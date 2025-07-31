@@ -359,3 +359,152 @@ EditRoute
         </tbody>
     </table>
 </div>
+-----------
+addflitht
+@model Airline.Models.Flight
+@{
+    Layout = null;
+    var flights = ViewBag.Flights as List<Airline.Models.Flight>;
+    var routes = ViewBag.Routes as List<Airline.Models.SearchRequest>;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Flight</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+</head>
+<body class="bg-light p-4">
+
+    <div class="container">
+        <h2 class="text-primary mb-4">Add New Flight</h2>
+        <form method="post" action="/Admin/AddFlight" class="border p-4 bg-white rounded shadow-sm">
+            <div class="form-group">
+                <label>Route:</label>
+                <select name="RouteId" class="form-control" required>
+                    <option value="">-- Select Route --</option>
+                    @foreach (var r in routes)
+                    {
+                        <option value="@r.RouteId">@r.From → @r.To | @r.DepartureDate.ToString("dd MMM")</option>
+                    }
+                </select>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label>Departure City:</label>
+                    <input type="text" name="DepartureCity" class="form-control" required />
+                </div>
+                <div class="form-group col-md-6">
+                    <label>Arrival City:</label>
+                    <input type="text" name="ArrivalCity" class="form-control" required />
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label>Departure Time:</label>
+                    <input type="datetime-local" name="DepartureTime" class="form-control" required />
+                </div>
+                <div class="form-group col-md-6">
+                    <label>Arrival Time:</label>
+                    <input type="datetime-local" name="ArrivalTime" class="form-control" required />
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-4">
+                    <label>Economy Price:</label>
+                    <input type="number" name="EconomyPrice" class="form-control" required />
+                </div>
+                <div class="form-group col-md-4">
+                    <label>Economy Seats:</label>
+                    <input type="number" name="EconomySeats" class="form-control" required />
+                </div>
+                <div class="form-group col-md-4">
+                    <label>Business Price:</label>
+                    <input type="number" name="BusinessPrice" class="form-control" required />
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label>Business Seats:</label>
+                    <input type="number" name="BusinessSeats" class="form-control" required />
+                </div>
+                <div class="form-group col-md-3">
+                    <label>First Class Price:</label>
+                    <input type="number" name="FirstClassPrice" class="form-control" />
+                </div>
+                <div class="form-group col-md-3">
+                    <label>First Class Seats:</label>
+                    <input type="number" name="FirstClassSeats" class="form-control" />
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label>Airplane ID:</label>
+                    <input type="text" name="AirplaneId" class="form-control" required />
+                </div>
+                <div class="form-group col-md-6">
+                    <label>Airplane Number:</label>
+                    <input type="text" name="AirplaneNumber" class="form-control" required />
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-success">Add Flight</button>
+        </form>
+
+        <hr class="my-5" />
+
+        <h3 class="text-secondary">Flight List</h3>
+        <table class="table table-striped table-bordered mt-3 bg-white">
+            <thead class="thead-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Route ID</th>
+                    <th>Airplane ID</th>
+                    <th>Airplane Number</th>
+                    <th>From → To</th>
+                    <th>Departure Time</th>
+                    <th>Arrival Time</th>
+                    <th>Economy Price</th>
+                    <th>Economy Seats</th>
+                    <th>Business Price</th>
+                    <th>Business Seats</th>
+                    <th>First Class Price</th>
+                    <th>First Class Seats</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var f in flights)
+                {
+                    <tr>
+                        <td>@f.Id</td>
+                        <td>@f.RouteId</td>
+                        <td>@f.AirplaneId</td>
+                        <td>@f.AirplaneNumber</td>
+                        <td>@f.DepartureCity → @f.ArrivalCity</td>
+                        <td>@f.DepartureTime.ToString("yyyy-MM-dd HH:mm")</td>
+                        <td>@f.ArrivalTime.ToString("yyyy-MM-dd HH:mm")</td>
+                        <td>@f.EconomyPrice</td>
+                        <td>@f.EconomySeats</td>
+                        <td>@f.BusinessPrice</td>
+                        <td>@f.BusinessSeats</td>
+                        <td>@f.FirstClassPrice</td>
+                        <td>@f.FirstClassSeats</td>
+                        <td>
+                            <a class="btn btn-sm btn-primary" href="/Admin/EditFlight/@f.Id">Edit</a>
+                            <a class="btn btn-sm btn-danger" href="/Admin/DeleteFlight/@f.Id" onclick="return confirm('Are you sure?')">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+
+        <a href="/Admin/AdminPanel" class="btn btn-outline-secondary mt-3">← Back to Panel</a>
+    </div>
+</body>
+</html>
