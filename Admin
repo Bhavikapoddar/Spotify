@@ -6,21 +6,37 @@ body {
 /* Style the main container for the form */
 .form-horizontal {
     color: white;
+    /* Increased width by reducing margins from 35% to 20% */
     margin-top: 2%;
-    margin-left: 35%;
-    margin-right: 35%;
+    margin-left: 20%;
+    margin-right: 20%;
     padding: 20px 5%;
     border: 1px solid #d83f87;
     background: #d83f87; /* The pink background color */
     border-radius: 15px;
-    text-align: center;
+}
+
+/* * This is the key change. 
+ * We use flexbox to put the labels and inputs on the same line.
+ */
+.form-group {
+    display: flex;
+    align-items: center; /* Vertically center the label and input */
+    margin-bottom: 20px;
 }
 
 /* Style the form labels */
 .control-label {
-    text-align: left; /* Align labels to the left */
-    display: block; /* Make labels take up full width for better alignment */
-    margin-bottom: 5px; /* Add some space below labels */
+    text-align: left;
+    /* Give the labels a fixed width to align the inputs neatly */
+    width: 150px; 
+    margin-right: 10px; /* Add some space between the label and the input */
+}
+
+/* The div containing the input field */
+.col-md-10 {
+    /* Allow the input container to take up the remaining space */
+    flex-grow: 1; 
 }
 
 /* Style the form input fields and dropdown lists */
@@ -30,15 +46,16 @@ body {
     width: 100%;
     box-shadow: 1px 1px 1px 0px rgba(0, 0, 0, 0.5);
     border: none;
-    margin-bottom: 20px;
-    text-align: center; /* Center the text inside the input field */
+    /* The padding is a good way to align text inside the field */
+    padding-left: 10px; 
 }
 
 /* Style the submit button */
 .btn-default {
     border-radius: 5px;
     height: 50px;
-    width: 100%; /* Make button full width */
+    /* Make the button fill the available width */
+    width: 100%; 
     background-color: #fff; /* White background for the button */
     color: #d83f87; /* Pink text color */
     border: 1px solid #d83f87; /* Pink border */
