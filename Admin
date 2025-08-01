@@ -1,54 +1,47 @@
+/* Apply the dark background to the body */
 body {
     background-color: #2A1B3D;
 }
 
-h2 {
-    text-align: center;
-    color: white;
-    margin-bottom: 5%;
-}
-
-.login-container {
+/* Style the main container for the form */
+.form-horizontal {
     color: white;
     margin-top: 2%;
     margin-left: 35%;
     margin-right: 35%;
-    padding-left: 5%;
-    padding-right: 5%;
+    padding: 20px 5%;
     border: 1px solid #d83f87;
     background: #d83f87; /* The pink background color */
     border-radius: 15px;
     text-align: center;
-    height: 320px;
 }
 
-h3 {
-    margin-bottom: 10%;
-    margin-top: 15%;
+/* Style the form labels */
+.control-label {
+    text-align: left; /* Align labels to the left */
+    display: block; /* Make labels take up full width for better alignment */
+    margin-bottom: 5px; /* Add some space below labels */
 }
 
-.login-item {
-    text-align: center;
-}
-
-.input-field {
+/* Style the form input fields and dropdown lists */
+.form-control {
     border-radius: 5px;
     height: 50px;
     width: 100%;
     box-shadow: 1px 1px 1px 0px rgba(0, 0, 0, 0.5);
-    text-align: center;
     border: none;
     margin-bottom: 20px;
+    text-align: center; /* Center the text inside the input field */
 }
 
-.submit-btn-container {
-    margin-bottom: 10px;
-}
-
-#submit-btn {
-    margin-top: 3%;
-}
-
-.register-btn {
-    color: white;
+/* Style the submit button */
+.btn-default {
+    border-radius: 5px;
+    height: 50px;
+    width: 100%; /* Make button full width */
+    background-color: #fff; /* White background for the button */
+    color: #d83f87; /* Pink text color */
+    border: 1px solid #d83f87; /* Pink border */
+    font-weight: bold;
+    margin-top: 20px;
 }
