@@ -1,160 +1,134 @@
+hii
+.... 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using Airline_Managementnew.Models;
 
+namespace Airline_Managementnew.Controllers
+{
+    public class UserController : Controller
+    {
+        DatabaseContext db = new DatabaseContext();
+
+        // GET: Register
+        public ActionResult Register()
+        {
+            return View();
+        }
+
+        // POST: Register
+        [HttpPost]
+        public ActionResult Register(User user)
+        {
+            if (ModelState.IsValid)
+            {
+                db.USERS.Add(user);
+                db.SaveChanges();
+                ViewBag.Message = "Registration Successfully!";
+                return RedirectToAction("Login");
+            }
+            return View();
+        }
+
+        // GET: Login
+        public ActionResult Login()
+        {
+            // Clear any existing session data on page load to prevent issues
+            Session.Clear();
+            return View();
+        }
+
+        // POST: Login
+        [HttpPost]
+        public ActionResult Login(string Username, string Password)
+        {
+            var admin = db.Admins.FirstOrDefault(a => a.Username == Username && a.Password == Password);
+            if (admin != null)
+            {
+                Session["AdminId"] = admin.Id;
+                Session["Username"] = admin.Username;
+                return RedirectToAction("AdminPanel", "Admin");
+            }
+
+            var user = db.USERS.FirstOrDefault(u => u.Username == Username && u.Password == Password);
+            if (user != null)
+            {
+                Session["UserId"] = user.Id;
+                Session["Username"] = user.Username;
+                return RedirectToAction("Index", "Booking");
+            }
+
+            ViewBag.Error = "Invalid Username or Password!";
+            return View();
+        }
+
+        // GET: Logout
+        public ActionResult Logout()
+        {
+            Session.Clear();
+            return RedirectToAction("Login", "User");
+        }
+    }
+}
+--_-----------
+-----
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Login & Register</title>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', sans-serif;
-    }
-
-    body {
-      background: linear-gradient(to right, #4facfe, #00f2fe);
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .container {
-      background: white;
-      width: 400px;
-      padding: 40px 30px;
-      border-radius: 15px;
-      box-shadow: 0 15px 25px rgba(0, 0, 0, 0.2);
-      position: relative;
-    }
-
-    h2 {
-      text-align: center;
-      margin-bottom: 20px;
-      color: #333;
-    }
-
-    .form-group {
-      margin-bottom: 15px;
-    }
-
-    label {
-      font-weight: 600;
-      display: block;
-      margin-bottom: 5px;
-    }
-
-    input {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #aaa;
-      border-radius: 5px;
-      outline: none;
-    }
-
-    button {
-      width: 100%;
-      padding: 12px;
-      background-color: #4facfe;
-      border: none;
-      color: white;
-      font-weight: bold;
-      border-radius: 5px;
-      margin-top: 10px;
-      cursor: pointer;
-      transition: background 0.3s ease;
-    }
-
-    button:hover {
-      background-color: #00c6ff;
-    }
-
-    .toggle {
-      text-align: center;
-      margin-top: 15px;
-    }
-
-    .toggle a {
-      color: #4facfe;
-      cursor: pointer;
-      text-decoration: none;
-      font-weight: bold;
-    }
-
-    .form-box {
-      display: none;
-      animation: fadeIn 0.5s ease-in-out;
-    }
-
-    .form-box.active {
-      display: block;
-    }
-
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-  </style>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - My ASP.NET Application</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
 </head>
 <body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                @Html.ActionLink("Application name", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li>@Html.ActionLink("Home", "Index", "Home")</li>
+                    <li>@Html.ActionLink("About", "About", "Home")</li>
+                    <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
+                </ul>
 
-  <div class="container">
-    <!-- Login Form -->
-    <div class="form-box active" id="login-form">
-      <h2>Login</h2>
-      <div class="form-group">
-        <label>Email</label>
-        <input type="email" placeholder="Enter your email" />
-      </div>
-      <div class="form-group">
-        <label>Password</label>
-        <input type="password" placeholder="Enter your password" />
-      </div>
-      <button>Login</button>
-      <div class="toggle">Don't have an account? <a id="show-register">Register</a></div>
+                @* Add this conditional logic to replace the _loginPartial *@
+                <ul class="nav navbar-nav navbar-right">
+                    @if (Session["Username"] != null)
+                    {
+                        <li><p class="navbar-text">Welcome, @Session["Username"]</p></li>
+                        <li>@Html.ActionLink("Logout", "Logout", "User")</li>
+                    }
+                    else
+                    {
+                        <li>@Html.ActionLink("Login", "Login", "User")</li>
+                        <li>@Html.ActionLink("Register", "Register", "User")</li>
+                    }
+                </ul>
+            </div>
+        </div>
     </div>
-
-    <!-- Register Form -->
-    <div class="form-box" id="register-form">
-      <h2>Register</h2>
-      <div class="form-group">
-        <label>Name</label>
-        <input type="text" placeholder="Enter your name" />
-      </div>
-      <div class="form-group">
-        <label>Email</label>
-        <input type="email" placeholder="Enter your email" />
-      </div>
-      <div class="form-group">
-        <label>Password</label>
-        <input type="password" placeholder="Create a password" />
-      </div>
-      <button>Register</button>
-      <div class="toggle">Already have an account? <a id="show-login">Login</a></div>
+    <div class="container body-content">
+        @RenderBody()
+        <hr />
+        <footer>
+            <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
+        </footer>
     </div>
-  </div>
-
-  <script>
-    $(document).ready(function () {
-      $("#show-register").click(function () {
-        $("#login-form").removeClass("active");
-        $("#register-form").addClass("active");
-      });
-
-      $("#show-login").click(function () {
-        $("#register-form").removeClass("active");
-        $("#login-form").addClass("active");
-      });
-    });
-  </script>
-
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
 </body>
 </html>
+.......... 
+... 
