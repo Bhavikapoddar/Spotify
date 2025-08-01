@@ -7,7 +7,7 @@
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="..." crossorigin="anonymous" referrerpolicy="no-referrer" />
 
 </head>
 <body>
@@ -20,8 +20,9 @@
                     <span class="icon-bar"></span>
                 </button>
                 
-                <a href="@Url.Action("Index", "Home")" class="navbar-brand">
-                    <img src="@Url.Content("~/Content/images/airplane-logo.png")" alt="Airplane Logo" style="height: 30px; margin-top: -5px;" />
+                <a href="@Url.Action("Index", "Booking")" class="navbar-brand">
+                    <i class="fas fa-plane"></i>
+                    Application Name
                 </a>
             </div>
             
@@ -31,7 +32,7 @@
                     {
                         <li>
                             <p class="navbar-text">
-                                <i class="fas fa-user"></i> Welcome, @Session["Username"]
+                                <i class="fas fa-user-circle"></i> Welcome, @Session["Username"]
                             </p>
                         </li>
                         <li>@Html.ActionLink("Logout", "Logout", "User")</li>
