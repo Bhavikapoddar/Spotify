@@ -1,12 +1,6 @@
-hhhj
-hh
-
-Given the constraint of C# version 6 or less, your web view component is almost certainly an older one, likely based on Internet Explorer. This means we must completely avoid modern CSS properties that are not supported by that engine, such as backdrop-filter, grid, and some more advanced flexbox features.
-The original CSS you provided was already quite good and used a responsive approach with float and media queries, which is perfect for this situation. I've refactored your code to remove the unsupported backdrop-filter property and made sure all other properties are widely compatible with older browsers. The "frosted glass" effect will be replaced with a simple, semi-transparent white background, which is the standard and safest fallback.
-Here is the complete and robust CSS code, fully compatible with older C# web views and responsive for different screen sizes.
 /* Global Styles for Body */
 body {
-    background: linear-gradient(to right, #e0ecf8, #f8fbff); /* Soft blue gradient */
+    background: linear-gradient(to right, #e0ecf8, #f8fbff);
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     color: #1a202c;
     margin: 0;
@@ -68,7 +62,7 @@ h2.passenger-title::before {
     content: "📝 ";
 }
 
-/* Column Layout using floats for responsiveness */
+/* Column Layout using floats for responsiveness on larger screens */
 .row::after {
     content: "";
     display: table;
@@ -86,11 +80,11 @@ h2.passenger-title::before {
 .col-md-4 { width: 33.3333%; }
 .col-md-6 { width: 50%; }
 
-/* Responsive for Mobile */
+/* The responsive part: Media query for mobile devices */
 @media (max-width: 768px) {
     .col-md-3, .col-md-4, .col-md-6 {
-        width: 100%;
-        float: none;
+        width: 100%; /* Columns take up full width */
+        float: none; /* Columns stack vertically */
         padding: 0;
     }
 }
@@ -165,4 +159,3 @@ h2.passenger-title::before {
 .passenger-mb-5 {
     margin-bottom: 5rem !important;
 }
-
