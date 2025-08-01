@@ -1,68 +1,87 @@
 /* Global Styles for Body */
 body {
-    background: linear-gradient(to right, #e0ecf8, #f8fbff);
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    color: #1a202c;
+    /* A softer, more inviting blue gradient for the background */
+    background: linear-gradient(to right, #e6f2ff, #f0f8ff);
+    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; /* Slightly updated font stack */
+    color: #333; /* Darker, more readable text color */
     margin: 0;
-    padding: 20px;
+    padding: 30px; /* Increased padding for more breathing room */
     background-attachment: fixed;
     background-size: cover;
+    line-height: 1.6; /* Improved line spacing for readability */
 }
 
-/* Main Container - Fallback for older browsers */
+/* Main Container */
 .passenger-container {
-    max-width: 960px;
+    max-width: 900px; /* Slightly narrower for a more focused layout */
     margin: 0 auto;
-    padding: 30px;
-    /* Replaced backdrop-filter with a solid, semi-transparent background */
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 20px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    padding: 40px; /* More internal padding */
+    background: rgba(255, 255, 255, 0.98); /* Near-opaque white for a clean base, no blur */
+    border-radius: 25px; /* Softer, more modern rounded corners */
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15); /* More pronounced, softer shadow */
 }
 
 /* Card Styling */
 .passenger-card {
-    /* Used a solid semi-transparent color for consistency with the main container */
-    background-color: rgba(255, 255, 255, 0.95);
-    border-radius: 16px;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
-    padding: 35px;
-    margin-bottom: 30px;
-    transition: transform 0.3s;
+    background-color: #ffffff; /* Pure white for crispness */
+    border-radius: 18px; /* Slightly larger radius for cards */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08); /* Gentle shadow for depth */
+    padding: 40px; /* Increased padding inside cards */
+    margin-bottom: 35px; /* More space between cards */
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out; /* Smooth transitions */
+    border: 1px solid #e0e0e0; /* Subtle border for definition */
 }
 
 .passenger-card:hover {
-    transform: scale(1.01);
+    transform: translateY(-5px); /* Slight lift effect on hover */
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15); /* Enhanced shadow on hover */
 }
 
 /* Heading Styles */
 h2.passenger-title {
-    font-weight: 800;
-    color: #2a4365;
+    font-weight: 700; /* Slightly less bold, but still strong */
+    color: #2c3e50; /* Deep, rich blue-grey for main title */
     text-align: center;
-    margin-bottom: 3.5rem;
-    font-size: 2rem;
-    letter-spacing: 1px;
+    margin-bottom: 4rem; /* More space below the main title */
+    font-size: 2.5rem; /* Larger, more impactful main title */
+    letter-spacing: 0.5px; /* Reduced letter spacing for better readability */
     position: relative;
+    padding-bottom: 15px; /* Space for an underline effect */
 }
 
 h2.passenger-title::before {
     content: "✈️ ";
-    font-size: 1.5rem;
+    font-size: 2rem; /* Larger emoji */
+    margin-right: 10px;
+}
+
+h2.passenger-title::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    transform: translateX(-50%);
+    width: 80px; /* Short underline */
+    height: 4px;
+    background: linear-gradient(to right, #4A90E2, #357ABD); /* Gradient underline */
+    border-radius: 2px;
 }
 
 .passenger-card h5 {
-    font-weight: 700;
-    color: #4a5568;
-    font-size: 1.2rem;
-    margin-bottom: 18px;
+    font-weight: 600; /* Slightly less bold for sub-headings */
+    color: #4A90E2; /* Vibrant blue for card titles */
+    font-size: 1.35rem; /* Slightly larger card titles */
+    margin-bottom: 25px; /* More space below card titles */
+    border-bottom: 1px solid #f0f0f0; /* Subtle separator */
+    padding-bottom: 10px;
 }
 
 .passenger-card h5::before {
     content: "📝 ";
+    margin-right: 8px;
 }
 
-/* Column Layout using floats for responsiveness on larger screens */
+/* Column Layout (Responsive using floats) */
 .row::after {
     content: "";
     display: table;
@@ -73,19 +92,38 @@ h2.passenger-title::before {
     float: left;
     padding: 0 15px;
     box-sizing: border-box;
-    margin-bottom: 20px;
+    margin-bottom: 25px; /* More vertical spacing between fields */
 }
 
 .col-md-3 { width: 25%; }
 .col-md-4 { width: 33.3333%; }
 .col-md-6 { width: 50%; }
 
-/* The responsive part: Media query for mobile devices */
+/* Responsive for Mobile (Media Query) */
 @media (max-width: 768px) {
+    body {
+        padding: 15px; /* Less padding on very small screens */
+    }
+    .passenger-container {
+        padding: 25px; /* Less padding inside container on small screens */
+        border-radius: 15px; /* Smaller border-radius on small screens */
+    }
+    .passenger-card {
+        padding: 25px; /* Less padding inside cards on small screens */
+        border-radius: 12px; /* Smaller border-radius for cards on small screens */
+    }
+    h2.passenger-title {
+        font-size: 2rem; /* Adjust title size for smaller screens */
+        margin-bottom: 3rem;
+    }
+    .passenger-card h5 {
+        font-size: 1.2rem; /* Adjust card title size */
+    }
     .col-md-3, .col-md-4, .col-md-6 {
-        width: 100%; /* Columns take up full width */
-        float: none; /* Columns stack vertically */
+        width: 100%; /* Columns stack vertically */
+        float: none; /* Remove float */
         padding: 0;
+        margin-bottom: 20px; /* Consistent spacing when stacked */
     }
 }
 
@@ -93,66 +131,80 @@ h2.passenger-title::before {
 .passenger-label {
     display: block;
     font-weight: 600;
-    color: #718096;
-    margin-bottom: 8px;
+    color: #555; /* Softer dark grey for labels */
+    margin-bottom: 10px; /* More space below labels */
+    font-size: 0.95rem; /* Slightly smaller label font */
 }
 
 .passenger-input, .passenger-select {
     width: 100%;
-    padding: 14px 16px;
-    border: 1px solid #cbd5e0;
-    border-radius: 10px;
-    background-color: #f7fafc;
-    color: #2d3748;
+    padding: 15px 18px; /* Increased padding for larger input fields */
+    border: 1px solid #dcdcdc; /* Lighter, softer border */
+    border-radius: 12px; /* More rounded input fields */
+    background-color: #fcfcfc; /* Very light background for inputs */
+    color: #333;
     transition: all 0.3s ease-in-out;
-    font-size: 1rem;
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+    font-size: 1.05rem; /* Slightly larger input text */
+    box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.04); /* Subtle inner shadow */
 }
 
 .passenger-input:focus, .passenger-select:focus {
-    border-color: #4299e1;
-    box-shadow: 0 0 0 4px rgba(66, 153, 225, 0.3);
+    border-color: #4A90E2; /* Vibrant blue border on focus */
+    box-shadow: 0 0 0 4px rgba(74, 144, 226, 0.25); /* Soft blue glow on focus */
     background-color: #fff;
     outline: none;
 }
 
 .passenger-input[readonly], .passenger-select[readonly] {
-    background-color: #edf2f7;
+    background-color: #f0f0f0; /* Lighter grey for readonly fields */
     cursor: not-allowed;
+    box-shadow: none; /* No inner shadow for readonly */
 }
 
 /* Buttons */
+.button-group {
+    text-align: right;
+    margin-top: 40px; /* More space above buttons */
+}
+
 .passenger-btn-primary {
-    background: linear-gradient(to right, #4299e1, #3182ce);
+    /* More vibrant blue gradient for primary button */
+    background: linear-gradient(to right, #4A90E2, #357ABD);
     color: white;
     border: none;
-    padding: 14px 30px;
-    font-size: 16px;
+    padding: 16px 35px; /* Larger buttons */
+    font-size: 1.1rem; /* Larger font size for buttons */
     font-weight: 700;
-    border-radius: 10px;
+    border-radius: 12px; /* Rounded button corners */
     cursor: pointer;
     transition: all 0.3s ease;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1); /* Subtle button shadow */
 }
 
 .passenger-btn-primary:hover {
-    background: linear-gradient(to right, #2b6cb0, #2c5282);
+    background: linear-gradient(to right, #357ABD, #2a5f96); /* Darker gradient on hover */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); /* Enhanced shadow on hover */
+    transform: translateY(-2px); /* Slight lift on hover */
 }
 
 .passenger-btn-secondary {
-    background: #a0aec0;
+    background: #a0aec0; /* Muted grey for secondary button */
     color: white;
     border: none;
-    padding: 14px 30px;
-    font-size: 16px;
+    padding: 16px 35px; /* Larger buttons */
+    font-size: 1.1rem; /* Larger font size for buttons */
     font-weight: 700;
-    border-radius: 10px;
+    border-radius: 12px; /* Rounded button corners */
     cursor: pointer;
     transition: all 0.3s ease;
-    margin-right: 10px;
+    margin-right: 15px; /* More space between buttons */
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08); /* Subtle button shadow */
 }
 
 .passenger-btn-secondary:hover {
-    background-color: #718096;
+    background-color: #718096; /* Darker grey on hover */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12); /* Enhanced shadow on hover */
+    transform: translateY(-2px); /* Slight lift on hover */
 }
 
 /* Spacing */
