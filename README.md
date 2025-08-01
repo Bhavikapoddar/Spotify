@@ -1,36 +1,6 @@
-hii
-/* General Body Styles */
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f0f2f5;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
-}
-
-/* Form Container */
-.form-container {
-    background-color: #fff;
-    padding: 30px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    width: 100%;
-    max-width: 400px;
-    box-sizing: border-box;
-}
-
-/* Form Header */
-h2 {
-    text-align: center;
-    margin-bottom: 20px;
-    color: #333;
-}
-
-/* Form Elements */
-.form-group {
-    margin-bottom: 15px;
+   hiii
+   .... 
+   
 }
 
 label {
@@ -86,5 +56,3 @@ input[type="submit"]:hover {
 .success-message {
     color: #28a745;
     text-align: center;
-    margin-top: 15px;
-}
