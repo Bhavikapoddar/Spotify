@@ -1,11 +1,5 @@
-hiii
-.... 
-Okay, I understand! You want the main title to be much larger and more prominent, and you'd like each input field to have its own subtle "background card" or visual separation to make them stand out clearly. I will also ensure the code is free of comments and remains fully responsive and compatible with older C# web views.
-To achieve the "background card" for inputs, I've introduced a new class called .form-group-item. You would wrap each label and input/select pair within this div in your HTML.
-Here is the complete CSS code with these enhancements:
-/* Global Styles for Body */
 body {
-    background: linear-gradient(to right bottom, #e0f2f7, #e6e9f0);
+    background: linear-gradient(to right bottom, #dff6f0, #e6ecf3);
     font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
     color: #2c3e50;
     margin: 0;
@@ -15,22 +9,20 @@ body {
     line-height: 1.65;
 }
 
-/* Main Container */
 .passenger-container {
     max-width: 920px;
     margin: 0 auto;
     padding: 45px;
-    background: rgba(255, 255, 255, 0.98);
+    background: #ffffff;
     border-radius: 30px;
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.18);
-    border: 1px solid rgba(220, 220, 220, 0.5);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(200, 200, 200, 0.5);
 }
 
-/* Card Styling */
 .passenger-card {
     background-color: #ffffff;
     border-radius: 22px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
     padding: 45px;
     margin-bottom: 40px;
     transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
@@ -39,25 +31,25 @@ body {
 
 .passenger-card:hover {
     transform: translateY(-7px);
-    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.25);
 }
 
-/* Heading Styles */
 h2.passenger-title {
-    font-weight: 700;
-    color: #2980b9;
+    font-weight: 900;
+    color: #2d98f0;
     text-align: center;
     margin-bottom: 4.5rem;
-    font-size: 3.5rem; /* Increased font size for the main title */
-    letter-spacing: 0.8px;
+    font-size: 3.8rem;
+    letter-spacing: 1px;
     position: relative;
     padding-bottom: 20px;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
 }
 
 h2.passenger-title::before {
     content: "✈️ ";
-    font-size: 2.8rem; /* Adjusted emoji size */
-    margin-right: 12px;
+    font-size: 3rem;
+    margin-right: 10px;
 }
 
 h2.passenger-title::after {
@@ -73,11 +65,11 @@ h2.passenger-title::after {
 }
 
 .passenger-card h5 {
-    font-weight: 600;
+    font-weight: 700;
     color: #3498db;
-    font-size: 1.45rem;
+    font-size: 1.6rem;
     margin-bottom: 30px;
-    border-bottom: 1px solid #e9ecef;
+    border-bottom: 2px solid #dfe6e9;
     padding-bottom: 12px;
 }
 
@@ -87,7 +79,6 @@ h2.passenger-title::after {
     color: #2ecc71;
 }
 
-/* Column Layout (Responsive using floats) */
 .row::after {
     content: "";
     display: table;
@@ -98,29 +89,27 @@ h2.passenger-title::after {
     float: left;
     padding: 0 18px;
     box-sizing: border-box;
-    margin-bottom: 0; /* Reset margin-bottom here, it will be on .form-group-item */
+    margin-bottom: 0;
 }
 
 .col-md-3 { width: 25%; }
 .col-md-4 { width: 33.3333%; }
 .col-md-6 { width: 50%; }
 
-/* Styling for individual input "cards" */
 .form-group-item {
-    background-color: #f8faff; /* Very light blue background for input groups */
-    border: 1px solid #eef2f7; /* Subtle border */
-    border-radius: 12px; /* Rounded corners for the input group */
-    padding: 20px; /* Padding inside the input group */
-    margin-bottom: 25px; /* Space between input groups */
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05); /* Soft shadow */
-    transition: box-shadow 0.2s ease-in-out;
+    background-color: #f0f8ff;
+    border: 1px solid #d7e4f2;
+    border-radius: 15px;
+    padding: 22px;
+    margin-bottom: 28px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    transition: box-shadow 0.3s ease-in-out;
 }
 
 .form-group-item:hover {
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08); /* Slightly more pronounced shadow on hover */
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
 }
 
-/* Responsive for Mobile (Media Query) */
 @media (max-width: 768px) {
     body {
         padding: 20px;
@@ -134,62 +123,60 @@ h2.passenger-title::after {
         border-radius: 15px;
     }
     h2.passenger-title {
-        font-size: 2.8rem; /* Adjusted title size for smaller screens */
+        font-size: 3rem;
         margin-bottom: 3.5rem;
     }
     h2.passenger-title::before {
-        font-size: 2.2rem;
+        font-size: 2.5rem;
     }
     .passenger-card h5 {
-        font-size: 1.3rem;
+        font-size: 1.4rem;
     }
     .col-md-3, .col-md-4, .col-md-6 {
         width: 100%;
         float: none;
         padding: 0;
-        margin-bottom: 0; /* Reset margin-bottom here for stacking */
+        margin-bottom: 0;
     }
     .form-group-item {
-        margin-bottom: 20px; /* Consistent spacing when stacked on mobile */
+        margin-bottom: 20px;
         padding: 18px;
     }
 }
 
-/* Labels and Inputs */
 .passenger-label {
     display: block;
-    font-weight: 600;
-    color: #555;
+    font-weight: bold;
+    color: #34495e;
     margin-bottom: 12px;
-    font-size: 1rem;
+    font-size: 1.05rem;
 }
 
 .passenger-input, .passenger-select {
     width: 100%;
     padding: 16px 20px;
-    border: 1px solid #e0e0e0;
+    border: 1px solid #d0d0d0;
     border-radius: 15px;
-    background-color: #fcfdff;
-    color: #333;
-    transition: all 0.3s ease-in-out;
+    background-color: #ffffff;
+    color: #2c3e50;
     font-size: 1.1rem;
-    box-shadow: inset 0 1px 5px rgba(0, 0, 0, 0.06);
+    box-shadow: inset 0 1px 5px rgba(0, 0, 0, 0.07);
+    transition: all 0.3s ease-in-out;
 }
 
 .passenger-input:focus, .passenger-select:focus {
-    border-color: #3498db;
-    box-shadow: 0 0 0 5px rgba(52, 152, 219, 0.35);
+    border-color: #2d98f0;
+    box-shadow: 0 0 0 6px rgba(45, 152, 240, 0.25);
     background-color: #fff;
     outline: none;
 }
 
 .passenger-input[readonly], .passenger-select[readonly] {
-    background-color: #f5f7fa;
+    background-color: #f2f4f8;
     cursor: not-allowed;
     box-shadow: none;
 }
 
-/* Buttons */
 .button-group {
     text-align: right;
     margin-top: 45px;
@@ -201,7 +188,7 @@ h2.passenger-title::after {
     border: none;
     padding: 18px 40px;
     font-size: 1.15rem;
-    font-weight: 700;
+    font-weight: bold;
     border-radius: 15px;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -220,7 +207,7 @@ h2.passenger-title::after {
     border: none;
     padding: 18px 40px;
     font-size: 1.15rem;
-    font-weight: 700;
+    font-weight: bold;
     border-radius: 15px;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -234,8 +221,6 @@ h2.passenger-title::after {
     transform: translateY(-3px);
 }
 
-/* Spacing */
 .passenger-mb-5 {
     margin-bottom: 5rem !important;
 }
-
