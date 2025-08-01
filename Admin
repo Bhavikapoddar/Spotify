@@ -1,510 +1,161 @@
-hiii AddRoute
-@model Airline.Models.SearchRequest
-@{
-    Layout = null;
-    var routes = ViewBag.Routes as List<Airline.Models.SearchRequest>;
-}
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Add Route</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
-</head>
-<body class="bg-light p-4">
-    <div class="container">
-        <h2 class="text-primary mb-4">Add New Route</h2>
-        <form method="post" action="/Admin/AddRoute" class="border p-4 bg-white rounded shadow-sm">
-            <div class="form-row">
-                <div class="form-group col-md-6">
-                    <label>From:</label>
-                    <input type="text" name="From" class="form-control" required />
-                </div>
-                <div class="form-group col-md-6">
-                    <label>To:</label>
-                    <input type="text" name="To" class="form-control" required />
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>Departure Date:</label>
-                <input type="date" name="DepartureDate" class="form-control" required />
-            </div>
-
-            <div class="form-group">
-                <label>Route Number:</label>
-                <input type="text" name="RouteNumber" class="form-control" required />
-            </div>
-
-            <button type="submit" class="btn btn-success">Add Route</button>
-        </form>
-
-        <hr class="my-5" />
-
-        <h3 class="text-secondary">Route List</h3>
-        <table class="table table-bordered table-striped bg-white">
-            <thead class="thead-dark">
-                <tr>
-                    <th>ID</th>
-                    <th>From</th>
-                    <th>To</th>
-                    <th>Date</th>
-                    <th>Route No</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var r in routes)
-                {
-                    <tr>
-                        <td>@r.RouteId</td>
-                        <td>@r.From</td>
-                        <td>@r.To</td>
-                        <td>@r.DepartureDate.ToString("yyyy-MM-dd")</td>
-                        <td>@r.RouteNumber</td>
-                        <td>
-                            <a class="btn btn-sm btn-primary" href="/Admin/EditRoute/@r.RouteId">Edit</a>
-                            <a class="btn btn-sm btn-danger" href="/Admin/DeleteRoute/@r.RouteId" onclick="return confirm('Are you sure?')">Delete</a>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-
-        <a href="/Admin/AdminPanel" class="btn btn-outline-secondary mt-3">← Back to Panel</a>
-    </div>
-</body>
-</html>
-----------------
-Adminpanel.,  
-@{
-    Layout = null;
+/* Global Styles for Body */
+body {
+    background: linear-gradient(to right, #e0ecf8, #f8fbff); /* Soft blue gradient */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #1a202c;
+    margin: 0;
+    padding: 20px;
+    background-attachment: fixed;
+    background-size: cover;
 }
 
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Admin Panel</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            display: flex;
-            font-family: 'Inter', sans-serif;
-            background-color: #f5f6fa;
-            color: #333;
-        }
-
-        .sidebar {
-            width: 230px;
-            background: linear-gradient(135deg, #1f1c2c, #928dab);
-            color: white;
-            padding: 30px 20px;
-            height: 100vh;
-            box-shadow: 2px 0 6px rgba(0,0,0,0.1);
-            position: fixed;
-        }
-
-            .sidebar h3 {
-                margin-bottom: 30px;
-                font-size: 22px;
-                font-weight: 600;
-                letter-spacing: 0.5px;
-            }
-
-            .sidebar a {
-                display: flex;
-                align-items: center;
-                color: white;
-                text-decoration: none;
-                font-size: 16px;
-                padding: 10px 12px;
-                margin-bottom: 12px;
-                border-radius: 8px;
-                transition: background 0.3s ease;
-            }
-
-                .sidebar a:hover {
-                    background-color: rgba(255, 255, 255, 0.1);
-                }
-
-                .sidebar a span {
-                    margin-right: 10px;
-                    font-size: 18px;
-                }
-
-        .main-content {
-            margin-left: 230px;
-            padding: 40px;
-            flex-grow: 1;
-        }
-
-            .main-content h2 {
-                font-size: 28px;
-                font-weight: 600;
-                margin-bottom: 10px;
-            }
-
-            .main-content p {
-                font-size: 16px;
-                color: #555;
-            }
-    </style>
-</head>
-<body>
-    <div class="sidebar">
-        <h3>🛠️ Admin Menu</h3>
-        <a href="/Admin/AddRoute"><span>📍</span>Add Route</a>
-        <a href="/Admin/AddFlight"><span>✈️</span>Add Flight</a>
-        <a href="/Admin/PassengerInfo"><span>👥</span>Passenger Info</a>
-        <a href="/Admin/Flights"><span>🗂️</span>Manage Flights</a>
-        <a href="/"><span>🏠</span>Back to Home</a>
-    </div>
-
-    <div class="main-content">
-        <h2>✨ Welcome to Admin Panel</h2>
-        <p>Use the left menu to manage routes, flights, and passengers efficiently.</p>
-    </div>
-</body>
-</html>
---------------------
-EditFlight. cshmtl
-@model Airline.Models.Flight
-@{
-    Layout = null;
-    var routes = ViewBag.Routes as List<Airline.Models.SearchRequest>;
-}
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Edit Flight</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
-</head>
-<body class="bg-light p-4">
-    <div class="container">
-        <h2 class="text-primary mb-4">Edit Flight</h2>
-        <form method="post" action="/Admin/EditFlight" class="border p-4 bg-white rounded shadow-sm">
-            <input type="hidden" name="Id" value="@Model.Id" />
-
-            <div class="form-group">
-                <label>Route:</label>
-                <select name="RouteId" class="form-control" required>
-                    <option value="">-- Select Route --</option>
-                    @foreach (var r in routes)
-                    {
-                        <option value="@r.RouteId" @(r.RouteId == Model.RouteId ? "selected" : "")>
-                            @r.From → @r.To | @r.DepartureDate.ToString("dd MMM")
-                        </option>
-                    }
-                </select>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group col-md-6">
-                    <label>Departure City:</label>
-                    <input type="text" name="DepartureCity" class="form-control" value="@Model.DepartureCity" required />
-                </div>
-                <div class="form-group col-md-6">
-                    <label>Arrival City:</label>
-                    <input type="text" name="ArrivalCity" class="form-control" value="@Model.ArrivalCity" required />
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group col-md-6">
-                    <label>Departure Time:</label>
-                    <input type="datetime-local" name="DepartureTime" class="form-control"
-                           value="@Model.DepartureTime.ToString("yyyy-MM-ddTHH:mm")" required />
-                </div>
-                <div class="form-group col-md-6">
-                    <label>Arrival Time:</label>
-                    <input type="datetime-local" name="ArrivalTime" class="form-control"
-                           value="@Model.ArrivalTime.ToString("yyyy-MM-ddTHH:mm")" required />
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group col-md-4">
-                    <label>Economy Price:</label>
-                    <input type="number" name="EconomyPrice" class="form-control" value="@Model.EconomyPrice" required />
-                </div>
-                <div class="form-group col-md-4">
-                    <label>Economy Seats:</label>
-                    <input type="number" name="EconomySeats" class="form-control" value="@Model.EconomySeats" required />
-                </div>
-                <div class="form-group col-md-4">
-                    <label>Business Price:</label>
-                    <input type="number" name="BusinessPrice" class="form-control" value="@Model.BusinessPrice" required />
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group col-md-6">
-                    <label>Business Seats:</label>
-                    <input type="number" name="BusinessSeats" class="form-control" value="@Model.BusinessSeats" required />
-                </div>
-                <div class="form-group col-md-3">
-                    <label>First Class Price:</label>
-                    <input type="number" name="FirstClassPrice" class="form-control" value="@Model.FirstClassPrice" />
-                </div>
-                <div class="form-group col-md-3">
-                    <label>First Class Seats:</label>
-                    <input type="number" name="FirstClassSeats" class="form-control" value="@Model.FirstClassSeats" />
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group col-md-6">
-                    <label>Airplane ID:</label>
-                    <input type="text" name="AirplaneId" class="form-control" value="@Model.AirplaneId" required />
-                </div>
-                <div class="form-group col-md-6">
-                    <label>Airplane Number:</label>
-                    <input type="text" name="AirplaneNumber" class="form-control" value="@Model.AirplaneNumber" required />
-                </div>
-            </div>
-
-            <button type="submit" class="btn btn-primary">Update Flight</button>
-            <a href="/Admin/AddFlight" class="btn btn-secondary ml-2">Cancel</a>
-        </form>
-    </div>
-</body>
-</html>
---------
-EditRoute
-
-@model Airline.Models.SearchRequest
-
-@{
-    ViewBag.Title = "Edit Route";
+/* Main Container */
+.passenger-container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 30px;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 20px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
 }
 
-<h2>Edit Route</h2>
-
-@using (Html.BeginForm("EditRoute", "Admin", FormMethod.Post))
-{
-    @Html.HiddenFor(model => model.RouteId)
-
-    <div>
-        <label>From:</label>
-        @Html.TextBoxFor(model => model.From, new { @class = "form-control" })
-    </div>
-
-    <div>
-        <label>To:</label>
-        @Html.TextBoxFor(model => model.To, new { @class = "form-control" })
-    </div>
-
-    <div>
-        <label>Departure Date:</label>
-        @Html.TextBoxFor(model => model.DepartureDate, "{0:yyyy-MM-dd}", new { @type = "date", @class = "form-control" })
-    </div>
-
-    <div>
-        <label>Route Number:</label>
-        @Html.TextBoxFor(model => model.RouteNumber, new { @class = "form-control" })
-    </div>
-
-    <br />
-    <input type="submit" value="Update Route" class="btn btn-primary" />
-}
-------
-@model List<Airline.Models.Passenger>
-
-@{
-    ViewBag.Title = "Passenger List";
+/* Card Styling */
+.passenger-card {
+    background-color: #ffffffd9;
+    border-radius: 16px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+    padding: 35px;
+    margin-bottom: 30px;
+    transition: transform 0.3s;
 }
 
-<div class="container mt-5">
-    <h2 class="text-center mb-4">All Booked Passengers</h2>
-    <table class="table table-bordered table-striped">
-        <thead class="table-dark">
-            <tr>
-                <th>Passenger Name</th>
-                <th>Gender</th>
-                <th>Age</th> 
-                <th>Mobile</th>
-                <th>Seat</th>
-                <th>Class</th>
-                <th>Flight</th>
-                <th>From</th>
-                <th>To</th>
-                <th>Departure</th>
-                <th>Arrival</th>
-                <th>Booked On</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var p in Model)
-            {
-                <tr>
-                    <td>@p.Title @p.FirstName @p.LastName</td>
-                    <td>@p.Gender</td>
-                    <td>@p.Age</td> 
-                    <td>@p.MobileNumber</td>
-                    <td>@p.SeatNumber</td>
-                    <td>@p.Class</td>
-                    <td>@p.AirplaneNumber</td>
-                    <td>@p.DepartureCity</td>
-                    <td>@p.ArrivalCity</td>
-                    <td>@p.DepartureDate.ToShortDateString() @p.DepartureTime</td>
-                    <td>@p.ArrivalTime</td>
-                    <td>@p.BookingDate.ToString("dd-MMM-yyyy hh:mm tt")</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-</div>
------------
-addflitht
-@model Airline.Models.Flight
-@{
-    Layout = null;
-    var flights = ViewBag.Flights as List<Airline.Models.Flight>;
-    var routes = ViewBag.Routes as List<Airline.Models.SearchRequest>;
+.passenger-card:hover {
+    transform: scale(1.01);
 }
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Add Flight</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
-</head>
-<body class="bg-light p-4">
 
-    <div class="container">
-        <h2 class="text-primary mb-4">Add New Flight</h2>
-        <form method="post" action="/Admin/AddFlight" class="border p-4 bg-white rounded shadow-sm">
-            <div class="form-group">
-                <label>Route:</label>
-                <select name="RouteId" class="form-control" required>
-                    <option value="">-- Select Route --</option>
-                    @foreach (var r in routes)
-                    {
-                        <option value="@r.RouteId">@r.From → @r.To | @r.DepartureDate.ToString("dd MMM")</option>
-                    }
-                </select>
-            </div>
+/* Heading Styles */
+h2.passenger-title {
+    font-weight: 800;
+    color: #2a4365;
+    text-align: center;
+    margin-bottom: 3.5rem;
+    font-size: 2rem;
+    letter-spacing: 1px;
+    position: relative;
+}
 
-            <div class="form-row">
-                <div class="form-group col-md-6">
-                    <label>Departure City:</label>
-                    <input type="text" name="DepartureCity" class="form-control" required />
-                </div>
-                <div class="form-group col-md-6">
-                    <label>Arrival City:</label>
-                    <input type="text" name="ArrivalCity" class="form-control" required />
-                </div>
-            </div>
+h2.passenger-title::before {
+    content: "✈️ ";
+    font-size: 1.5rem;
+}
 
-            <div class="form-row">
-                <div class="form-group col-md-6">
-                    <label>Departure Time:</label>
-                    <input type="datetime-local" name="DepartureTime" class="form-control" required />
-                </div>
-                <div class="form-group col-md-6">
-                    <label>Arrival Time:</label>
-                    <input type="datetime-local" name="ArrivalTime" class="form-control" required />
-                </div>
-            </div>
+.passenger-card h5 {
+    font-weight: 700;
+    color: #4a5568;
+    font-size: 1.2rem;
+    margin-bottom: 18px;
+}
 
-            <div class="form-row">
-                <div class="form-group col-md-4">
-                    <label>Economy Price:</label>
-                    <input type="number" name="EconomyPrice" class="form-control" required />
-                </div>
-                <div class="form-group col-md-4">
-                    <label>Economy Seats:</label>
-                    <input type="number" name="EconomySeats" class="form-control" required />
-                </div>
-                <div class="form-group col-md-4">
-                    <label>Business Price:</label>
-                    <input type="number" name="BusinessPrice" class="form-control" required />
-                </div>
-            </div>
+.passenger-card h5::before {
+    content: "📝 ";
+}
 
-            <div class="form-row">
-                <div class="form-group col-md-6">
-                    <label>Business Seats:</label>
-                    <input type="number" name="BusinessSeats" class="form-control" required />
-                </div>
-                <div class="form-group col-md-3">
-                    <label>First Class Price:</label>
-                    <input type="number" name="FirstClassPrice" class="form-control" />
-                </div>
-                <div class="form-group col-md-3">
-                    <label>First Class Seats:</label>
-                    <input type="number" name="FirstClassSeats" class="form-control" />
-                </div>
-            </div>
+/* Column Layout */
+.row::after {
+    content: "";
+    display: table;
+    clear: both;
+}
 
-            <div class="form-row">
-                <div class="form-group col-md-6">
-                    <label>Airplane ID:</label>
-                    <input type="text" name="AirplaneId" class="form-control" required />
-                </div>
-                <div class="form-group col-md-6">
-                    <label>Airplane Number:</label>
-                    <input type="text" name="AirplaneNumber" class="form-control" required />
-                </div>
-            </div>
+.col-md-3, .col-md-4, .col-md-6 {
+    float: left;
+    padding: 0 15px;
+    box-sizing: border-box;
+    margin-bottom: 20px;
+}
 
-            <button type="submit" class="btn btn-success">Add Flight</button>
-        </form>
+.col-md-3 { width: 25%; }
+.col-md-4 { width: 33.3333%; }
+.col-md-6 { width: 50%; }
 
-        <hr class="my-5" />
+/* Responsive for Mobile */
+@media (max-width: 768px) {
+    .col-md-3, .col-md-4, .col-md-6 {
+        width: 100%;
+        float: none;
+        padding: 0;
+    }
+}
 
-        <h3 class="text-secondary">Flight List</h3>
-        <table class="table table-striped table-bordered mt-3 bg-white">
-            <thead class="thead-dark">
-                <tr>
-                    <th>ID</th>
-                    <th>Route ID</th>
-                    <th>Airplane ID</th>
-                    <th>Airplane Number</th>
-                    <th>From → To</th>
-                    <th>Departure Time</th>
-                    <th>Arrival Time</th>
-                    <th>Economy Price</th>
-                    <th>Economy Seats</th>
-                    <th>Business Price</th>
-                    <th>Business Seats</th>
-                    <th>First Class Price</th>
-                    <th>First Class Seats</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var f in flights)
-                {
-                    <tr>
-                        <td>@f.Id</td>
-                        <td>@f.RouteId</td>
-                        <td>@f.AirplaneId</td>
-                        <td>@f.AirplaneNumber</td>
-                        <td>@f.DepartureCity → @f.ArrivalCity</td>
-                        <td>@f.DepartureTime.ToString("yyyy-MM-dd HH:mm")</td>
-                        <td>@f.ArrivalTime.ToString("yyyy-MM-dd HH:mm")</td>
-                        <td>@f.EconomyPrice</td>
-                        <td>@f.EconomySeats</td>
-                        <td>@f.BusinessPrice</td>
-                        <td>@f.BusinessSeats</td>
-                        <td>@f.FirstClassPrice</td>
-                        <td>@f.FirstClassSeats</td>
-                        <td>
-                            <a class="btn btn-sm btn-primary" href="/Admin/EditFlight/@f.Id">Edit</a>
-                            <a class="btn btn-sm btn-danger" href="/Admin/DeleteFlight/@f.Id" onclick="return confirm('Are you sure?')">Delete</a>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+/* Labels and Inputs */
+.passenger-label {
+    display: block;
+    font-weight: 600;
+    color: #718096;
+    margin-bottom: 8px;
+}
 
+.passenger-input, .passenger-select {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1px solid #cbd5e0;
+    border-radius: 10px;
+    background-color: #f7fafc;
+    color: #2d3748;
+    transition: all 0.3s ease-in-out;
+    font-size: 1rem;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+}
 
-        <a href="/Admin/AdminPanel" class="btn btn-outline-secondary mt-3">← Back to Panel</a>
-    </div>
-</body>
-</html>
+.passenger-input:focus, .passenger-select:focus {
+    border-color: #4299e1;
+    box-shadow: 0 0 0 4px rgba(66, 153, 225, 0.3);
+    background-color: #fff;
+    outline: none;
+}
+
+.passenger-input[readonly], .passenger-select[readonly] {
+    background-color: #edf2f7;
+    cursor: not-allowed;
+}
+
+/* Buttons */
+.passenger-btn-primary {
+    background: linear-gradient(to right, #4299e1, #3182ce);
+    color: white;
+    border: none;
+    padding: 14px 30px;
+    font-size: 16px;
+    font-weight: 700;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.passenger-btn-primary:hover {
+    background: linear-gradient(to right, #2b6cb0, #2c5282);
+}
+
+.passenger-btn-secondary {
+    background: #a0aec0;
+    color: white;
+    border: none;
+    padding: 14px 30px;
+    font-size: 16px;
+    font-weight: 700;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-right: 10px;
+}
+
+.passenger-btn-secondary:hover {
+    background-color: #718096;
+}
+
+/* Spacing */
+.passenger-mb-5 {
+    margin-bottom: 5rem !important;
+}
+
