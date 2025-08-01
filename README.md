@@ -1,27 +1,8 @@
-jhhu
-[HttpPost]
-public ActionResult PassengerInfo(Passenger passenger)
-{
-    if (ModelState.IsValid)
-    {
-        using (DatabaseContext db = new DatabaseContext())
+hhh
+return RedirectToAction("SeatSelection", new
         {
-            db.Passengers.Add(passenger);
-            db.SaveChanges();
-        }
-
-        return RedirectToAction("SuccessPage"); // or redirect to payment
-    }
-
-    return View(passenger); // show errors
-}
-........... 
-public ActionResult PassengerInfo()
-{
-    using (DatabaseContext db = new DatabaseContext())
-    {
-        var passengers = db.Passengers.ToList();
-        return View(passengers);
-    }
-}
-........ 
+            flightId = passenger.FlightId,      // Make sure this exists in your Passenger model
+            seatClass = passenger.SeatClass,    // Also exists
+            price = passenger.Price,            // Same here
+            departureTime = passenger.DepartureTime // Make sure this field exists
+        });
