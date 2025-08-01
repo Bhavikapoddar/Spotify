@@ -1,61 +1,54 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewBag.Title - My ASP.NET Application</title>
-    @Styles.Render("~/Content/css")
-    @Scripts.Render("~/bundles/modernizr")
+body {
+    background-color: #2A1B3D;
+}
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="..." crossorigin="anonymous" referrerpolicy="no-referrer" />
+h2 {
+    text-align: center;
+    color: white;
+    margin-bottom: 5%;
+}
 
-</head>
-<body>
-    <div class="navbar navbar-inverse navbar-fixed-top">
-        <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                
-                <a href="@Url.Action("Index", "Booking")" class="navbar-brand">
-                    <i class="fas fa-plane"></i>
-                    Application Name
-                </a>
-            </div>
-            
-            <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav navbar-right">
-                    @if (Session["Username"] != null)
-                    {
-                        <li>
-                            <p class="navbar-text">
-                                <i class="fas fa-user-circle"></i> Welcome, @Session["Username"]
-                            </p>
-                        </li>
-                        <li>@Html.ActionLink("Logout", "Logout", "User")</li>
-                    }
-                    else
-                    {
-                        <li>@Html.ActionLink("Login", "Login", "User")</li>
-                        <li>@Html.ActionLink("Register", "Register", "User")</li>
-                    }
-                </ul>
-            </div>
-        </div>
-    </div>
-    <div class="container body-content">
-        @RenderBody()
-        <hr />
-        <footer>
-            <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
-        </footer>
-    </div>
+.login-container {
+    color: white;
+    margin-top: 2%;
+    margin-left: 35%;
+    margin-right: 35%;
+    padding-left: 5%;
+    padding-right: 5%;
+    border: 1px solid #d83f87;
+    background: #d83f87; /* The pink background color */
+    border-radius: 15px;
+    text-align: center;
+    height: 320px;
+}
 
-    @Scripts.Render("~/bundles/jquery")
-    @Scripts.Render("~/bundles/bootstrap")
-    @RenderSection("scripts", required: false)
-</body>
-</html>
+h3 {
+    margin-bottom: 10%;
+    margin-top: 15%;
+}
+
+.login-item {
+    text-align: center;
+}
+
+.input-field {
+    border-radius: 5px;
+    height: 50px;
+    width: 100%;
+    box-shadow: 1px 1px 1px 0px rgba(0, 0, 0, 0.5);
+    text-align: center;
+    border: none;
+    margin-bottom: 20px;
+}
+
+.submit-btn-container {
+    margin-bottom: 10px;
+}
+
+#submit-btn {
+    margin-top: 3%;
+}
+
+.register-btn {
+    color: white;
+}
