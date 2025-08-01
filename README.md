@@ -1,134 +1,90 @@
 hii
-.... 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
-using Airline_Managementnew.Models;
-
-namespace Airline_Managementnew.Controllers
-{
-    public class UserController : Controller
-    {
-        DatabaseContext db = new DatabaseContext();
-
-        // GET: Register
-        public ActionResult Register()
-        {
-            return View();
-        }
-
-        // POST: Register
-        [HttpPost]
-        public ActionResult Register(User user)
-        {
-            if (ModelState.IsValid)
-            {
-                db.USERS.Add(user);
-                db.SaveChanges();
-                ViewBag.Message = "Registration Successfully!";
-                return RedirectToAction("Login");
-            }
-            return View();
-        }
-
-        // GET: Login
-        public ActionResult Login()
-        {
-            // Clear any existing session data on page load to prevent issues
-            Session.Clear();
-            return View();
-        }
-
-        // POST: Login
-        [HttpPost]
-        public ActionResult Login(string Username, string Password)
-        {
-            var admin = db.Admins.FirstOrDefault(a => a.Username == Username && a.Password == Password);
-            if (admin != null)
-            {
-                Session["AdminId"] = admin.Id;
-                Session["Username"] = admin.Username;
-                return RedirectToAction("AdminPanel", "Admin");
-            }
-
-            var user = db.USERS.FirstOrDefault(u => u.Username == Username && u.Password == Password);
-            if (user != null)
-            {
-                Session["UserId"] = user.Id;
-                Session["Username"] = user.Username;
-                return RedirectToAction("Index", "Booking");
-            }
-
-            ViewBag.Error = "Invalid Username or Password!";
-            return View();
-        }
-
-        // GET: Logout
-        public ActionResult Logout()
-        {
-            Session.Clear();
-            return RedirectToAction("Login", "User");
-        }
-    }
+/* General Body Styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f2f5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
 }
---_-----------
------
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewBag.Title - My ASP.NET Application</title>
-    @Styles.Render("~/Content/css")
-    @Scripts.Render("~/bundles/modernizr")
-</head>
-<body>
-    <div class="navbar navbar-inverse navbar-fixed-top">
-        <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                @Html.ActionLink("Application name", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
-            </div>
-            <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-                    <li>@Html.ActionLink("Home", "Index", "Home")</li>
-                    <li>@Html.ActionLink("About", "About", "Home")</li>
-                    <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
-                </ul>
 
-                @* Add this conditional logic to replace the _loginPartial *@
-                <ul class="nav navbar-nav navbar-right">
-                    @if (Session["Username"] != null)
-                    {
-                        <li><p class="navbar-text">Welcome, @Session["Username"]</p></li>
-                        <li>@Html.ActionLink("Logout", "Logout", "User")</li>
-                    }
-                    else
-                    {
-                        <li>@Html.ActionLink("Login", "Login", "User")</li>
-                        <li>@Html.ActionLink("Register", "Register", "User")</li>
-                    }
-                </ul>
-            </div>
-        </div>
-    </div>
-    <div class="container body-content">
-        @RenderBody()
-        <hr />
-        <footer>
-            <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
-        </footer>
-    </div>
-    @Scripts.Render("~/bundles/jquery")
-    @Scripts.Render("~/bundles/bootstrap")
-    @RenderSection("scripts", required: false)
-</body>
-</html>
-.......... 
-... 
+/* Form Container */
+.form-container {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    box-sizing: border-box;
+}
+
+/* Form Header */
+h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+/* Form Elements */
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #555;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="email"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 16px;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="email"]:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+/* Submit Button */
+input[type="submit"] {
+    width: 100%;
+    padding: 12px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+input[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+/* Error and Message Styles */
+.error-message {
+    color: #dc3545;
+    text-align: center;
+    margin-top: 15px;
+}
+
+.success-message {
+    color: #28a745;
+    text-align: center;
+    margin-top: 15px;
+}
