@@ -10,32 +10,30 @@
     <title>@ViewBag.Title</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        /* --- Base Layout --- */
+        /* --- CORRECTED Base Layout --- */
         html, body {
             margin: 0;
             padding: 0;
-            height: 100%; /* Ensure full height for the body */
+            height: 100%; /* Critical: Ensures the body takes up the full viewport height */
             font-family: 'Inter', sans-serif;
             background-color: #f0f2f5;
         }
 
-        /* The main container for the entire page */
+        /* The main container that holds the sidebar and content */
         .page-wrapper {
             display: flex;
-            min-height: 100vh; /* Use min-height to ensure the container fills the viewport */
+            height: 100%; /* Ensures this container also takes up the full height */
             box-sizing: border-box;
         }
 
         /* --- Sidebar Styling --- */
         .admin-sidebar {
             width: 250px;
-            background: linear-gradient(135deg, #2c3e50, #34495e); /* Darker, professional gradient */
+            background: linear-gradient(135deg, #2c3e50, #34495e);
             color: #ecf0f1;
             padding: 30px 20px;
             box-shadow: 2px 0 10px rgba(0,0,0,0.1);
-            position: sticky;
-            top: 0;
-            height: 100vh; /* Keep the sidebar fixed and full height */
+            /* Removed 'position: sticky' to avoid potential conflicts */
         }
 
         .admin-sidebar h3 {
@@ -63,9 +61,9 @@
         
         /* --- Main Content Styling --- */
         .admin-main-content {
-            flex: 1; /* Take up all available space */
+            flex: 1; /* Allows the main content to grow and fill the rest of the space */
             padding: 40px;
-            overflow-y: auto; /* Allow scrolling for main content if needed */
+            overflow-y: auto; /* Allows scrolling within the content area if it's too long */
         }
         
         .admin-main-content h2 {
@@ -100,7 +98,7 @@
         
         /* --- Bar Chart Styling --- */
         .bar-chart-container {
-            display: flex; /* Use flexbox for the chart */
+            display: flex;
             flex-direction: row;
             align-items: flex-end;
             gap: 20px;
@@ -146,7 +144,7 @@
 
         .chart-bar-wrapper {
             position: relative;
-            flex: 1; /* Allow bars to grow and fill space */
+            flex: 1;
             height: 100%;
             text-align: center;
             display: flex;
@@ -155,7 +153,7 @@
         }
 
         .chart-bar {
-            background-color: #3498db; /* A clean, professional blue */
+            background-color: #3498db;
             width: 80%;
             min-height: 5px;
             border-radius: 5px 5px 0 0;
