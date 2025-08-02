@@ -1,432 +1,114 @@
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web.Mvc;
-using Airline_Managementnew.Models;
-
-namespace Airline_Managementnew.Controllers
+.... ....... ... [HttpPost]
+[ValidateAntiForgeryToken]
+public JsonResult AddFlight(Flight model)
 {
-    public class AdminController : Controller
+    if (ModelState.IsValid)
     {
-        private readonly DatabaseContext db = new DatabaseContext();
+        db.Flight.Add(model);
+        db.SaveChanges();
 
-        // AdminPanel Action Method
-        public ActionResult AdminPanel()
+        return Json(new
         {
-            var allRoutes = db.SearchRequest.ToList();
-            var flightCounts = db.Flight
-                .GroupBy(f => f.RouteId)
-                .Select(g => new
-                {
-                    RouteId = g.Key,
-                    FlightCount = g.Count()
-                })
-                .ToList();
-            
-            var flightStatistics = allRoutes.GroupJoin(
-                flightCounts,
-                route => route.RouteId,
-                count => count.RouteId,
-                (route, group) => new FlightStatisticViewModel
-                {
-                    RouteName = route.FromLocation + " to " + route.Tolocation,
-                    FlightCount = group.Any() ? group.Sum(c => c.FlightCount) : 0
-                })
-                .ToList();
-            
-            ViewBag.FlightStatistics = flightStatistics;
-            ViewBag.Flights = db.Flight.ToList();
-            ViewBag.Routes = allRoutes;
-            
-            return View();
-        }
-
-        // AddRoute Action Methods - NOT using AJAX for POST
-        public ActionResult AddRoute()
-        {
-            ViewBag.Routes = db.SearchRequest.ToList();
-            return View();
-        }
-        
-        [HttpPost]
-        public ActionResult AddRoute(SearchRequest route)
-        {
-            if (ModelState.IsValid)
+            success = true,
+            message = "Flight added successfully!",
+            flight = new
             {
-                db.SearchRequest.Add(route);
-                db.SaveChanges();
+                model.FlightId,
+                model.RouteId,
+                model.DepartureCity,
+                model.ArrivalCity,
+                DepartureTime = model.DepartureTime.ToString("yyyy-MM-dd HH:mm"),
+                ArrivalTime = model.ArrivalTime.ToString("yyyy-MM-dd HH:mm"),
+                model.EconomyPrice,
+                model.EconomySeats,
+                model.BusinessPrice,
+                model.BusinessSeats,
+                model.FirstClassPrice,
+                model.FirstClassSeats,
+                model.AirplaneId,
+                model.AirplaneNumber
             }
-            return RedirectToAction("AddRoute");
-        }
-
-        // EditRoute Action Methods - NOT using AJAX for POST
-        public ActionResult EditRoute(int id)
-        {
-            var route = db.SearchRequest.Find(id);
-            if (route == null)
-            {
-                return HttpNotFound();
-            }
-            return View(route);
-        }
-        
-        [HttpPost]
-        public ActionResult EditRoute(SearchRequest updatedRoute)
-        {
-            if (ModelState.IsValid)
-            {
-                var route = db.SearchRequest.Find(updatedRoute.RouteId);
-                if (route != null)
-                {
-                    route.FromLocation = updatedRoute.FromLocation;
-                    route.Tolocation = updatedRoute.Tolocation;
-                    route.DepartureDate = updatedRoute.DepartureDate;
-                    route.RouteNumber = updatedRoute.RouteNumber;
-                    db.SaveChanges();
-                }
-            }
-            return RedirectToAction("EditRoute", new { id = updatedRoute.RouteId });
-        }
-
-        // DeleteRoute Action Method
-        [HttpPost]
-        public ActionResult DeleteRoute(int id)
-        {
-            var route = db.SearchRequest.Find(id);
-            if (route != null)
-            {
-                db.SearchRequest.Remove(route);
-                db.SaveChanges();
-            }
-            return RedirectToAction("AddRoute");
-        }
-
-        // AddFlight Action Methods - This is the only one using AJAX
-        public ActionResult AddFlight()
-        {
-            ViewBag.Flights = db.Flight.ToList();
-            ViewBag.Routes = db.SearchRequest.ToList();
-            return View();
-        }
-
-        [HttpPost]
-        public JsonResult AddFlight(Flight model) // This action now returns the added flight object or validation errors
-        {
-            if (ModelState.IsValid)
-            {
-                db.Flight.Add(model);
-                db.SaveChanges();
-                // Return a success flag AND the newly created flight data
-                return Json(new { success = true, message = "Flight added successfully!", flight = model });
-            }
-            // Return validation errors if the model is invalid
-            var errors = ModelState.ToDictionary(
-                kvp => kvp.Key,
-                kvp => kvp.Value.Errors.Select(e => e.ErrorMessage).ToList()
-            );
-            return Json(new { success = false, message = "Invalid flight data.", errors = errors });
-        }
-
-        // EditFlight Action Methods - NOT using AJAX for POST
-        public ActionResult EditFlight(int id)
-        {
-            var flight = db.Flight.Find(id);
-            if (flight == null)
-            {
-                return HttpNotFound();
-            }
-            ViewBag.Routes = db.SearchRequest.ToList();
-            return View(flight);
-        }
-        
-        [HttpPost]
-        public ActionResult EditFlight(Flight updatedFlight)
-        {
-            if (ModelState.IsValid)
-            {
-                var flight = db.Flight.Find(updatedFlight.FlightId);
-                if (flight != null)
-                {
-                    flight.RouteId = updatedFlight.RouteId;
-                    flight.DepartureCity = updatedFlight.DepartureCity;
-                    flight.ArrivalCity = updatedFlight.ArrivalCity;
-                    flight.DepartureTime = updatedFlight.DepartureTime;
-                    flight.ArrivalTime = updatedFlight.ArrivalTime;
-                    flight.EconomyPrice = updatedFlight.EconomyPrice;
-                    flight.EconomySeats = updatedFlight.EconomySeats;
-                    flight.BusinessPrice = updatedFlight.BusinessPrice;
-                    flight.BusinessSeats = updatedFlight.BusinessSeats;
-                    flight.FirstClassPrice = updatedFlight.FirstClassPrice;
-                    flight.FirstClassSeats = updatedFlight.FirstClassSeats;
-                    flight.AirplaneId = updatedFlight.AirplaneId;
-                    flight.AirplaneNumber = updatedFlight.AirplaneNumber;
-                    db.SaveChanges();
-                }
-            }
-            return RedirectToAction("EditFlight", new { id = updatedFlight.FlightId });
-        }
-
-        // DeleteFlight Action Method
-        [HttpPost]
-        public ActionResult DeleteFlight(int id)
-        {
-            var flight = db.Flight.Find(id);
-            if (flight != null)
-            {
-                db.Flight.Remove(flight);
-                db.SaveChanges();
-            }
-            return RedirectToAction("AddFlight");
-        }
-        
-        public ActionResult PassengerInfo()
-        {
-            var passengers = db.Passengers.ToList();
-            return View(passengers);
-        }
+        });
     }
+
+    // Extract errors
+    var errors = ModelState.ToDictionary(
+        kvp => kvp.Key,
+        kvp => kvp.Value.Errors.Select(e => e.ErrorMessage).ToList()
+    );
+
+    return Json(new { success = false, message = "Invalid flight data.", errors });
 }
-.... 
-.... 
-... 
+..... ..... @section Scripts {
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // Send AntiForgeryToken with every AJAX request
+        $.ajaxSetup({
+            headers: {
+                'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+            }
+        });
 
-..... @model Airline_Managementnew.Models.Flight
-@{
-    ViewBag.Title = "Add New Flight";
-}
+        $("#addFlightForm").submit(function (e) {
+            e.preventDefault();
 
-<head>
-    <title>Add Flight</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
-    <style>
-        .form-row {
-            display: flex;
-            flex-wrap: wrap;
-            margin-right: -5px;
-            margin-left: -5px;
-        }
-        .form-group.col-md-6, .form-group.col-md-3, .form-group.col-md-4 {
-            padding-right: 5px;
-            padding-left: 5px;
-        }
-    </style>
-</head>
+            var form = $(this);
+            var url = '@Url.Action("AddFlight", "Admin")';
 
-<body>
-    <div class="container">
-        <h2 class="text-primary mb-4">Add New Flight</h2>
-        <form id="addFlightForm" class="p-4 bg-white rounded shadow-sm">
-            @Html.AntiForgeryToken()
-            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-            
-            <div class="form-row">
-                <div class="form-group col-md-6">
-                    <label for="RouteId">Route:</label>
-                    <select name="RouteId" id="RouteId" class="form-control" required>
-                        <option value="">--- Select Route ---</option>
-                        @foreach (var route in ViewBag.Routes)
-                        {
-                            <option value="@route.RouteId">@route.FromLocation to @route.Tolocation (@route.DepartureDate.ToString("yyyy-MM-dd HH:mm"))</option>
-                        }
-                    </select>
-                </div>
-                <div class="form-group col-md-6">
-                    <label for="DepartureCity">Departure City:</label>
-                    <input type="text" name="DepartureCity" class="form-control" required />
-                </div>
-            </div>
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: form.serialize(),
+                success: function (response) {
+                    if (response.success) {
+                        $("#statusMessage").text(response.message).css("color", "green");
+                        form[0].reset(); // clear form
 
-            <div class="form-row">
-                <div class="form-group col-md-6">
-                    <label for="ArrivalCity">Arrival City:</label>
-                    <input type="text" name="ArrivalCity" class="form-control" required />
-                </div>
-                <div class="form-group col-md-6">
-                    <label for="DepartureTime">Departure Time:</label>
-                    <input type="datetime-local" name="DepartureTime" class="form-control" required />
-                </div>
-            </div>
+                        appendNewFlightRow(response.flight);
 
-            <div class="form-row">
-                <div class="form-group col-md-6">
-                    <label for="ArrivalTime">Arrival Time:</label>
-                    <input type="datetime-local" name="ArrivalTime" class="form-control" required />
-                </div>
-                <div class="form-group col-md-4">
-                    <label for="EconomyPrice">Economy Price:</label>
-                    <input type="number" name="EconomyPrice" class="form-control" required />
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group col-md-4">
-                    <label for="EconomySeats">Economy Seats:</label>
-                    <input type="number" name="EconomySeats" class="form-control" required />
-                </div>
-                <div class="form-group col-md-4">
-                    <label for="BusinessPrice">Business Price:</label>
-                    <input type="number" name="BusinessPrice" class="form-control" required />
-                </div>
-                <div class="form-group col-md-4">
-                    <label for="BusinessSeats">Business Seats:</label>
-                    <input type="number" name="BusinessSeats" class="form-control" required />
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group col-md-4">
-                    <label for="FirstClassPrice">First Class Price:</label>
-                    <input type="number" name="FirstClassPrice" class="form-control" required />
-                </div>
-                <div class="form-group col-md-4">
-                    <label for="FirstClassSeats">First Class Seats:</label>
-                    <input type="number" name="FirstClassSeats" class="form-control" required />
-                </div>
-            </div>
-            
-            <div class="form-row">
-                <div class="form-group col-md-6">
-                    <label for="AirplaneId">Airplane ID:</label>
-                    <input type="text" name="AirplaneId" class="form-control" required />
-                </div>
-                <div class="form-group col-md-6">
-                    <label for="AirplaneNumber">Airplane Number:</label>
-                    <input type="text" name="AirplaneNumber" class="form-control" required />
-                </div>
-            </div>
-
-            <button type="submit" class="btn btn-success">Add Flight</button>
-        </form>
-        
-        <div id="statusMessage" class="mt-3"></div>
-        
-        <hr class="my-5" />
-
-        <div class="flight-list-container">
-            <h3 class="text-secondary">Flight List</h3>
-            <table class="table table-striped table-bordered mt-3 bg-white">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Route ID</th>
-                        <th>Airplane ID</th>
-                        <th>Airplane Number</th>
-                        <th>From to To</th>
-                        <th>Departure Time</th>
-                        <th>Arrival Time</th>
-                        <th>Economy Price</th>
-                        <th>Economy Seats</th>
-                        <th>Business Price</th>
-                        <th>Business Seats</th>
-                        <th>First Class Price</th>
-                        <th>First Class Seats</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="flightTableBody">
-                    @foreach (var f in ViewBag.Flights)
-                    {
-                        <tr>
-                            <td>@f.FlightId</td>
-                            <td>@f.RouteId</td>
-                            <td>@f.AirplaneId</td>
-                            <td>@f.AirplaneNumber</td>
-                            <td>@f.DepartureCity - @f.ArrivalCity</td>
-                            <td>@f.DepartureTime.ToString("yyyy-MM-dd HH:mm")</td>
-                            <td>@f.ArrivalTime.ToString("yyyy-MM-dd HH:mm")</td>
-                            <td>@f.EconomyPrice</td>
-                            <td>@f.EconomySeats</td>
-                            <td>@f.BusinessPrice</td>
-                            <td>@f.BusinessSeats</td>
-                            <td>@f.FirstClassPrice</td>
-                            <td>@f.FirstClassSeats</td>
-                            <td>
-                                <a href="/Admin/EditFlight/@f.FlightId" class="btn btn-sm btn-primary">Edit</a>
-                                <a href="#" class="btn btn-sm btn-danger" onclick="confirmDeleteFlight(@f.FlightId)">Delete</a>
-                            </td>
-                        </tr>
+                        setTimeout(function () {
+                            window.location.href = '@Url.Action("AdminPanel", "Admin")';
+                        }, 1000);
+                    } else {
+                        var errorMessages = "Errors:\n";
+                        $.each(response.errors, function (key, value) {
+                            errorMessages += "- " + key + ": " + value.join(", ") + "\n";
+                        });
+                        $("#statusMessage").text(errorMessages).css("color", "red");
                     }
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    @section Scripts {
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <script>
-            function confirmDeleteFlight(id) {
-                if (confirm('Are you sure you want to delete this flight?')) {
-                    var form = $('<form action="/Admin/DeleteFlight/' + id + '" method="post">' +
-                        '@Html.AntiForgeryToken()' +
-                        '</form>');
-                    $('body').append(form);
-                    form.submit();
+                },
+                error: function (xhr, status, error) {
+                    console.error("AJAX Error:", status, error);
+                    $("#statusMessage").text("Unknown error occurred.").css("color", "red");
                 }
-            }
-
-            $(document).ready(function () {
-                $("#addFlightForm").submit(function (e) {
-                    e.preventDefault(); // Prevents the default form submission
-
-                    var form = $(this);
-                    var url = '@Url.Action("AddFlight", "Admin")'; 
-
-                    $.ajax({
-                        type: "POST",
-                        url: url,
-                        data: form.serialize(), 
-                        success: function (response) {
-                            if (response.success) {
-                                $("#statusMessage").text(response.message).css("color", "green");
-                                form[0].reset(); 
-                                
-                                appendNewFlightRow(response.flight);
-
-                                setTimeout(function() {
-                                    window.location.href = '@Url.Action("AdminPanel", "Admin")';
-                                }, 1000); 
-                            } else {
-                                // Display specific validation errors from the server
-                                var errorMessages = "Please correct the following errors:\n";
-                                $.each(response.errors, function(key, value) {
-                                    errorMessages += "- " + key + ": " + value.join(", ") + "\n";
-                                });
-                                $("#statusMessage").text(errorMessages).css("color", "red");
-                            }
-                        },
-                        error: function (xhr, status, error) {
-                            console.error("AJAX Error:", status, error, xhr.responseText);
-                            $("#statusMessage").text("An unknown error occurred. Please check the browser console for details.").css("color", "red");
-                        }
-                    });
-                });
             });
+        });
 
-            // This function takes the flight data and appends it to the table
-            function appendNewFlightRow(flight) {
-                var newRow = '<tr>' +
-                    '<td>' + flight.FlightId + '</td>' +
-                    '<td>' + flight.RouteId + '</td>' +
-                    '<td>' + flight.AirplaneId + '</td>' +
-                    '<td>' + flight.AirplaneNumber + '</td>' +
-                    '<td>' + flight.DepartureCity + ' - ' + flight.ArrivalCity + '</td>' +
-                    '<td>' + new Date(parseInt(flight.DepartureTime.substr(6))).toLocaleString() + '</td>' +
-                    '<td>' + new Date(parseInt(flight.ArrivalTime.substr(6))).toLocaleString() + '</td>' +
-                    '<td>' + flight.EconomyPrice + '</td>' +
-                    '<td>' + flight.EconomySeats + '</td>' +
-                    '<td>' + flight.BusinessPrice + '</td>' +
-                    '<td>' + flight.BusinessSeats + '</td>' +
-                    '<td>' + flight.FirstClassPrice + '</td>' +
-                    '<td>' + flight.FirstClassSeats + '</td>' +
-                    '<td>' +
-                        '<a href="/Admin/EditFlight/' + flight.FlightId + '" class="btn btn-sm btn-primary">Edit</a> ' +
-                        '<a href="#" class="btn btn-sm btn-danger" onclick="confirmDeleteFlight(' + flight.FlightId + ')">Delete</a>' +
-                    '</td>' +
-                '</tr>';
-                
-                $('#flightTableBody').append(newRow);
-            }
-        </script>
-    }
-</body>
+        function appendNewFlightRow(flight) {
+            var newRow = '<tr>' +
+                '<td>' + flight.FlightId + '</td>' +
+                '<td>' + flight.RouteId + '</td>' +
+                '<td>' + flight.AirplaneId + '</td>' +
+                '<td>' + flight.AirplaneNumber + '</td>' +
+                '<td>' + flight.DepartureCity + ' - ' + flight.ArrivalCity + '</td>' +
+                '<td>' + flight.DepartureTime + '</td>' +
+                '<td>' + flight.ArrivalTime + '</td>' +
+                '<td>' + flight.EconomyPrice + '</td>' +
+                '<td>' + flight.EconomySeats + '</td>' +
+                '<td>' + flight.BusinessPrice + '</td>' +
+                '<td>' + flight.BusinessSeats + '</td>' +
+                '<td>' + flight.FirstClassPrice + '</td>' +
+                '<td>' + flight.FirstClassSeats + '</td>' +
+                '<td>' +
+                    '<a href="/Admin/EditFlight/' + flight.FlightId + '" class="btn btn-sm btn-primary">Edit</a> ' +
+                    '<a href="#" class="btn btn-sm btn-danger" onclick="confirmDeleteFlight(' + flight.FlightId + ')">Delete</a>' +
+                '</td>' +
+            '</tr>';
+
+            $('#flightTableBody').append(newRow);
+        }
+    });
+</script>
+}
+..... ... 
