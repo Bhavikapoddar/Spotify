@@ -1,24 +1,20 @@
+
 <style>
     html, body {
         margin: 0;
         padding: 0;
-        height: 100%;
         font-family: 'Inter', sans-serif;
         background-color: #f0f2f5;
+        height: 100%;
     }
 
-    /* Clearfix fix */
-    .clearfix::after {
-        content: "";
-        display: table;
-        clear: both;
-    }
-
-    /* Sidebar */
+    /* Sidebar (left fixed) */
     .admin-sidebar {
-        float: left;
         width: 250px;
         height: 100vh;
+        position: fixed;
+        top: 0;
+        left: 0;
         background: linear-gradient(135deg, #2c3e50, #34495e);
         color: #ecf0f1;
         padding: 30px 20px;
@@ -26,38 +22,36 @@
     }
 
     .admin-sidebar h3 {
-        text-align: center;
         font-size: 24px;
-        margin-bottom: 30px;
-        font-weight: bold;
+        font-weight: 600;
+        margin-bottom: 40px;
+        text-align: center;
     }
 
     .admin-sidebar nav a {
         display: block;
         padding: 10px 15px;
         margin-bottom: 10px;
-        background: transparent;
-        text-decoration: none;
         color: #ecf0f1;
-        border-radius: 5px;
+        text-decoration: none;
+        border-radius: 6px;
     }
 
     .admin-sidebar nav a:hover {
         background-color: rgba(255,255,255,0.1);
     }
 
-    /* Main Content */
+    /* Main Content (next to sidebar) */
     .admin-main-content {
-        margin-left: 250px;
+        margin-left: 250px; /* To the right of the sidebar */
         padding: 40px;
         min-height: 100vh;
-        overflow-y: auto;
     }
 
     .admin-main-content h2 {
         font-size: 28px;
-        margin-bottom: 10px;
         color: #2c3e50;
+        margin-bottom: 10px;
     }
 
     .admin-main-content p {
@@ -67,8 +61,8 @@
     }
 
     .statistics-card {
-        background-color: #ffffff;
-        border-radius: 12px;
+        background-color: #fff;
+        border-radius: 10px;
         padding: 30px;
         box-shadow: 0 4px 12px rgba(0,0,0,0.05);
     }
@@ -77,17 +71,16 @@
         font-size: 22px;
         text-align: center;
         margin-bottom: 30px;
+        color: #333;
         border-bottom: 1px solid #ccc;
         padding-bottom: 10px;
-        color: #333;
     }
 
-    /* Bar Chart */
+    /* Chart Container */
     .bar-chart-container {
         position: relative;
-        height: 300px;
+        height: 320px;
         padding-left: 50px;
-        padding-bottom: 40px;
         border-bottom: 2px solid #ccc;
     }
 
@@ -109,11 +102,11 @@
         transform: translateY(-50%);
     }
 
-    .y-axis-labels .y-label-max { top: 0; transform: none; }
-    .y-axis-labels .y-label-75 { top: 25%; }
-    .y-axis-labels .y-label-50 { top: 50%; }
-    .y-axis-labels .y-label-25 { top: 75%; }
-    .y-axis-labels .y-label-0 { bottom: 0; top: auto; transform: none; }
+    .y-label-max { top: 0; transform: none; }
+    .y-label-75 { top: 25%; }
+    .y-label-50 { top: 50%; }
+    .y-label-25 { top: 75%; }
+    .y-label-0 { bottom: 0; top: auto; transform: none; }
 
     .y-axis-labels div::after {
         content: '';
@@ -122,38 +115,31 @@
         right: -10px;
         width: 10px;
         height: 1px;
-        background-color: #ddd;
+        background-color: #ccc;
     }
 
     .chart-grid {
-        position: absolute;
-        top: 0;
-        left: 50px;
-        right: 0;
-        bottom: 30px;
+        margin-left: 50px; /* to avoid y-axis */
+        height: 300px;
+        overflow: hidden;
     }
 
     .chart-bar-wrapper {
         float: left;
-        width: 13%;
-        margin-right: 1.5%;
+        width: 12%; /* adjust based on number of bars */
+        text-align: center;
         position: relative;
         height: 100%;
-        text-align: center;
-    }
-
-    .chart-bar-wrapper:last-child {
-        margin-right: 0;
     }
 
     .chart-bar {
         position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
+        bottom: 25px; /* leave space for label */
+        left: 20%;
+        width: 60%;
         background-color: #3498db;
         border-radius: 5px 5px 0 0;
-        transition: height 0.3s ease-in-out;
+        transition: height 0.3s ease;
     }
 
     .chart-bar:hover {
@@ -162,18 +148,18 @@
 
     .bar-tooltip {
         position: absolute;
-        bottom: 105%;
+        bottom: 100%;
         left: 50%;
         transform: translateX(-50%);
         background: rgba(0,0,0,0.8);
         color: #fff;
-        padding: 4px 8px;
         font-size: 12px;
+        padding: 4px 8px;
         border-radius: 4px;
         white-space: nowrap;
         opacity: 0;
-        transition: opacity 0.3s ease;
         pointer-events: none;
+        transition: opacity 0.3s ease;
     }
 
     .chart-bar-wrapper:hover .bar-tooltip {
@@ -182,13 +168,12 @@
 
     .x-axis-label {
         position: absolute;
-        bottom: -25px;
-        left: 50%;
-        transform: translateX(-50%);
+        bottom: 0;
+        left: 0;
+        width: 100%;
         font-size: 12px;
         color: #555;
-        width: 100%;
-        text-align: center;
+        white-space: nowrap;
     }
 
     .no-data-message {
