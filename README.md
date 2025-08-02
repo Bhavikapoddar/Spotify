@@ -10,22 +10,22 @@
     <title>@ViewBag.Title</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        /* --- CORRECTED Base Layout --- */
+        /* --- CORRECTED Base Layout with Float --- */
         html, body {
             margin: 0;
             padding: 0;
-            height: 100%; /* Critical: Ensures the body takes up the full viewport height */
+            height: 100%;
             font-family: 'Inter', sans-serif;
             background-color: #f0f2f5;
-        }
-
-        /* The main container that holds the sidebar and content */
-        .page-wrapper {
-            display: flex;
-            height: 100%; /* Ensures this container also takes up the full height */
             box-sizing: border-box;
         }
 
+        .clearfix::after {
+            content: "";
+            clear: both;
+            display: table;
+        }
+        
         /* --- Sidebar Styling --- */
         .admin-sidebar {
             width: 250px;
@@ -33,7 +33,8 @@
             color: #ecf0f1;
             padding: 30px 20px;
             box-shadow: 2px 0 10px rgba(0,0,0,0.1);
-            /* Removed 'position: sticky' to avoid potential conflicts */
+            float: left; /* Use float for side-by-side alignment */
+            height: 100%; /* Ensure full height */
         }
 
         .admin-sidebar h3 {
@@ -61,9 +62,10 @@
         
         /* --- Main Content Styling --- */
         .admin-main-content {
-            flex: 1; /* Allows the main content to grow and fill the rest of the space */
+            margin-left: 250px; /* Push content to the right of the sidebar */
             padding: 40px;
-            overflow-y: auto; /* Allows scrolling within the content area if it's too long */
+            overflow-y: auto;
+            min-height: 100vh; /* Use min-height to ensure it fills the page */
         }
         
         .admin-main-content h2 {
@@ -98,32 +100,29 @@
         
         /* --- Bar Chart Styling --- */
         .bar-chart-container {
-            display: flex;
-            flex-direction: row;
-            align-items: flex-end;
-            gap: 20px;
-            height: 300px;
             position: relative;
+            height: 300px;
             padding-bottom: 20px;
             border-bottom: 2px solid #ccc;
         }
 
         .y-axis-labels {
-            display: flex;
-            flex-direction: column-reverse;
-            justify-content: space-between;
-            height: 100%;
-            padding-right: 10px;
-            text-align: right;
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 20px;
             width: 40px;
+            text-align: right;
+            padding-right: 10px;
             font-size: 12px;
             color: #777;
+            display: table-cell;
+            vertical-align: bottom;
         }
-
         .y-axis-labels div {
-            position: relative;
+            position: absolute;
+            right: 10px;
         }
-
         .y-axis-labels div::after {
             content: '';
             position: absolute;
@@ -133,23 +132,36 @@
             height: 1px;
             background-color: #eee;
         }
+        .y-axis-labels .y-label-max { top: 0; }
+        .y-axis-labels .y-label-75 { top: 25%; }
+        .y-axis-labels .y-label-50 { top: 50%; }
+        .y-axis-labels .y-label-25 { top: 75%; }
+        .y-axis-labels .y-label-0 { bottom: 0; }
 
         .chart-grid {
-            display: flex;
-            align-items: flex-end;
+            margin-left: 50px; /* Space for Y-axis */
+            padding-top: 5px;
             height: 100%;
-            flex: 1;
-            gap: 15px;
         }
 
         .chart-bar-wrapper {
             position: relative;
-            flex: 1;
+            float: left; /* Use float for horizontal bars */
+            width: 16%; /* Adjust width to fit multiple bars */
             height: 100%;
             text-align: center;
-            display: flex;
-            flex-direction: column-reverse;
-            align-items: center;
+            margin-left: 2%; /* Replace gap with margin */
+        }
+        .chart-grid > .chart-bar-wrapper:first-child {
+            margin-left: 0;
+        }
+        .chart-bar-wrapper:first-child {
+            clear: left; /* Ensure the first bar starts a new row */
+        }
+        .chart-bar-wrapper .bar-tooltip, .chart-bar-wrapper .x-axis-label {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
         }
 
         .chart-bar {
@@ -158,6 +170,10 @@
             min-height: 5px;
             border-radius: 5px 5px 0 0;
             transition: height 0.5s ease-in-out;
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
         }
 
         .chart-bar:hover {
@@ -165,10 +181,7 @@
         }
 
         .bar-tooltip {
-            position: absolute;
             bottom: calc(100% + 5px);
-            left: 50%;
-            transform: translateX(-50%);
             background: rgba(0,0,0,0.85);
             color: #fff;
             padding: 5px 10px;
@@ -185,7 +198,6 @@
         }
         
         .x-axis-label {
-            position: absolute;
             bottom: -25px;
             font-size: 12px;
             color: #555;
@@ -204,7 +216,7 @@
     </style>
 </head>
 <body>
-    <div class="page-wrapper">
+    <div class="clearfix">
         <div class="admin-sidebar">
             <h3>Admin Menu</h3>
             <nav>
@@ -229,13 +241,13 @@
 
                     <div class="bar-chart-container">
                         <div class="y-axis-labels">
-                            <div>@maxCount</div>
-                            <div>@Math.Round((double)maxCount * 0.75)</div>
-                            <div>@Math.Round((double)maxCount * 0.5)</div>
-                            <div>@Math.Round((double)maxCount * 0.25)</div>
-                            <div>0</div>
+                            <div class="y-label-max">@maxCount</div>
+                            <div class="y-label-75">@Math.Round((double)maxCount * 0.75)</div>
+                            <div class="y-label-50">@Math.Round((double)maxCount * 0.5)</div>
+                            <div class="y-label-25">@Math.Round((double)maxCount * 0.25)</div>
+                            <div class="y-label-0">0</div>
                         </div>
-                        <div class="chart-grid">
+                        <div class="chart-grid clearfix">
                             @foreach (var stat in flightStatistics)
                             {
                                 var barHeight = (int)Math.Round((double)stat.FlightCount / maxCount * 100);
