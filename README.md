@@ -1,179 +1,252 @@
-     
-                    <!DOCTYPE html>
+@{
+    ViewBag.Title = "Admin Panel";
+    var flightStatistics = ViewBag.FlightStatistics as IEnumerable<Airline_Management_System.Models.FlightStatisticViewModel>;
+}
+
+<!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
+        /* --- General Body and Layout --- */
         body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f5f5f5;
             margin: 0;
             padding: 0;
-            font-family: 'Inter', sans-serif;
-            background-color: #f0f0f0;
-            color: #333;
+            display: flex;
         }
 
-        /* Layout using floats */
-        .sidebar {
-            float: left;
-            width: 230px;
-            height: 100%;
-            background: #2c3e50;
+        .admin-sidebar {
+            width: 250px;
+            background: linear-gradient(135deg, #1f1c2c, #928dab);
             color: #fff;
-            padding: 20px;
-            box-sizing: border-box;
+            padding: 30px;
+            height: 100vh;
+            box-shadow: 2px 0 6px rgba(0,0,0,0.1);
         }
 
-        .sidebar h3 {
-            margin-bottom: 20px;
-            font-size: 20px;
-            font-weight: bold;
+        .admin-sidebar h3 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 40px;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding-bottom: 20px;
         }
 
-        .sidebar a {
+        .admin-sidebar a {
             display: block;
             color: #fff;
             text-decoration: none;
+            font-size: 16px;
+            padding: 12px 15px;
             margin-bottom: 10px;
-            padding: 8px;
-            background-color: #34495e;
-            border-radius: 4px;
+            border-radius: 8px;
+            transition: background 0.3s ease, transform 0.2s ease;
         }
 
-        .sidebar a:hover {
-            background-color: #3b5998;
+        .admin-sidebar a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
         }
 
-        .main-content {
-            margin-left: 250px; /* Equal to sidebar width + padding */
-            padding: 30px;
-            box-sizing: border-box;
+        .admin-main-content {
+            flex-grow: 1;
+            padding: 40px;
+            overflow-y: auto;
         }
 
-        .main-content h2 {
-            margin-top: 0;
+        .admin-main-content h2 {
+            font-size: 32px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
         }
-
-        .statistics-container {
-            margin-top: 20px;
+        
+        .admin-main-content p {
+            font-size: 16px;
+            color: #555;
+            margin-bottom: 30px;
+        }
+        
+        /* --- Statistics Container --- */
+        .statistics-card {
             background-color: #fff;
-            border: 1px solid #ccc;
-            padding: 20px;
-            border-radius: 6px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            padding: 30px;
+            margin-bottom: 30px;
         }
 
-        .statistics-container h3 {
+        .statistics-card h3 {
             text-align: center;
-            margin-bottom: 20px;
+            font-size: 22px;
+            color: #333;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 15px;
+        }
+        
+        /* --- Bar Chart Styling --- */
+        .bar-chart-container {
+            display: grid;
+            grid-template-columns: 50px 1fr; /* For Y-axis and Chart Area */
+            align-items: end;
+            height: 350px;
+            position: relative;
+            padding: 20px 0;
+            border-bottom: 2px solid #ccc;
         }
 
-        /* Bar Graph without flex */
-        .graph-container {
-            border-top: 1px solid #ccc;
-            padding-top: 10px;
-            overflow-x: auto;
-            white-space: nowrap;
+        .y-axis-labels {
+            display: flex;
+            flex-direction: column-reverse;
+            justify-content: space-between;
+            height: 100%;
+            padding-right: 10px;
+            text-align: right;
+            border-right: 2px dashed #eee;
         }
-
-        .bar-wrapper {
-            display: inline-block;
-            width: 100px;
-            margin: 0 10px;
-            vertical-align: bottom;
+        
+        .y-axis-labels div {
+            font-size: 12px;
+            color: #777;
             position: relative;
         }
 
-        .bar {
-            background-color: #2980b9;
-            width: 60px;
-            margin: 0 auto;
-            border-radius: 4px 4px 0 0;
-        }
-
-        .bar-wrapper:hover .bar {
-            background-color: #1c6690;
-        }
-
-        .tooltip {
+        .y-axis-labels div::before {
+            content: '';
             position: absolute;
-            top: -25px;
+            top: 50%;
+            right: -10px;
+            width: 10px;
+            height: 1px;
+            background-color: #eee;
+        }
+
+        .chart-grid {
+            display: flex;
+            align-items: flex-end;
+            gap: 15px;
+            height: 100%;
+            padding-left: 20px;
+        }
+
+        .chart-bar-wrapper {
+            position: relative;
+            flex-grow: 1;
+            height: 100%;
+            text-align: center;
+            display: flex;
+            flex-direction: column-reverse;
+            align-items: center;
+        }
+
+        .chart-bar {
+            background-color: #3f51b5; /* A vibrant blue color */
+            width: 70%;
+            min-height: 5px; /* Minimum height for bars with 0 or low values */
+            border-radius: 5px 5px 0 0;
+            transition: height 0.5s ease-in-out, background-color 0.3s ease;
+        }
+
+        .chart-bar:hover {
+            background-color: #2c387e; /* Darker shade on hover */
+        }
+        
+        .bar-tooltip {
+            position: absolute;
+            bottom: calc(100% + 5px); /* Position above the bar */
             left: 50%;
             transform: translateX(-50%);
-            background: #000;
+            background: rgba(0,0,0,0.8);
             color: #fff;
-            padding: 3px 8px;
-            font-size: 12px;
-            border-radius: 4px;
-            display: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 10;
         }
 
-        .bar-wrapper:hover .tooltip {
-            display: block;
+        .chart-bar-wrapper:hover .bar-tooltip {
+            opacity: 1;
         }
-
-        .x-label {
-            margin-top: 5px;
+        
+        .x-axis-label {
+            position: absolute;
+            bottom: -25px; /* Position below the bar */
+            left: 50%;
+            transform: translateX(-50%);
             font-size: 12px;
             color: #555;
-            text-align: center;
-            overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
+            overflow: hidden;
+            width: 100%;
         }
 
-        .clearfix::after {
-            content: "";
-            display: block;
-            clear: both;
+        .no-data-message {
+            text-align: center;
+            padding: 50px;
+            color: #777;
+            font-size: 18px;
         }
     </style>
 </head>
 <body>
-    <div class="sidebar">
+    <div class="admin-sidebar">
         <h3>Admin Menu</h3>
-        <a href="@Url.Action("AdminPanel", "Admin")">Admin Panel</a>
-        <a href="@Url.Action("AddFlight", "Admin")">Add Flight</a>
-        <a href="@Url.Action("PassengerInfo", "Admin")">Passenger Info</a>
-        <a href="@Url.Action("Flights", "Admin")">Manage Flights</a>
-        <a href="@Url.Action("Index", "Home")">Back to Home</a>
+        <nav>
+            <a href="@Url.Action("AdminPanel", "Admin")">Admin Panel</a>
+            <a href="@Url.Action("AddFlight", "Admin")">Add Flight</a>
+            <a href="@Url.Action("PassengerInfo", "Admin")">Passenger Info</a>
+            <a href="@Url.Action("Flights", "Admin")">Manage Flights</a>
+            <a href="@Url.Action("Index", "Home")">Back to Home</a>
+        </nav>
     </div>
 
-    <div class="main-content">
-        <h2>Welcome to Admin Panel</h2>
-        <p>Use the menu to manage flights, passengers, and more.</p>
+    <div class="admin-main-content">
+        <h2>Welcome to Admin Panel!</h2>
+        <p>Use the left menu to manage routes, flights, and passengers efficiently.</p>
 
-        <div class="statistics-container">
+        <div class="statistics-card">
             <h3>Flights per Route Statistics</h3>
+            @if (flightStatistics != null && flightStatistics.Any())
+            {
+                var maxCount = flightStatistics.Max(s => s.FlightCount);
+                if (maxCount == 0) { maxCount = 1; }
 
-            <div class="graph-container">
-                @if (flightStatistics != null && flightStatistics.Any())
-                {
-                    var maxCount = flightStatistics.Max(s => s.FlightCount);
-                    if (maxCount == 0) { maxCount = 1; }
-
-                    foreach (var stat in flightStatistics)
-                    {
-                        var barHeight = (int)Math.Round((double)stat.FlightCount / maxCount * 200); // max height 200px
-
-                        <div class="bar-wrapper">
-                            <div class="bar" style="height: @barHeightpx;"></div>
-                            <div class="tooltip">
-                                @(stat.FlightCount == 1 ? "1 flight" : stat.FlightCount + " flights")
+                <div class="bar-chart-container">
+                    <div class="y-axis-labels">
+                        <div>@maxCount</div>
+                        <div>@Math.Round((double)maxCount * 0.75)</div>
+                        <div>@Math.Round((double)maxCount * 0.5)</div>
+                        <div>@Math.Round((double)maxCount * 0.25)</div>
+                        <div>0</div>
+                    </div>
+                    <div class="chart-grid">
+                        @foreach (var stat in flightStatistics)
+                        {
+                            var barHeight = (int)Math.Round((double)stat.FlightCount / maxCount * 100);
+                            <div class="chart-bar-wrapper">
+                                <div class="chart-bar" style="height: @barHeight%;"></div>
+                                <div class="bar-tooltip">@stat.FlightCount flight@(stat.FlightCount > 1 ? "s" : "")</div>
+                                <div class="x-axis-label">@stat.RouteName</div>
                             </div>
-                            <div class="x-label" title="@stat.RouteName">@stat.RouteName</div>
-                        </div>
-                    }
-                }
-                else
-                {
-                    <p style="text-align:center;">No flight data available.</p>
-                }
-            </div>
+                        }
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="no-data-message">No flight data available to display.</div>
+            }
         </div>
     </div>
-
-    <div class="clearfix"></div>
 </body>
 </html>
-                        
