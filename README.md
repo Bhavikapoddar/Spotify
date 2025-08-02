@@ -1,93 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web.Mvc;
-// Make sure this path is correct for your project
-using Airline_Managementnew.Models; 
-
-namespace Airline_Managementnew.Controllers
-{
-    public class AdminController : Controller
-    {
-        private readonly DatabaseContext db = new DatabaseContext(); // Your DbContext
-
-        // GET: Admin/AdminPanel
-        public ActionResult AdminPanel()
-        {
-            // Fetch all routes and flights
-            var allRoutes = db.SearchRequest.ToList();
-            var allFlights = db.Flight.ToList();
-
-            // Perform the group join to create flight statistics
-            var flightStatistics = (from route in allRoutes
-                                    join flight in allFlights on route.RouteId equals flight.RouteId into flightGroup
-                                    select new FlightStatisticViewModel
-                                    {
-                                        // Pick the FlightId of the first flight in the group to use for the link
-                                        // If no flights exist for the route, this will be 0.
-                                        FlightId = flightGroup.Any() ? flightGroup.First().FlightId : 0, 
-                                        RouteName = route.FromLocation + " - " + route.ToLocation,
-                                        FlightCount = flightGroup.Count()
-                                    }).ToList();
-
-            // Pass the statistics to the view
-            ViewBag.FlightStatistics = flightStatistics;
-
-            return View(); // Assumes this is your main admin panel view
-        }
-
-        // AddFlight Action Methods (no changes needed based on the new request)
-        public ActionResult AddRoute()
-        {
-            ViewBag.Routes = db.SearchRequest.ToList();
-            return View();
-        }
-
-        public ActionResult AddFlight()
-        {
-            ViewBag.Flights = db.Flight.ToList();
-            ViewBag.Routes = db.SearchRequest.ToList();
-            return View();
-        }
-
-        [HttpPost]
-        public ActionResult AddFlight(Flight model)
-        {
-            if (ModelState.IsValid)
-            {
-                db.Flight.Add(model);
-                db.SaveChanges();
-                return RedirectToAction("AdminPanel");
-            }
-
-            ViewBag.Flights = db.Flight.ToList();
-            ViewBag.Routes = db.SearchRequest.ToList();
-            return View(model);
-        }
-
-        // EditFlight Action Methods
-        public ActionResult EditFlight(int id)
-        {
-            var flight = db.Flight.Find(id);
-            if (flight == null)
-            {
-                return HttpNotFound();
-            }
-            ViewBag.Routes = db.SearchRequest.ToList();
-            return View(flight);
-        }
-
-        [HttpPost]
-        public ActionResult EditFlight(Flight updatedFlight)
-        {
-            // ... (your existing update logic here)
-            return RedirectToAction("AdminPanel");
-        }
-    }
-}
-... 
-
-
+     
 @* AdminPanel.cshtml *@
 @using Airline_Managementnew.Models
 @{
@@ -209,13 +120,14 @@ namespace Airline_Managementnew.Controllers
             position: relative;
         }
 
+        /* Y-axis labels are now dynamically generated */
         .y-label {
-            height: 20%;
             position: relative;
             border-bottom: 1px dashed #ccc;
             line-height: 0;
+            height: 0; /* height will be set dynamically below */
         }
-
+        
         .y-label:first-child {
             border-bottom: none;
         }
@@ -251,14 +163,6 @@ namespace Airline_Managementnew.Controllers
             vertical-align: bottom;
         }
 
-        /* Bar link */
-        .bar-link {
-            display: block;
-            height: 100%;
-            position: relative;
-            text-decoration: none; /* Remove underline from the link */
-        }
-        
         /* Bar itself */
         .bar {
             background-color: #3f51b5;
@@ -269,12 +173,12 @@ namespace Airline_Managementnew.Controllers
             left: 20%;
             transition: all 0.3s ease;
             border-radius: 4px 4px 0 0;
+            cursor: default; /* Change cursor to default since it's not clickable */
         }
 
         /* Bar Hover Effect */
-        .bar-link:hover .bar {
+        .bar-wrapper:hover .bar {
             background-color: #303f9f;
-            cursor: pointer;
         }
         
         /* X-axis Label (Route Name) */
@@ -337,18 +241,21 @@ namespace Airline_Managementnew.Controllers
                     @if (flightStatistics != null && flightStatistics.Any())
                     {
                         var maxCount = flightStatistics.Max(s => s.FlightCount);
-                        // If maxCount is 0, set it to 1 to avoid a completely empty graph
+                        // Ensure maxCount is at least 1 to avoid division by zero
                         if (maxCount == 0) { maxCount = 1; }
 
-                        // Create labels from maxCount down to 1
+                        // Calculate the height of each Y-axis label dynamically
+                        var yLabelHeight = (100.0 / maxCount);
+
+                        // Loop from maxCount down to 1
                         for (int i = maxCount; i >= 1; i--)
                         {
-                            <div class="y-label" data-value="@i"></div>
+                            <div class="y-label" data-value="@i" style="height: @yLabelHeight%;"></div>
                         }
                     }
                     else
                     {
-                        <div class="y-label" data-value="1"></div>
+                        <div class="y-label" data-value="1" style="height: 100%;"></div>
                     }
                 </div>
                 
@@ -360,23 +267,13 @@ namespace Airline_Managementnew.Controllers
 
                         foreach (var stat in flightStatistics)
                         {
-                            // Bar height is a percentage of the total graph height
                             var barHeight = (int)Math.Round((double)stat.FlightCount / maxCount * 100);
 
                             <div class="bar-wrapper">
-                                @if (stat.FlightCount > 0 && stat.FlightId > 0)
-                                {
-                                    <a href="@Url.Action("EditFlight", "Admin", new { id = stat.FlightId })" class="bar-link">
-                                        <div class="bar" style="height: @barHeight%;"></div>
-                                    </a>
-                                }
-                                else
-                                {
-                                    <div class="bar-link">
-                                        <div class="bar" style="height: 5%;"></div>
-                                    </div>
-                                }
-                                <div class="tooltip">@stat.FlightCount flights</div>
+                                <div class="bar" style="height: @barHeight%;"></div>
+                                <div class="tooltip">
+                                    @(stat.FlightCount == 1 ? "1 flight" : stat.FlightCount + " flights")
+                                </div>
                                 <div class="x-label" title="@stat.RouteName">@stat.RouteName</div>
                             </div>
                         }
