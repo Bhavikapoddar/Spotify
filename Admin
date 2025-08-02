@@ -1,14 +1,11 @@
- bll
-. 
 // Inside AdminController.cs
 
 public ActionResult AdminPanel()
 {
-    // 1. Get all routes first. This ensures all routes will be on the graph.
+    // Get all routes first. This ensures all routes will be on the graph.
     var allRoutes = db.SearchRequest.ToList();
 
-    // 2. Get flight counts for each route that has at least one flight.
-    // We are still grouping by RouteId from the Flight table.
+    // Get flight counts for each route that has at least one flight.
     var flightCounts = db.Flight
         .GroupBy(f => f.RouteId)
         .Select(g => new
@@ -18,26 +15,23 @@ public ActionResult AdminPanel()
         })
         .ToList();
 
-    // 3. Perform a LEFT JOIN to combine all routes with the flight counts.
-    // This will keep all routes from the 'allRoutes' list.
-    // If a route has no flights, its 'FlightCount' will be 0.
-    var flightStatistics = from route in allRoutes
-                           join count in flightCounts on route.RouteId equals count.RouteId into flightGroup
-                           from flightCount in flightGroup.DefaultIfEmpty()
-                           select new FlightStatisticViewModel
-                           {
-                               RouteName = route.FromLocation + " to " + route.Tolocation,
-                               // If flightCount is null (because of the left join), the count is 0.
-                               FlightCount = flightCount != null ? flightCount.FlightCount : 0
-                           };
+    // Perform a LEFT JOIN to combine all routes with the flight counts.
+    var flightStatistics = (from route in allRoutes
+                            join count in flightCounts on route.RouteId equals count.RouteId into flightGroup
+                            from flightCount in flightGroup.DefaultIfEmpty()
+                            select new FlightStatisticViewModel
+                            {
+                                RouteName = route.FromLocation + " to " + route.Tolocation,
+                                // If flightCount is null (because of the left join), the count is 0.
+                                FlightCount = flightCount != null ? flightCount.FlightCount : 0
+                            }).ToList();
 
-    // 4. Pass the data to the view
-    ViewBag.FlightStatistics = flightStatistics.ToList();
-    
+    // Pass the data to the view
+    ViewBag.FlightStatistics = flightStatistics;
+
     // Also passing the other ViewBag data you were using
     ViewBag.Flights = db.Flight.ToList();
-    ViewBag.Routes = allRoutes; // Re-use the allRoutes list
+    ViewBag.Routes = allRoutes;
 
     return View();
 }
-
