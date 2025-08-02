@@ -10,20 +10,20 @@
     <title>@ViewBag.Title</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        /* --- CORRECTED Base Layout with Float --- */
+        /* --- General Reset and Main Layout with Float --- */
         html, body {
             margin: 0;
             padding: 0;
             height: 100%;
             font-family: 'Inter', sans-serif;
             background-color: #f0f2f5;
-            box-sizing: border-box;
         }
 
+        /* Use this class to fix any layout issues caused by float */
         .clearfix::after {
             content: "";
-            clear: both;
             display: table;
+            clear: both;
         }
         
         /* --- Sidebar Styling --- */
@@ -34,7 +34,7 @@
             padding: 30px 20px;
             box-shadow: 2px 0 10px rgba(0,0,0,0.1);
             float: left; /* Use float for side-by-side alignment */
-            height: 100%; /* Ensure full height */
+            height: 100vh; /* Set sidebar height to full viewport height */
         }
 
         .admin-sidebar h3 {
@@ -62,10 +62,10 @@
         
         /* --- Main Content Styling --- */
         .admin-main-content {
-            margin-left: 250px; /* Push content to the right of the sidebar */
+            margin-left: 250px; /* Pushes content to the right of the sidebar */
             padding: 40px;
             overflow-y: auto;
-            min-height: 100vh; /* Use min-height to ensure it fills the page */
+            min-height: 100vh; /* Ensures the content area takes up at least the full page height */
         }
         
         .admin-main-content h2 {
@@ -102,7 +102,8 @@
         .bar-chart-container {
             position: relative;
             height: 300px;
-            padding-bottom: 20px;
+            padding-left: 50px; /* Space for Y-axis */
+            padding-bottom: 30px; /* Space for X-axis labels */
             border-bottom: 2px solid #ccc;
         }
 
@@ -110,19 +111,24 @@
             position: absolute;
             left: 0;
             top: 0;
-            bottom: 20px;
+            bottom: 30px;
             width: 40px;
             text-align: right;
             padding-right: 10px;
             font-size: 12px;
             color: #777;
-            display: table-cell;
-            vertical-align: bottom;
         }
+
         .y-axis-labels div {
             position: absolute;
-            right: 10px;
+            right: 0;
+            transform: translateY(-50%);
         }
+        .y-axis-labels .y-label-max { top: 0; transform: none; }
+        .y-axis-labels .y-label-75 { top: 25%; }
+        .y-axis-labels .y-label-50 { top: 50%; }
+        .y-axis-labels .y-label-25 { top: 75%; }
+        .y-axis-labels .y-label-0 { bottom: 0; top: auto; transform: none; }
         .y-axis-labels div::after {
             content: '';
             position: absolute;
@@ -132,48 +138,35 @@
             height: 1px;
             background-color: #eee;
         }
-        .y-axis-labels .y-label-max { top: 0; }
-        .y-axis-labels .y-label-75 { top: 25%; }
-        .y-axis-labels .y-label-50 { top: 50%; }
-        .y-axis-labels .y-label-25 { top: 75%; }
-        .y-axis-labels .y-label-0 { bottom: 0; }
 
         .chart-grid {
-            margin-left: 50px; /* Space for Y-axis */
-            padding-top: 5px;
-            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 50px;
+            right: 0;
+            bottom: 30px;
         }
 
         .chart-bar-wrapper {
             position: relative;
             float: left; /* Use float for horizontal bars */
-            width: 16%; /* Adjust width to fit multiple bars */
+            width: 15%; /* Adjust width to fit multiple bars */
             height: 100%;
-            text-align: center;
-            margin-left: 2%; /* Replace gap with margin */
+            margin-right: 10px; /* Create a gap between bars */
         }
-        .chart-grid > .chart-bar-wrapper:first-child {
-            margin-left: 0;
-        }
-        .chart-bar-wrapper:first-child {
-            clear: left; /* Ensure the first bar starts a new row */
-        }
-        .chart-bar-wrapper .bar-tooltip, .chart-bar-wrapper .x-axis-label {
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
+        .chart-bar-wrapper:last-child {
+            margin-right: 0;
         }
 
         .chart-bar {
             background-color: #3498db;
-            width: 80%;
+            width: 100%;
             min-height: 5px;
             border-radius: 5px 5px 0 0;
             transition: height 0.5s ease-in-out;
             position: absolute;
             bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
+            left: 0;
         }
 
         .chart-bar:hover {
@@ -181,7 +174,10 @@
         }
 
         .bar-tooltip {
+            position: absolute;
             bottom: calc(100% + 5px);
+            left: 50%;
+            transform: translateX(-50%);
             background: rgba(0,0,0,0.85);
             color: #fff;
             padding: 5px 10px;
@@ -198,13 +194,17 @@
         }
         
         .x-axis-label {
+            position: absolute;
             bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
             font-size: 12px;
             color: #555;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            max-width: 100%;
+            width: 100%;
+            text-align: center;
         }
 
         .no-data-message {
