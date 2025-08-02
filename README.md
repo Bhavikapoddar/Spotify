@@ -1,12 +1,104 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web.Mvc;
+// Make sure this path is correct for your project
+using Airline_Managementnew.Models; 
+
+namespace Airline_Managementnew.Controllers
+{
+    public class AdminController : Controller
+    {
+        private readonly DatabaseContext db = new DatabaseContext(); // Your DbContext
+
+        // GET: Admin/AdminPanel
+        public ActionResult AdminPanel()
+        {
+            // Fetch all routes and flights
+            var allRoutes = db.SearchRequest.ToList();
+            var allFlights = db.Flight.ToList();
+
+            // Perform the group join to create flight statistics
+            var flightStatistics = (from route in allRoutes
+                                    join flight in allFlights on route.RouteId equals flight.RouteId into flightGroup
+                                    select new FlightStatisticViewModel
+                                    {
+                                        // Pick the FlightId of the first flight in the group to use for the link
+                                        // If no flights exist for the route, this will be 0.
+                                        FlightId = flightGroup.Any() ? flightGroup.First().FlightId : 0, 
+                                        RouteName = route.FromLocation + " - " + route.ToLocation,
+                                        FlightCount = flightGroup.Count()
+                                    }).ToList();
+
+            // Pass the statistics to the view
+            ViewBag.FlightStatistics = flightStatistics;
+
+            return View(); // Assumes this is your main admin panel view
+        }
+
+        // AddFlight Action Methods (no changes needed based on the new request)
+        public ActionResult AddRoute()
+        {
+            ViewBag.Routes = db.SearchRequest.ToList();
+            return View();
+        }
+
+        public ActionResult AddFlight()
+        {
+            ViewBag.Flights = db.Flight.ToList();
+            ViewBag.Routes = db.SearchRequest.ToList();
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult AddFlight(Flight model)
+        {
+            if (ModelState.IsValid)
+            {
+                db.Flight.Add(model);
+                db.SaveChanges();
+                return RedirectToAction("AdminPanel");
+            }
+
+            ViewBag.Flights = db.Flight.ToList();
+            ViewBag.Routes = db.SearchRequest.ToList();
+            return View(model);
+        }
+
+        // EditFlight Action Methods
+        public ActionResult EditFlight(int id)
+        {
+            var flight = db.Flight.Find(id);
+            if (flight == null)
+            {
+                return HttpNotFound();
+            }
+            ViewBag.Routes = db.SearchRequest.ToList();
+            return View(flight);
+        }
+
+        [HttpPost]
+        public ActionResult EditFlight(Flight updatedFlight)
+        {
+            // ... (your existing update logic here)
+            return RedirectToAction("AdminPanel");
+        }
+    }
+}
+... 
+
+
+@* AdminPanel.cshtml *@
+@using Airline_Managementnew.Models
 @{
-    // Assuming this is your Admin Panel View
     ViewBag.Title = "Admin Panel";
-    var flightStatistics = ViewBag.FlightStatistics as IEnumerable<Airline_Managementnew.Controllers.AdminController.FlightStatisticModel>;
+    var flightStatistics = ViewBag.FlightStatistics as IEnumerable<FlightStatisticViewModel>;
 }
 
 <!DOCTYPE html>
 <html>
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
@@ -15,6 +107,7 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            height: 100%;
         }
 
         body {
@@ -31,7 +124,7 @@
             padding: 30px 20px;
             height: 100vh;
             box-shadow: 2px 0 6px rgba(0,0,0,0.1);
-            float: left; /* Use float for layout */
+            float: left;
         }
 
         .sidebar h3 {
@@ -56,15 +149,11 @@
             background-color: rgba(255, 255, 255, 0.1);
         }
 
-        .sidebar a span {
-            margin-right: 10px;
-            font-size: 18px;
-        }
-
         /* Main Content */
         .main-content {
-            margin-left: 230px; /* Adjust margin to clear the float */
+            margin-left: 230px;
             padding: 40px;
+            overflow: hidden;
         }
 
         .main-content h2 {
@@ -91,6 +180,7 @@
             margin-top: 20px;
             background-color: #fff;
             border-radius: 8px;
+            overflow: hidden;
         }
         
         .statistics-container h3 {
@@ -105,6 +195,7 @@
             width: 100%;
             height: 300px;
             position: relative;
+            border-bottom: 1px solid #eee;
         }
 
         /* Y-axis */
@@ -146,20 +237,29 @@
             height: 100%;
             white-space: nowrap;
             overflow-x: auto;
+            padding-left: 10px;
         }
 
         /* Bar wrapper */
         .bar-wrapper {
             display: inline-block;
-            width: 15%; /* Adjust width as needed */
+            width: 15%;
             height: 100%;
             text-align: center;
-            margin: 0 2%;
+            margin: 0 1%;
             position: relative;
             vertical-align: bottom;
         }
 
-        /* Bar */
+        /* Bar link */
+        .bar-link {
+            display: block;
+            height: 100%;
+            position: relative;
+            text-decoration: none; /* Remove underline from the link */
+        }
+        
+        /* Bar itself */
         .bar {
             background-color: #3f51b5;
             width: 60%;
@@ -171,28 +271,29 @@
             border-radius: 4px 4px 0 0;
         }
 
-        /* Bar Hover */
-        .bar-wrapper:hover .bar {
+        /* Bar Hover Effect */
+        .bar-link:hover .bar {
             background-color: #303f9f;
             cursor: pointer;
         }
         
-        /* X-axis Label */
+        /* X-axis Label (Route Name) */
         .x-label {
             position: absolute;
-            bottom: -20px;
+            bottom: -25px;
             left: 0;
             right: 0;
             font-size: 12px;
             color: #555;
             overflow: hidden;
             text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
-        /* Tooltip */
+        /* Tooltip (Flight Count) */
         .tooltip {
             position: absolute;
-            top: -30px; /* Adjusted to be above the bar */
+            top: -30px;
             left: 50%;
             transform: translateX(-50%);
             background-color: rgba(0, 0, 0, 0.7);
@@ -203,9 +304,10 @@
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.3s ease;
-            z-index: 10; /* Ensure tooltip is on top */
+            z-index: 10;
         }
 
+        /* Show tooltip on bar-wrapper hover */
         .bar-wrapper:hover .tooltip {
             opacity: 1;
         }
@@ -215,11 +317,11 @@
     <div class="sidebar">
         <h3>Admin Menu</h3>
         <nav>
-            <a href="/Admin/AdminPanel"><span class="icon">&#9776;</span> Admin Panel</a>
-            <a href="/Admin/AddFlight"><span class="icon">&#9992;</span> Add Flight</a>
-            <a href="/Admin/PassengerInfo"><span class="icon">&#128100;</span> Passenger Info</a>
-            <a href="/Admin/Flights"><span class="icon">&#128221;</span> Manage Flights</a>
-            <a href="/Home/Index"><span class="icon">&#8962;</span> Back to Home</a>
+            <a href="@Url.Action("AdminPanel", "Admin")"> Admin Panel</a>
+            <a href="@Url.Action("AddFlight", "Admin")"> Add Flight</a>
+            <a href="@Url.Action("PassengerInfo", "Admin")"> Passenger Info</a>
+            <a href="@Url.Action("Flights", "Admin")"> Manage Flights</a>
+            <a href="@Url.Action("Index", "Home")"> Back to Home</a>
         </nav>
     </div>
 
@@ -232,33 +334,48 @@
             
             <div class="graph-container">
                 <div class="y-axis">
-                    @for (int i = 5; i > 0; i--)
+                    @if (flightStatistics != null && flightStatistics.Any())
                     {
-                        <div class="y-label" data-value="@(i)"></div>
+                        var maxCount = flightStatistics.Max(s => s.FlightCount);
+                        // If maxCount is 0, set it to 1 to avoid a completely empty graph
+                        if (maxCount == 0) { maxCount = 1; }
+
+                        // Create labels from maxCount down to 1
+                        for (int i = maxCount; i >= 1; i--)
+                        {
+                            <div class="y-label" data-value="@i"></div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="y-label" data-value="1"></div>
                     }
                 </div>
                 
                 <div class="bars-container">
                     @if (flightStatistics != null && flightStatistics.Any())
                     {
-                        // Find the max flight count to scale the bars
                         var maxCount = flightStatistics.Max(s => s.FlightCount);
+                        if (maxCount == 0) { maxCount = 1; }
 
-                        if (maxCount == 0) // Avoid division by zero
-                        {
-                            maxCount = 1;
-                        }
-
-                        // Loop through flight statistics
                         foreach (var stat in flightStatistics)
                         {
-                            // Calculate the height of the bar based on the max count
+                            // Bar height is a percentage of the total graph height
                             var barHeight = (int)Math.Round((double)stat.FlightCount / maxCount * 100);
 
                             <div class="bar-wrapper">
-                                <a href="@Url.Action("EditFlight", "Admin", new { id = stat.FlightId })">
-                                    <div class="bar" style="height: @barHeight%;"></div>
-                                </a>
+                                @if (stat.FlightCount > 0 && stat.FlightId > 0)
+                                {
+                                    <a href="@Url.Action("EditFlight", "Admin", new { id = stat.FlightId })" class="bar-link">
+                                        <div class="bar" style="height: @barHeight%;"></div>
+                                    </a>
+                                }
+                                else
+                                {
+                                    <div class="bar-link">
+                                        <div class="bar" style="height: 5%;"></div>
+                                    </div>
+                                }
                                 <div class="tooltip">@stat.FlightCount flights</div>
                                 <div class="x-label" title="@stat.RouteName">@stat.RouteName</div>
                             </div>
@@ -266,7 +383,7 @@
                     }
                     else
                     {
-                        <p>No flight data available to display.</p>
+                        <p style="text-align: center; width: 100%; padding-top: 50px;">No flight data available to display.</p>
                     }
                 </div>
             </div>
