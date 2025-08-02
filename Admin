@@ -1,5 +1,4 @@
 
-... 
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +11,7 @@ namespace Airline_Managementnew.Controllers
     {
         private readonly DatabaseContext db = new DatabaseContext();
 
-        // AdminPanel Action Method
+        // AdminPanel Action Method - This is the main dashboard
         public ActionResult AdminPanel()
         {
             var allRoutes = db.SearchRequest.ToList();
@@ -103,7 +102,7 @@ namespace Airline_Managementnew.Controllers
             return RedirectToAction("AddRoute");
         }
 
-        // AddFlight Action Methods - Only this one uses AJAX for POST
+        // AddFlight Action Methods - This is the only one using AJAX
         public ActionResult AddFlight()
         {
             ViewBag.Flights = db.Flight.ToList();
@@ -112,7 +111,7 @@ namespace Airline_Managementnew.Controllers
         }
 
         [HttpPost]
-        public JsonResult AddFlight(Flight model) // This action now returns the added flight object
+        public JsonResult AddFlight(Flight model)
         {
             if (ModelState.IsValid)
             {
@@ -186,6 +185,7 @@ namespace Airline_Managementnew.Controllers
 }
 ..... 
 .... 
+... 
 @model Airline_Managementnew.Models.Flight
 @{
     ViewBag.Title = "Add New Flight";
@@ -229,6 +229,65 @@ namespace Airline_Managementnew.Controllers
                 <div class="form-group col-md-6">
                     <label for="DepartureCity">Departure City:</label>
                     <input type="text" name="DepartureCity" class="form-control" required />
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="ArrivalCity">Arrival City:</label>
+                    <input type="text" name="ArrivalCity" class="form-control" required />
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="DepartureTime">Departure Time:</label>
+                    <input type="datetime-local" name="DepartureTime" class="form-control" required />
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="ArrivalTime">Arrival Time:</label>
+                    <input type="datetime-local" name="ArrivalTime" class="form-control" required />
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="EconomyPrice">Economy Price:</label>
+                    <input type="number" name="EconomyPrice" class="form-control" required />
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-4">
+                    <label for="EconomySeats">Economy Seats:</label>
+                    <input type="number" name="EconomySeats" class="form-control" required />
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="BusinessPrice">Business Price:</label>
+                    <input type="number" name="BusinessPrice" class="form-control" required />
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="BusinessSeats">Business Seats:</label>
+                    <input type="number" name="BusinessSeats" class="form-control" required />
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-4">
+                    <label for="FirstClassPrice">First Class Price:</label>
+                    <input type="number" name="FirstClassPrice" class="form-control" required />
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="FirstClassSeats">First Class Seats:</label>
+                    <input type="number" name="FirstClassSeats" class="form-control" required />
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="AirplaneId">Airplane ID:</label>
+                    <input type="text" name="AirplaneId" class="form-control" required />
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="AirplaneNumber">Airplane Number:</label>
+                    <input type="text" name="AirplaneNumber" class="form-control" required />
                 </div>
             </div>
 
@@ -293,6 +352,7 @@ namespace Airline_Managementnew.Controllers
         <script>
             function confirmDeleteFlight(id) {
                 if (confirm('Are you sure you want to delete this flight?')) {
+                    // This uses a POST to prevent accidental deletion
                     var form = $('<form action="/Admin/DeleteFlight/' + id + '" method="post">' +
                         '@Html.AntiForgeryToken()' +
                         '</form>');
@@ -329,7 +389,7 @@ namespace Airline_Managementnew.Controllers
                             }
                         },
                         error: function (xhr, status, error) {
-                            console.error("AJAX Error:", status, error);
+                            console.error("AJAX Error:", status, error, xhr.responseText);
                             $("#statusMessage").text("An error occurred. Please try again.").css("color", "red");
                         }
                     });
@@ -338,14 +398,18 @@ namespace Airline_Managementnew.Controllers
 
             // This function takes the flight data and appends it to the table
             function appendNewFlightRow(flight) {
+                // Ensure times are formatted correctly
+                var departureTime = new Date(flight.DepartureTime).toLocaleString();
+                var arrivalTime = new Date(flight.ArrivalTime).toLocaleString();
+
                 var newRow = '<tr>' +
                     '<td>' + flight.FlightId + '</td>' +
                     '<td>' + flight.RouteId + '</td>' +
                     '<td>' + flight.AirplaneId + '</td>' +
                     '<td>' + flight.AirplaneNumber + '</td>' +
                     '<td>' + flight.DepartureCity + ' - ' + flight.ArrivalCity + '</td>' +
-                    '<td>' + new Date(parseInt(flight.DepartureTime.substr(6))).toLocaleString() + '</td>' +
-                    '<td>' + new Date(parseInt(flight.ArrivalTime.substr(6))).toLocaleString() + '</td>' +
+                    '<td>' + departureTime + '</td>' +
+                    '<td>' + arrivalTime + '</td>' +
                     '<td>' + flight.EconomyPrice + '</td>' +
                     '<td>' + flight.EconomySeats + '</td>' +
                     '<td>' + flight.BusinessPrice + '</td>' +
