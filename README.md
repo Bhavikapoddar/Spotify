@@ -1,3 +1,4 @@
+
 @{
     ViewBag.Title = "Admin Panel";
     var flightStatistics = ViewBag.FlightStatistics as IEnumerable<Airline_Management_System.Models.FlightStatisticViewModel>;
@@ -19,7 +20,7 @@
             background-color: #f0f2f5;
         }
 
-        /* Use this class to fix any layout issues caused by float */
+        /* Use this class to contain floated elements */
         .clearfix::after {
             content: "";
             display: table;
@@ -32,9 +33,9 @@
             background: linear-gradient(135deg, #2c3e50, #34495e);
             color: #ecf0f1;
             padding: 30px 20px;
-            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
-            float: left; /* Use float for side-by-side alignment */
-            height: 100vh; /* Set sidebar height to full viewport height */
+            box-shadow: -2px 0 10px rgba(0,0,0,0.1); /* Shadow on the left side */
+            float: right; /* Align sidebar to the right side of the page */
+            height: 100vh;
         }
 
         .admin-sidebar h3 {
@@ -62,10 +63,10 @@
         
         /* --- Main Content Styling --- */
         .admin-main-content {
-            margin-left: 250px; /* Pushes content to the right of the sidebar */
+            margin-right: 250px; /* Pushes content to the left of the sidebar */
             padding: 40px;
             overflow-y: auto;
-            min-height: 100vh; /* Ensures the content area takes up at least the full page height */
+            min-height: 100vh;
         }
         
         .admin-main-content h2 {
@@ -102,8 +103,8 @@
         .bar-chart-container {
             position: relative;
             height: 300px;
-            padding-left: 50px; /* Space for Y-axis */
-            padding-bottom: 30px; /* Space for X-axis labels */
+            padding-left: 50px;
+            padding-bottom: 30px;
             border-bottom: 2px solid #ccc;
         }
 
@@ -149,10 +150,10 @@
 
         .chart-bar-wrapper {
             position: relative;
-            float: left; /* Use float for horizontal bars */
-            width: 15%; /* Adjust width to fit multiple bars */
+            float: left;
+            width: 15%;
             height: 100%;
-            margin-right: 10px; /* Create a gap between bars */
+            margin-right: 10px;
         }
         .chart-bar-wrapper:last-child {
             margin-right: 0;
