@@ -1,27 +1,54 @@
+<script>
+    // This function will run when the page has finished loading
+    window.onload = function () {
+        // Create a Date object for today
+        const today = new Date();
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema; // You might need this for [Key]
+        // Calculate tomorrow's date
+        const tomorrow = new Date(today);
+        tomorrow.setDate(today.getDate() + 1);
 
-namespace Airline_Managementnew.Models
-{
-    public class User
-    {
-        public int Id { get; set; }
+        // Extract year, month, and day from tomorrow's date
+        const yyyy = tomorrow.getFullYear();
+        // getMonth() is 0-indexed, so we add 1
+        const mm = String(tomorrow.getMonth() + 1).padStart(2, '0');
+        const dd = String(tomorrow.getDate()).padStart(2, '0');
 
-        [Required(ErrorMessage = "Username is required.")]
-        public string Username { get; set; }
+        // Format tomorrow's date into 'YYYY-MM-DD'
+        const minDate = `${yyyy}-${mm}-${dd}`;
 
-        [Required(ErrorMessage = "Email is required.")]
-        [EmailAddress(ErrorMessage = "Invalid email address.")]
-        public string Email { get; set; }
+        // Select the departure date input field and set its 'min' attribute
+        const departureDateInput = document.querySelector('input[name="DepartureDate"]');
+        if (departureDateInput) {
+            departureDateInput.setAttribute('min', minDate);
+        }
+    };
 
-        [Required(ErrorMessage = "Password is required.")]
-        [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 8)]
-        [RegularExpression(@"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*()_+=\[{\]};:'"",<.>/?\-\\|~`]).*$", ErrorMessage = "Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character.")]
-        [DataType(DataType.Password)]
-        public string Password { get; set; }
+    // This function can be called on form submission to perform a final validation
+    function validateDate() {
+        // Get the selected departure date from the input field
+        const departureDateInput = document.querySelector('input[name="DepartureDate"]');
+        if (!departureDateInput) {
+            return true; // No input field, no validation needed
+        }
+
+        const selectedDate = new Date(departureDateInput.value);
+
+        // Get tomorrow's date for comparison
+        const today = new Date();
+        const tomorrow = new Date(today);
+        tomorrow.setDate(today.getDate() + 1);
+
+        // Normalize both dates to midnight (00:00:00) for accurate comparison
+        selectedDate.setHours(0, 0, 0, 0);
+        tomorrow.setHours(0, 0, 0, 0);
+
+        // Check if the selected date is before tomorrow's date
+        if (selectedDate < tomorrow) {
+            alert("Past dates or today's date are not allowed. Please select a date from tomorrow onwards.");
+            return false;
+        }
+
+        return true;
     }
-}
+</script>
