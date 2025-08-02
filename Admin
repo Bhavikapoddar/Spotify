@@ -1,64 +1,227 @@
-/* Apply the dark background to the body */
-body {
-    background-color: #2A1B3D;
+hiiiii
+...... 
+............. 
+// Inside AdminController.cs
+
+public ActionResult AdminPanel()
+{
+    // Retrieve all flights from the database
+    var allFlights = db.Flight.ToList();
+
+    // Group flights by RouteId and count them
+    var flightCountsByRoute = allFlights
+        .GroupBy(f => f.RouteId)
+        .Select(g => new
+        {
+            RouteId = g.Key,
+            FlightCount = g.Count()
+        })
+        .ToList();
+
+    // Get the route information (From and To locations)
+    var allRoutes = db.SearchRequest.ToList();
+
+    // Combine the flight counts with the route details
+    var flightStatistics = from count in flightCountsByRoute
+                           join route in allRoutes on count.RouteId equals route.RouteId
+                           select new FlightStatisticViewModel
+                           {
+                               RouteName = $"{route.FromLocation} to {route.Tolocation}",
+                               FlightCount = count.FlightCount
+                           };
+
+    // Pass the data to the view using ViewBag
+    ViewBag.FlightStatistics = flightStatistics;
+
+    return View();
 }
 
-/* Style the main container for the form */
-.form-horizontal {
-    color: white;
-    /* Increased width by reducing margins from 35% to 20% */
-    margin-top: 2%;
-    margin-left: 20%;
-    margin-right: 20%;
-    padding: 20px 5%;
-    border: 1px solid #d83f87;
-    background: #d83f87; /* The pink background color */
-    border-radius: 15px;
+// You'll need to create this ViewModel class to hold the data
+public class FlightStatisticViewModel
+{
+    public string RouteName { get; set; }
+    public int FlightCount { get; set; }
 }
 
-/* * This is the key change. 
- * We use flexbox to put the labels and inputs on the same line.
- */
-.form-group {
-    display: flex;
-    align-items: center; /* Vertically center the label and input */
-    margin-bottom: 20px;
+. ....... 
+.... 
+@{
+    ViewBag.Title = "Admin Panel";
+    var flightStatistics = ViewBag.FlightStatistics as IEnumerable<Airline_Managementnew.Controllers.FlightStatisticViewModel>;
 }
 
-/* Style the form labels */
-.control-label {
-    text-align: left;
-    /* Give the labels a fixed width to align the inputs neatly */
-    width: 150px; 
-    margin-right: 10px; /* Add some space between the label and the input */
-}
+<div class="main-content">
+    <h2>Welcome to Admin Panel!</h2>
+    <p>Use the left menu to manage routes, flights, and passengers efficiently.</p>
 
-/* The div containing the input field */
-.col-md-10 {
-    /* Allow the input container to take up the remaining space */
-    flex-grow: 1; 
-}
+    <div class="statistics-container">
+        <h3>Flights per Route Statistics</h3>
+        <div class="graph-container">
+            <div class="y-axis">
+                @for (int i = 15; i >= 0; i -= 3)
+                {
+                    <div class="y-label">@i</div>
+                }
+            </div>
+            <div class="bars-container">
+                @if (flightStatistics != null && flightStatistics.Any())
+                {
+                    // Find the max flight count to scale the bars
+                    var maxCount = flightStatistics.Max(s => s.FlightCount);
+                    foreach (var stat in flightStatistics)
+                    {
+                        // Calculate the height of the bar based on the max count
+                        var barHeight = (int)Math.Round((double)stat.FlightCount / maxCount * 100);
+                        
+                        <div class="bar-wrapper">
+                            <div class="bar" style="height: @(barHeight)%">
+                                <div class="tooltip">@stat.FlightCount flights</div>
+                            </div>
+                            <div class="x-label">@stat.RouteName</div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <p>No flight data available to display.</p>
+                }
+            </div>
+        </div>
+        <div class="x-axis-label">Routes</div>
+    </div>
+</div>
 
-/* Style the form input fields and dropdown lists */
-.form-control {
-    border-radius: 5px;
-    height: 50px;
-    width: 100%;
-    box-shadow: 1px 1px 1px 0px rgba(0, 0, 0, 0.5);
-    border: none;
-    /* The padding is a good way to align text inside the field */
-    padding-left: 10px; 
-}
+<style>
+    /* Styling for the statistics graph */
+    .statistics-container {
+        border: 1px solid #ccc;
+        padding: 20px;
+        margin-top: 20px;
+        background-color: #f9f9f9;
+        border-radius: 8px;
+    }
 
-/* Style the submit button */
-.btn-default {
-    border-radius: 5px;
-    height: 50px;
-    /* Make the button fill the available width */
-    width: 100%; 
-    background-color: #fff; /* White background for the button */
-    color: #d83f87; /* Pink text color */
-    border: 1px solid #d83f87; /* Pink border */
-    font-weight: bold;
-    margin-top: 20px;
-}
+    .statistics-container h3 {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #333;
+    }
+
+    .graph-container {
+        display: table; /* Using table for layout since flexbox is not reliable */
+        width: 100%;
+        height: 300px; /* Fixed height for the graph area */
+        position: relative;
+    }
+    
+    .y-axis {
+        display: table-cell;
+        width: 40px;
+        vertical-align: bottom;
+        text-align: right;
+        padding-right: 5px;
+        height: 100%;
+        position: relative;
+    }
+    
+    .y-label {
+        height: 20%; /* 5 labels, so 20% each */
+        position: relative;
+        border-bottom: 1px dashed #ccc;
+        line-height: 0;
+    }
+    
+    .y-label:first-child {
+        border-bottom: none;
+    }
+    
+    .y-label::after {
+        content: attr(data-value);
+        position: absolute;
+        top: 50%;
+        right: 5px;
+        transform: translateY(-50%);
+        font-size: 12px;
+        color: #555;
+    }
+
+    .bars-container {
+        display: table-cell;
+        vertical-align: bottom;
+        height: 100%;
+        white-space: nowrap; /* Prevents bars from wrapping */
+        overflow-x: auto;
+    }
+    
+    .bar-wrapper {
+        display: inline-block;
+        width: 15%; /* Adjust this based on how many bars you have */
+        height: 100%;
+        text-align: center;
+        margin: 0 2%;
+        position: relative;
+        vertical-align: bottom;
+    }
+
+    .bar {
+        background-color: #3f51b5; /* Blue color for the bar */
+        width: 60%;
+        margin: 0 auto;
+        position: absolute;
+        bottom: 0;
+        left: 20%;
+        transition: all 0.3s ease;
+        border-radius: 4px 4px 0 0;
+    }
+
+    .bar:hover {
+        background-color: #303f9f;
+        cursor: pointer;
+    }
+
+    .x-label {
+        position: absolute;
+        bottom: -20px;
+        left: 0;
+        right: 0;
+        font-size: 12px;
+        color: #555;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* Tooltip styling */
+    .tooltip {
+        position: absolute;
+        top: -30px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: rgba(0, 0, 0, 0.7);
+        color: white;
+        padding: 5px 8px;
+        border-radius: 5px;
+        white-space: nowrap;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+    }
+
+    .bar:hover .tooltip {
+        opacity: 1;
+    }
+</style>
+
+<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+<script>
+    // You can add more complex logic here if needed,
+    // for example, to dynamically change colors or handle clicks.
+    $(document).ready(function () {
+        // Example: Change bar color on click (optional)
+        $('.bar').on('click', function () {
+            // You can implement an AJAX call here to get details for the clicked route
+            // For now, let's just log to the console
+            var routeName = $(this).siblings('.x-label').text();
+            console.log('Clicked on route:', routeName);
+        });
+    });
+</script>
