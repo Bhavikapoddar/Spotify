@@ -1,5 +1,5 @@
-hiiiii
-.. 
+
+huiiiii
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,13 +13,10 @@ namespace Airline_Managementnew.Controllers
     {
         private readonly DatabaseContext db = new DatabaseContext();
 
-        // AdminPanel Action Method
+        // AdminPanel Action Method - This is the main dashboard
         public ActionResult AdminPanel()
         {
-            // Get all routes first.
             var allRoutes = db.SearchRequest.ToList();
-            
-            // Get flight counts for each route.
             var flightCounts = db.Flight
                 .GroupBy(f => f.RouteId)
                 .Select(g => new
@@ -28,8 +25,7 @@ namespace Airline_Managementnew.Controllers
                     FlightCount = g.Count()
                 })
                 .ToList();
-                
-            // Perform a LEFT JOIN using lambda syntax to combine all routes with the flight counts.
+            
             var flightStatistics = allRoutes.GroupJoin(
                 flightCounts,
                 route => route.RouteId,
@@ -48,7 +44,7 @@ namespace Airline_Managementnew.Controllers
             return View();
         }
 
-        // AddRoute Action Methods (not using AJAX)
+        // AddRoute Action Methods - NOT using AJAX for POST
         public ActionResult AddRoute()
         {
             ViewBag.Routes = db.SearchRequest.ToList();
@@ -63,10 +59,11 @@ namespace Airline_Managementnew.Controllers
                 db.SearchRequest.Add(route);
                 db.SaveChanges();
             }
-            return RedirectToAction("AdminPanel");
+            // Redirects to the AddRoute page to show the updated list
+            return RedirectToAction("AddRoute");
         }
 
-        // EditRoute Action Methods (not using AJAX)
+        // EditRoute Action Methods - NOT using AJAX for POST
         public ActionResult EditRoute(int id)
         {
             var route = db.SearchRequest.Find(id);
@@ -92,10 +89,12 @@ namespace Airline_Managementnew.Controllers
                     db.SaveChanges();
                 }
             }
-            return RedirectToAction("AdminPanel");
+            // Redirects to the EditRoute page for the edited item
+            return RedirectToAction("EditRoute", new { id = updatedRoute.RouteId });
         }
 
-        // DeleteRoute Action Method (not using AJAX)
+        // DeleteRoute Action Method - Using a POST to prevent accidental deletion
+        [HttpPost]
         public ActionResult DeleteRoute(int id)
         {
             var route = db.SearchRequest.Find(id);
@@ -104,10 +103,11 @@ namespace Airline_Managementnew.Controllers
                 db.SearchRequest.Remove(route);
                 db.SaveChanges();
             }
-            return RedirectToAction("AdminPanel");
+            // Redirects to the AddRoute page to show the updated list
+            return RedirectToAction("AddRoute");
         }
 
-        // AddFlight Action Methods
+        // AddFlight Action Methods - Only this one uses AJAX for POST
         public ActionResult AddFlight()
         {
             ViewBag.Flights = db.Flight.ToList();
@@ -115,9 +115,8 @@ namespace Airline_Managementnew.Controllers
             return View();
         }
 
-        // This is the new AJAX-enabled POST method
         [HttpPost]
-        public JsonResult AddFlightAjax(Flight model)
+        public JsonResult AddFlight(Flight model) // This action returns JSON
         {
             if (ModelState.IsValid)
             {
@@ -130,7 +129,7 @@ namespace Airline_Managementnew.Controllers
             return Json(new { success = false, message = "Invalid flight data." });
         }
 
-        // EditFlight Action Methods
+        // EditFlight Action Methods - NOT using AJAX for POST
         public ActionResult EditFlight(int id)
         {
             var flight = db.Flight.Find(id);
@@ -166,10 +165,12 @@ namespace Airline_Managementnew.Controllers
                     db.SaveChanges();
                 }
             }
-            return RedirectToAction("AdminPanel");
+            // Redirects to the EditFlight page for the edited item
+            return RedirectToAction("EditFlight", new { id = updatedFlight.FlightId });
         }
 
-        // DeleteFlight Action Method
+        // DeleteFlight Action Method - Using a POST to prevent accidental deletion
+        [HttpPost]
         public ActionResult DeleteFlight(int id)
         {
             var flight = db.Flight.Find(id);
@@ -178,7 +179,8 @@ namespace Airline_Managementnew.Controllers
                 db.Flight.Remove(flight);
                 db.SaveChanges();
             }
-            return RedirectToAction("AdminPanel");
+            // Redirects to the AddFlight page to show the updated list
+            return RedirectToAction("AddFlight");
         }
         
         // PassengerInfo Action Method
@@ -189,8 +191,9 @@ namespace Airline_Managementnew.Controllers
         }
     }
 }
-.... 
 ..... 
+... 
+... 
 @model Airline_Managementnew.Models.Flight
 @{
     ViewBag.Title = "Add New Flight";
@@ -200,7 +203,6 @@ namespace Airline_Managementnew.Controllers
     <title>Add Flight</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
     <style>
-        /* Your existing CSS for form layout */
         .form-row {
             display: flex;
             flex-wrap: wrap;
@@ -344,43 +346,50 @@ namespace Airline_Managementnew.Controllers
                             <td>@f.FirstClassSeats</td>
                             <td>
                                 <a href="/Admin/EditFlight/@f.FlightId" class="btn btn-sm btn-primary">Edit</a>
-                                <a href="/Admin/DeleteFlight/@f.FlightId" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this flight?');">Delete</a>
+                                <a href="#" class="btn btn-sm btn-danger" onclick="confirmDeleteFlight(@f.FlightId)">Delete</a>
                             </td>
                         </tr>
                     }
                 </tbody>
             </table>
         </div>
-
     </div>
 
     @section Scripts {
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script>
+            function confirmDeleteFlight(id) {
+                if (confirm('Are you sure you want to delete this flight?')) {
+                    // Use a form post for deletion to follow best practices
+                    // You'll need a form with a hidden input for the ID
+                    var form = $('<form action="/Admin/DeleteFlight/' + id + '" method="post">' +
+                        '@Html.AntiForgeryToken()' +
+                        '</form>');
+                    $('body').append(form);
+                    form.submit();
+                }
+            }
+
             $(document).ready(function () {
                 $("#addFlightForm").submit(function (e) {
-                    e.preventDefault(); // Prevents the default form submission (page reload)
+                    e.preventDefault(); // Prevents the default form submission
 
                     var form = $(this);
-                    // Point to the new AJAX action
-                    var url = '@Url.Action("AddFlightAjax", "Admin")'; 
+                    var url = '@Url.Action("AddFlight", "Admin")'; 
 
                     $.ajax({
                         type: "POST",
                         url: url,
-                        data: form.serialize(), // Serializes the form data
+                        data: form.serialize(), 
                         success: function (response) {
                             if (response.success) {
                                 $("#statusMessage").text(response.message).css("color", "green");
-                                // Clear the form after success
                                 form[0].reset(); 
                                 
-                                // Redirect to AdminPanel after a short delay
-                                // This will cause a full page reload to the AdminPanel
-                                // to ensure all data (graph, lists) are refreshed.
+                                // This is the key part: redirect to AdminPanel
                                 setTimeout(function() {
                                     window.location.href = '@Url.Action("AdminPanel", "Admin")';
-                                }, 1000); // Redirect after 1 second
+                                }, 1000); 
                             } else {
                                 $("#statusMessage").text(response.message).css("color", "red");
                             }
@@ -393,4 +402,6 @@ namespace Airline_Managementnew.Controllers
             });
         </script>
     }
-</body>n
+</body>
+
+
