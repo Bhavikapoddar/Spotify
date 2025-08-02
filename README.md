@@ -1,103 +1,179 @@
-@model AirlineManagement.Models.SearchRequest
+..... 
+/*
+    Seat Selection UI Styling
+    This CSS file provides styling for a modern flight seat selection interface.
+    It's designed to be clean, responsive, and easy to read.
+*/
 
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8" />
-    <title>Airline Management System</title>
-    <link href="~/content/css/style.css" rel="stylesheet" />
-</head>
-<body>
-    <div class="header">
-        <h3 style="margin-left:20px;"> JetSetFly</h3>
-    </div>
-    <div style="text-align:center; color:white">
-        <h1>Create Ever-Lasting Memories With Us</h1>
-    </div>
-    <div class="search-box">
-        <form action="/Booking/SearchFlights" method="post" onsubmit="return validateDate();">
-            <div class="form-group row">
-                <div class="col-md-4">
-                    <label>From</label>
-                    <select name="FromLocation" class="form-control" required>
-                        <option value="">---Select From---</option>
-                        @foreach (var item in Model.Select(m => m.FromLocation).Distinct())
-                        {
-                            <option value="@item">@item</option>
-                        }
-                    </select>
-                </div>
-                <div class="col-md-4">
-                    <label>To</label>
-                    <select name="ToLocation" class="form-control" required>
-                        <option value="">---Select To---</option>
-                        @foreach (var item in Model.Select(m => m.ToLocation).Distinct())
-                        {
-                            <option value="@item">@item</option>
-                        }
-                    </select>
-                </div>
-            </div>
-            
-            <div class="form-group row">
-                <div class="col-md-4">
-                    <label>Departure Date</label>
-                    <input name="DepartureDate" type="date" class="form-control" required>
-                </div>
-                <div class="col-md-4">
-                    <button type="submit" class="btn btn-success">Search Flights</button>
-                </div>
-            </div>
-        </form>
-    </div>
+/* --- General Layout and Container --- */
 
-    <script>
-        // This function will set the minimum date to tomorrow
-        window.onload = function () {
-            // Get tomorrow's date
-            const today = new Date();
-            const tomorrow = new Date(today);
-            tomorrow.setDate(today.getDate() + 1);
+/* The main container for the seat selection area */
+.seat-selection-container {
+    width: 100%;
+    max-width: 700px; /* Adjust max-width as needed for your design */
+    margin: 40px auto;
+    padding: 20px;
+    background: #f0f4f8; /* Light background for a clean look */
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15); /* More prominent shadow */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #444;
+}
 
-            // Format tomorrow's date as YYYY-MM-DD
-            const yyyy = tomorrow.getFullYear();
-            const mm = String(tomorrow.getMonth() + 1).padStart(2, '0');
-            const dd = String(tomorrow.getDate()).padStart(2, '0');
-            const minDate = `${yyyy}-${mm}-${dd}`;
+h2 {
+    text-align: center;
+    color: #2c5282; /* A professional, deep blue color */
+    margin-bottom: 25px;
+    font-size: 1.8rem;
+    font-weight: 600;
+}
 
-            // Select the input field and set the 'min' attribute
-            const departureDateInput = document.querySelector('input[name="DepartureDate"]');
-            if (departureDateInput) {
-                departureDateInput.setAttribute('min', minDate);
-            }
-        }; // <-- The closing brace for window.onload is now here
+/* --- Legend for Seat Status --- */
 
-        // This function will perform the final validation on form submission
-        function validateDate() {
-            const departureDateInput = document.querySelector('input[name="DepartureDate"]');
-            if (!departureDateInput) {
-                return true; // No input field, no validation needed
-            }
+.legend {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-bottom: 30px;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #555;
+}
 
-            const selectedDate = new Date(departureDateInput.value);
+.legend-item {
+    display: flex;
+    align-items: center;
+}
 
-            // Get tomorrow's date for comparison
-            const today = new Date();
-            const tomorrow = new Date(today);
-            tomorrow.setDate(today.getDate() + 1);
+.legend-item .seat-indicator {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    margin-right: 10px;
+    border: 1px solid #c3dae8;
+}
 
-            // Normalize all dates to midnight for accurate comparison
-            selectedDate.setHours(0, 0, 0, 0);
-            tomorrow.setHours(0, 0, 0, 0);
+.seat-indicator.available {
+    background-color: #d1e2f3; /* A soft, light blue */
+}
 
-            // Check if the selected date is before tomorrow's date
-            if (selectedDate < tomorrow) {
-                alert("Past dates or today's date are not allowed. Please select a date from tomorrow onwards.");
-                return false;
-            }
+.seat-indicator.occupied {
+    background-color: #cbd5e0; /* A neutral gray for occupied seats */
+}
 
-            return true;
-        }
-    </script>
-</body>
-</html>
+.seat-indicator.selected {
+    background-color: #4c80b5; /* A more vibrant blue for selected */
+    border: 1px solid #3c6590;
+}
+
+/* --- Aircraft Cabin Layout --- */
+
+.cabin-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Vertical spacing between rows */
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 20px;
+}
+
+/* Style for each seat row */
+.seat-row {
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Center the entire row */
+    gap: 10px; /* Spacing between seat groups */
+}
+
+.row-label {
+    font-weight: bold;
+    color: #718096; /* A subtle, readable gray */
+    width: 30px; /* Fixed width for alignment */
+    text-align: center;
+}
+
+/* A group of seats, e.g., A-B-C */
+.seat-group {
+    display: flex;
+    gap: 8px; /* Spacing between individual seats */
+}
+
+/* The space for the aisle */
+.aisle-space {
+    width: 50px; /* Adjust this to control the width of the aisle */
+    height: 100%;
+}
+
+/* --- Individual Seat Styling --- */
+
+.seat {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out;
+    cursor: pointer;
+    border: 1px solid #a3b8c6;
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: #333;
+}
+
+/* Available seats */
+.seat.available {
+    background-color: #e3f2fd; /* Light blue */
+    border-color: #90caf9;
+}
+
+/* Hover effect for available seats */
+.seat.available:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3);
+    background-color: #b3e5fc;
+}
+
+/* Occupied seats */
+.seat.occupied {
+    background-color: #e5e7eb; /* Light gray */
+    border-color: #d1d5db;
+    cursor: not-allowed;
+    pointer-events: none; /* Prevents clicks on occupied seats */
+    color: #a0aec0; /* Lighter text color */
+}
+
+/* Selected seats */
+.seat.selected {
+    background-color: #1e3a8a; /* Deep blue, matching the heading */
+    border-color: #1a2a47;
+    color: #fff; /* White text for contrast */
+    transform: scale(1.1);
+    box-shadow: 0 4px 10px rgba(30, 58, 138, 0.4);
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 600px) {
+    .seat-selection-container {
+        margin: 20px 10px;
+        padding: 15px;
+    }
+
+    .seat-row {
+        gap: 5px;
+    }
+
+    .seat-group {
+        gap: 4px;
+    }
+
+    .aisle-space {
+        width: 30px;
+    }
+
+    .seat {
+        width: 35px;
+        height: 35px;
+    }
+}
