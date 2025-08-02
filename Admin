@@ -1,26 +1,25 @@
-..... 
-........ 
+hiiii
+
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using Airline_Managementnew.Models;
+using Airline_Managementnew.Models; // Ensure this is correct
 
 namespace Airline_Managementnew.Controllers
 {
     public class AdminController : Controller
     {
-        // Use your actual DbContext class name here.
         private readonly DatabaseContext db = new DatabaseContext();
 
-        // AdminPanel Action Method
+        // AdminPanel Action Method: This is the dashboard
         public ActionResult AdminPanel()
         {
             // Get all routes first to ensure every route is displayed on the graph.
             var allRoutes = db.SearchRequest.ToList();
-
+            
             // Get flight counts for each route that has at least one flight.
             var flightCounts = db.Flight
                 .GroupBy(f => f.RouteId)
@@ -31,8 +30,8 @@ namespace Airline_Managementnew.Controllers
                 })
                 .ToList();
 
-            // Perform a LEFT JOIN to combine all routes with the flight counts.
-            // If a route has no flights, its 'FlightCount' will be 0.
+            // Perform a LEFT JOIN using lambda syntax to combine all routes with the flight counts.
+            // This is a robust way to achieve a left join in older C#.
             var flightStatistics = allRoutes.GroupJoin(
                 flightCounts,
                 route => route.RouteId,
@@ -47,7 +46,7 @@ namespace Airline_Managementnew.Controllers
             // Pass the data to the view
             ViewBag.FlightStatistics = flightStatistics;
 
-            // Also passing the other ViewBag data you were using
+            // Also passing other data needed for the dashboard views
             ViewBag.Flights = db.Flight.ToList();
             ViewBag.Routes = allRoutes;
 
@@ -67,9 +66,11 @@ namespace Airline_Managementnew.Controllers
             if (ModelState.IsValid)
             {
                 db.SearchRequest.Add(route);
-                db.SaveChanges();
+                db.SaveChanges(); // Important: Saves the change to the database
+                return RedirectToAction("AdminPanel"); // Redirect to the dashboard to see the change
             }
-            return RedirectToAction("AddRoute");
+            // If model is invalid, return to the view with the model
+            return View(route); 
         }
 
         // EditRoute Action Methods
@@ -86,16 +87,21 @@ namespace Airline_Managementnew.Controllers
         [HttpPost]
         public ActionResult EditRoute(SearchRequest updatedRoute)
         {
-            var route = db.SearchRequest.Find(updatedRoute.RouteId);
-            if (route != null)
+            if (ModelState.IsValid)
             {
-                route.FromLocation = updatedRoute.FromLocation;
-                route.Tolocation = updatedRoute.Tolocation;
-                route.DepartureDate = updatedRoute.DepartureDate;
-                route.RouteNumber = updatedRoute.RouteNumber;
-                db.SaveChanges();
+                var route = db.SearchRequest.Find(updatedRoute.RouteId);
+                if (route != null)
+                {
+                    route.FromLocation = updatedRoute.FromLocation;
+                    route.Tolocation = updatedRoute.Tolocation;
+                    route.DepartureDate = updatedRoute.DepartureDate;
+                    route.RouteNumber = updatedRoute.RouteNumber;
+                    db.SaveChanges(); // Important: Saves the change
+                }
+                return RedirectToAction("AdminPanel"); // Redirect to the dashboard to see the change
             }
-            return RedirectToAction("AddRoute");
+            // If model is invalid, return to the view with the model
+            return View(updatedRoute);
         }
 
         // DeleteRoute Action Method
@@ -105,9 +111,9 @@ namespace Airline_Managementnew.Controllers
             if (route != null)
             {
                 db.SearchRequest.Remove(route);
-                db.SaveChanges();
+                db.SaveChanges(); // Important: Saves the change
             }
-            return RedirectToAction("AddRoute");
+            return RedirectToAction("AdminPanel"); // Redirect to the dashboard
         }
 
         // AddFlight Action Methods
@@ -124,9 +130,10 @@ namespace Airline_Managementnew.Controllers
             if (ModelState.IsValid)
             {
                 db.Flight.Add(model);
-                db.SaveChanges();
-                return RedirectToAction("AddFlight");
+                db.SaveChanges(); // Important: Saves the change
+                return RedirectToAction("AdminPanel"); // Redirect to the dashboard to see the change
             }
+            ViewBag.Routes = db.SearchRequest.ToList();
             return View(model);
         }
 
@@ -145,25 +152,30 @@ namespace Airline_Managementnew.Controllers
         [HttpPost]
         public ActionResult EditFlight(Flight updatedFlight)
         {
-            var flight = db.Flight.Find(updatedFlight.FlightId);
-            if (flight != null)
+            if (ModelState.IsValid)
             {
-                flight.RouteId = updatedFlight.RouteId;
-                flight.DepartureCity = updatedFlight.DepartureCity;
-                flight.ArrivalCity = updatedFlight.ArrivalCity;
-                flight.DepartureTime = updatedFlight.DepartureTime;
-                flight.ArrivalTime = updatedFlight.ArrivalTime;
-                flight.EconomyPrice = updatedFlight.EconomyPrice;
-                flight.EconomySeats = updatedFlight.EconomySeats;
-                flight.BusinessPrice = updatedFlight.BusinessPrice;
-                flight.BusinessSeats = updatedFlight.BusinessSeats;
-                flight.FirstClassPrice = updatedFlight.FirstClassPrice;
-                flight.FirstClassSeats = updatedFlight.FirstClassSeats;
-                flight.AirplaneId = updatedFlight.AirplaneId;
-                flight.AirplaneNumber = updatedFlight.AirplaneNumber;
-                db.SaveChanges();
+                var flight = db.Flight.Find(updatedFlight.FlightId);
+                if (flight != null)
+                {
+                    flight.RouteId = updatedFlight.RouteId;
+                    flight.DepartureCity = updatedFlight.DepartureCity;
+                    flight.ArrivalCity = updatedFlight.ArrivalCity;
+                    flight.DepartureTime = updatedFlight.DepartureTime;
+                    flight.ArrivalTime = updatedFlight.ArrivalTime;
+                    flight.EconomyPrice = updatedFlight.EconomyPrice;
+                    flight.EconomySeats = updatedFlight.EconomySeats;
+                    flight.BusinessPrice = updatedFlight.BusinessPrice;
+                    flight.BusinessSeats = updatedFlight.BusinessSeats;
+                    flight.FirstClassPrice = updatedFlight.FirstClassPrice;
+                    flight.FirstClassSeats = updatedFlight.FirstClassSeats;
+                    flight.AirplaneId = updatedFlight.AirplaneId;
+                    flight.AirplaneNumber = updatedFlight.AirplaneNumber;
+                    db.SaveChanges(); // Important: Saves the change
+                }
+                return RedirectToAction("AdminPanel"); // Redirect to the dashboard to see the change
             }
-            return RedirectToAction("AddFlight");
+            ViewBag.Routes = db.SearchRequest.ToList();
+            return View(updatedFlight);
         }
 
         // DeleteFlight Action Method
@@ -173,9 +185,9 @@ namespace Airline_Managementnew.Controllers
             if (flight != null)
             {
                 db.Flight.Remove(flight);
-                db.SaveChanges();
+                db.SaveChanges(); // Important: Saves the change
             }
-            return RedirectToAction("AddFlight");
+            return RedirectToAction("AdminPanel"); // Redirect to the dashboard
         }
         
         // PassengerInfo Action Method
