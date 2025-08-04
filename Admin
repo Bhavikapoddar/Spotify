@@ -1,21 +1,30 @@
+// Inside AccountController.cs
+
 using System.Web.Mvc;
+using System.Web.Security; // Required for FormsAuthentication
 
-namespace Airline_Managementnew.Filters
+public class AccountController : Controller
 {
-    public class AuthFilter : ActionFilterAttribute
+    // ... (Your other actions like Login, etc.) ...
+
+    [HttpPost]
+    [ValidateAntiForgeryToken] // Recommended for security
+    public ActionResult Logout()
     {
-        public override void OnActionExecuting(ActionExecutingContext filterContext)
-        {
-            var session = filterContext.HttpContext.Session;
+        FormsAuthentication.SignOut(); // This clears the authentication cookie
+        Session.Clear(); // This clears all session data
+        Session.Abandon(); // This destroys the session
 
-            // Check if Admin or User session exists
-            if (session["AdminId"] == null && session["UserId"] == null)
-            {
-                // Not logged in, redirect to Login
-                filterContext.Result = new RedirectResult("~/Login/Index");
-            }
+        // Redirect to the login page
+        return RedirectToAction("Login", "Account");
+    }
 
-            base.OnActionExecuting(filterContext);
-        }
+    // A GET version for simplicity, though the POST method is more secure
+    public ActionResult Logout()
+    {
+        FormsAuthentication.SignOut();
+        Session.Clear();
+        Session.Abandon();
+        return RedirectToAction("Login", "Account");
     }
 }
