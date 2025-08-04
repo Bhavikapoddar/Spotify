@@ -1,30 +1,26 @@
-// Inside AccountController.cs
-
-using System.Web.Mvc;
-using System.Web.Security; // Required for FormsAuthentication
-
-public class AccountController : Controller
+[HttpPost]
+public ActionResult Login(string Username, string Password)
 {
-    // ... (Your other actions like Login, etc.) ...
+    var admin = db.Admins.FirstOrDefault(a => a.Username == Username && a.Password == Password);
 
-    [HttpPost]
-    [ValidateAntiForgeryToken] // Recommended for security
-    public ActionResult Logout()
+    if (admin != null)
     {
-        FormsAuthentication.SignOut(); // This clears the authentication cookie
-        Session.Clear(); // This clears all session data
-        Session.Abandon(); // This destroys the session
-
-        // Redirect to the login page
-        return RedirectToAction("Login", "Account");
+        Session["AdminId"] = admin.Id;
+        Session["Username"] = admin.Username;
+        Session["UserRole"] = "Admin";
+        return RedirectToAction("AdminPanel", "Admin");
     }
 
-    // A GET version for simplicity, though the POST method is more secure
-    public ActionResult Logout()
+    var user = db.Users.FirstOrDefault(u => u.Username == Username && u.Password == Password);
+
+    if (user != null)
     {
-        FormsAuthentication.SignOut();
-        Session.Clear();
-        Session.Abandon();
-        return RedirectToAction("Login", "Account");
+        Session["UserId"] = user.Id;
+        Session["Username"] = user.Username;
+        Session["UserRole"] = "User";
+        return RedirectToAction("Index", "Booking");
     }
+
+    ViewBag.Error = "Invalid Username or Password!";
+    return View();
 }
