@@ -1,69 +1,33 @@
-using System.Linq;
+using System.Web;
 using System.Web.Mvc;
-using Airline_Managementnew.Models;
 
-namespace Airline_Managementnew.Controllers
+namespace Airline_Managementnew.Filters
 {
-    public class UserController : Controller
+    public class AuthFilter : ActionFilterAttribute
     {
-        DatabaseContext db = new DatabaseContext();
-
-        // GET: Register
-        public ActionResult Register()
+        public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
-            return View();
-        }
+            var session = filterContext.HttpContext.Session;
 
-        // POST: Register
-        [HttpPost]
-        public ActionResult Register(User user)
-        {
-            if (ModelState.IsValid)
+            // Controller and Action Names
+            string controller = filterContext.ActionDescriptor.ControllerDescriptor.ControllerName;
+            string action = filterContext.ActionDescriptor.ActionName;
+
+            // Allow these actions without login
+            if (controller == "User" && (action == "Login" || action == "Register"))
+                return;
+
+            // Redirect if not logged in
+            if (session["AdminId"] == null && session["UserId"] == null)
             {
-                db.USERS.Add(user);
-                db.SaveChanges();
-                ViewBag.Message = "Registration Successfully!";
-                return RedirectToAction("Login");
+                // Write debug log
+                System.Diagnostics.Debug.WriteLine($"Blocked: {controller}/{action}");
+
+                // Redirect to login
+                filterContext.Result = new RedirectResult("~/User/Login");
             }
 
-            return View();
-        }
-
-        // GET: Login
-        public ActionResult Login()
-        {
-            Session.Clear();
-            return View();
-        }
-
-        // POST: Login
-        [HttpPost]
-        public ActionResult Login(string Username, string Password)
-        {
-            var admin = db.Admins.FirstOrDefault(a => a.Username == Username && a.Password == Password);
-            if (admin != null)
-            {
-                Session["AdminId"] = admin.Id;
-                Session["Username"] = admin.Username;
-                return RedirectToAction("AdminPanel", "Admin");
-            }
-
-            var user = db.USERS.FirstOrDefault(u => u.Username == Username && u.Password == Password);
-            if (user != null)
-            {
-                Session["UserId"] = user.Id;
-                Session["Username"] = user.Username;
-                return RedirectToAction("Index", "Booking");
-            }
-
-            ViewBag.Error = "Invalid Username or Password!";
-            return View();
-        }
-
-        public ActionResult Logout()
-        {
-            Session.Clear();
-            return RedirectToAction("Login");
+            base.OnActionExecuting(filterContext);
         }
     }
 }
