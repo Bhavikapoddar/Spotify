@@ -1,7 +1,51 @@
-foreach (var validationErrors in ex.EntityValidationErrors)
+[HttpPost]
+public ActionResult TakePassengerInfo(Passenger passenger)
+{
+    // The "red line" is likely here, on the closing brace of this method,
+    // because not all code paths have a return statement.
+    
+    // Check if the model state is valid based on data annotations.
+    if (ModelState.IsValid)
+    {
+        try
+        {
+            // Set the TempData values before saving.
+            passenger.DepartureTime = (DateTime)TempData["DepartureTime"];
+            passenger.ArrivalTime = (DateTime)TempData["ArrivalTime"];
+
+            db.Passengers.Add(passenger);
+            db.SaveChanges();
+
+            // If save is successful, redirect.
+            return RedirectToAction("PaymentSuccess");
+        }
+        catch (DbEntityValidationException ex)
+        {
+            // If the database throws a validation exception, add the errors to ModelState.
+            foreach (var validationErrors in ex.EntityValidationErrors)
             {
                 foreach (var validationError in validationErrors.ValidationErrors)
                 {
                     ModelState.AddModelError(validationError.PropertyName, validationError.ErrorMessage);
                 }
             }
+            // The code will now fall through to the return View() statement below.
+        }
+    }
+    
+    // This block is executed if ModelState.IsValid is false OR if a DbEntityValidationException was caught.
+    
+    // Repopulate ViewBag/TempData required by the view to prevent NullReferenceExceptions.
+    TempData.Keep();
+    ViewBag.Class = TempData["Class"];
+    ViewBag.Price = TempData["Price"];
+    ViewBag.AirplaneNumber = TempData["AirplaneNumber"];
+    ViewBag.DepartureCity = TempData["DepartureCity"];
+    ViewBag.ArrivalCity = TempData["ArrivalCity"];
+    ViewBag.DepartureDate = TempData["DepartureDate"];
+    ViewBag.ArrivalTime = TempData["ArrivalTime"];
+
+    // Return the view with the passenger object, so the form is repopulated with user data
+    // and the validation messages are displayed.
+    return View(passenger);
+}
