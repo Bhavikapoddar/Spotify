@@ -1,4 +1,3 @@
-using System.Web;
 using System.Web.Mvc;
 
 namespace Airline_Managementnew.Filters
@@ -9,22 +8,11 @@ namespace Airline_Managementnew.Filters
         {
             var session = filterContext.HttpContext.Session;
 
-            // Controller and Action Names
-            string controller = filterContext.ActionDescriptor.ControllerDescriptor.ControllerName;
-            string action = filterContext.ActionDescriptor.ActionName;
-
-            // Allow these actions without login
-            if (controller == "User" && (action == "Login" || action == "Register"))
-                return;
-
-            // Redirect if not logged in
+            // Check if Admin or User session exists
             if (session["AdminId"] == null && session["UserId"] == null)
             {
-                // Write debug log
-                System.Diagnostics.Debug.WriteLine($"Blocked: {controller}/{action}");
-
-                // Redirect to login
-                filterContext.Result = new RedirectResult("~/User/Login");
+                // Not logged in, redirect to Login
+                filterContext.Result = new RedirectResult("~/Login/Index");
             }
 
             base.OnActionExecuting(filterContext);
