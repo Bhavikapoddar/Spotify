@@ -1,26 +1,7 @@
-[HttpPost]
-public ActionResult Login(string Username, string Password)
-{
-    var admin = db.Admins.FirstOrDefault(a => a.Username == Username && a.Password == Password);
-
-    if (admin != null)
-    {
-        Session["AdminId"] = admin.Id;
-        Session["Username"] = admin.Username;
-        Session["UserRole"] = "Admin";
-        return RedirectToAction("AdminPanel", "Admin");
-    }
-
-    var user = db.Users.FirstOrDefault(u => u.Username == Username && u.Password == Password);
-
-    if (user != null)
-    {
-        Session["UserId"] = user.Id;
-        Session["Username"] = user.Username;
-        Session["UserRole"] = "User";
-        return RedirectToAction("Index", "Booking");
-    }
-
-    ViewBag.Error = "Invalid Username or Password!";
-    return View();
-}
+foreach (var validationErrors in ex.EntityValidationErrors)
+            {
+                foreach (var validationError in validationErrors.ValidationErrors)
+                {
+                    ModelState.AddModelError(validationError.PropertyName, validationError.ErrorMessage);
+                }
+            }
