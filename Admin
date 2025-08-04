@@ -9,13 +9,24 @@ namespace Airline_Managementnew.Filters
         {
             var session = filterContext.HttpContext.Session;
 
+            // Allow Login & Register to work without redirect
+            string controller = filterContext.ActionDescriptor.ControllerDescriptor.ControllerName;
+            string action = filterContext.ActionDescriptor.ActionName;
+
+            if (controller == "User" && (action == "Login" || action == "Register"))
+            {
+                return; // Skip filter for login/register
+            }
+
+            // Check if not logged in
             if (session["AdminId"] == null && session["UserId"] == null)
             {
+                // Redirect to login page
                 filterContext.Result = new RedirectResult("~/User/Login");
+                return;
             }
 
             base.OnActionExecuting(filterContext);
         }
     }
 }
-. .... 
