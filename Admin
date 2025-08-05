@@ -1,35 +1,82 @@
-[HttpPost]
-[ValidateAntiForgeryToken]
-public ActionResult Delete(int id)
+hii
+public ActionResult Index(string searchString)
 {
-    var customer = db.Customers.Find(id);
-    if (customer == null)
+    ViewBag.CurrentFilter = searchString;
+
+    var customers = from c in db.Customers
+                    select c;
+
+    if (!String.IsNullOrEmpty(searchString))
     {
-        return HttpNotFound();
+        customers = customers.Where(c => c.Name.Contains(searchString) || c.Email.Contains(searchString));
     }
 
-    // Delete uploaded file if it exists
-    if (!string.IsNullOrEmpty(customer.IDProof))
-    {
-        string filePath = Path.Combine(Server.MapPath("~/Uploads/"), customer.IDProof);
-        if (System.IO.File.Exists(filePath))
-        {
-            System.IO.File.Delete(filePath);
-        }
-    }
-
-    db.Customers.Remove(customer);
-    db.SaveChanges();
-
-    return RedirectToAction("Index");
+    return View(customers.ToList());
 }
-..
-...
-....
-<td>
-    @using (Html.BeginForm("Delete", "Customer", new { id = item.CustomerID }, FormMethod.Post))
-    {
-        @Html.AntiForgeryToken()
-        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-    }
-</td>
+,........
+@model IEnumerable<Hotel1.Models.Customer>
+
+@{
+    ViewBag.Title = "Customer List";
+}
+
+<h2>Customer List</h2>
+
+<!-- Search Form -->
+@using (Html.BeginForm("Index", "Customer", FormMethod.Get))
+{
+    <p>
+        Search by Name or Email:
+        @Html.TextBox("searchString", ViewBag.CurrentFilter as string, new
+        {
+            @class = "form-control",
+            placeholder = "Enter name or email",
+            style = "width: 250px; display: inline-block; margin-right: 10px;"
+        })
+        <input type="submit" value="Search" class="btn btn-primary" />
+    </p>
+}
+
+<p>
+    @Html.ActionLink("Create New", "Create", null, new { @class = "btn btn-success" })
+</p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.FirstOrDefault().Name)</th>
+            <th>@Html.DisplayNameFor(model => model.FirstOrDefault().Gender)</th>
+            <th>@Html.DisplayNameFor(model => model.FirstOrDefault().Phone)</th>
+            <th>@Html.DisplayNameFor(model => model.FirstOrDefault().Email)</th>
+            <th>@Html.DisplayNameFor(model => model.FirstOrDefault().IDProof)</th>
+            <th>@Html.DisplayNameFor(model => model.FirstOrDefault().NoOfPeople)</th>
+            <th>@Html.DisplayNameFor(model => model.FirstOrDefault().PaymentStatus)</th>
+            <th>@Html.DisplayNameFor(model => model.FirstOrDefault().CurrentBill)</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model)
+{
+        <tr>
+            <td>@item.Name</td>
+            <td>@item.Gender</td>
+            <td>@item.Phone</td>
+            <td>@item.Email</td>
+            <td>
+                @if (!string.IsNullOrEmpty(item.IDProof))
+                {
+                    <img src="~/Uploads/@item.IDProof" width="60" height="60" />
+                }
+            </td>
+            <td>@item.NoOfPeople</td>
+            <td>@item.PaymentStatus</td>
+            <td>@item.CurrentBill</td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id = item.CustomerID }, new { @class = "btn btn-sm btn-warning" }) |
+                @Html.ActionLink("Delete", "Delete", new { id = item.CustomerID }, new { @class = "btn btn-sm btn-danger" })
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
