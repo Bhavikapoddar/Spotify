@@ -1,29 +1,79 @@
-using System.ComponentModel.DataAnnotations;
+using Hotel1.Models;
+using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 
-namespace Hotel1.Models
+namespace Hotel1.Controllers
 {
-    public class Room
+    public class RoomMasterController : Controller
     {
-        public int RoomID { get; set; }
+        private readonly HotelDbContext _context;
 
-        [Required(ErrorMessage = "Room Number is required")]
-        [StringLength(10)]
-        public string RoomNumber { get; set; }
+        public RoomMasterController(HotelDbContext context)
+        {
+            _context = context;
+        }
 
-        [Required(ErrorMessage = "Room Type is required")]
-        [StringLength(50)]
-        public string RoomType { get; set; }
+        public IActionResult Index(string search)
+        {
+            var rooms = from r in _context.Rooms
+                        select r;
 
-        [Required(ErrorMessage = "Capacity is required")]
-        [Range(1, 100)]
-        public int Capacity { get; set; }
+            if (!string.IsNullOrEmpty(search))
+            {
+                rooms = rooms.Where(r => r.RoomNumber.Contains(search) || r.RoomType.Contains(search));
+            }
 
-        [Required(ErrorMessage = "Price is required")]
-        [Range(0, 100000)]
-        public decimal Price { get; set; }
+            return View(rooms.ToList());
+        }
 
-        [Required(ErrorMessage = "Status is required")]
-        [StringLength(20)]
-        public string Status { get; set; }
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult Create(Room room)
+        {
+            if (ModelState.IsValid)
+            {
+                _context.Rooms.Add(room);
+                _context.SaveChanges();
+                return RedirectToAction("Index");
+            }
+            return View(room);
+        }
+
+        public IActionResult Edit(int id)
+        {
+            var room = _context.Rooms.Find(id);
+            return View(room);
+        }
+
+        [HttpPost]
+        public IActionResult Edit(Room room)
+        {
+            if (ModelState.IsValid)
+            {
+                _context.Rooms.Update(room);
+                _context.SaveChanges();
+                return RedirectToAction("Index");
+            }
+            return View(room);
+        }
+
+        public IActionResult Delete(int id)
+        {
+            var room = _context.Rooms.Find(id);
+            _context.Rooms.Remove(room);
+            _context.SaveChanges();
+            return RedirectToAction("Index");
+        }
+
+        // For showing only available rooms
+        public IActionResult Available()
+        {
+            var availableRooms = _context.Rooms.Where(r => r.Status == "Available").ToList();
+            return View(availableRooms);
+        }
     }
 }
