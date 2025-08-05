@@ -1,56 +1,35 @@
-@model IEnumerable<Hotel1.Models.Customer>
+[HttpPost]
+[ValidateAntiForgeryToken]
+public ActionResult Delete(int id)
+{
+    var customer = db.Customers.Find(id);
+    if (customer == null)
+    {
+        return HttpNotFound();
+    }
 
-@{
-    ViewBag.Title = "Customer Master";
-}
-
-<h2 style="text-align:center; font-size:28px; margin-bottom: 20px;">Customer Master</h2>
-
-<p>
-    <a href="@Url.Action("Create", "Customer")" class="btn btn-success">Add New Customer</a>
-</p>
-
-<table class="table table-bordered table-striped mt-3">
-    <thead style="background-color: #f2f2f2;">
-        <tr>
-            <th>Name</th>
-            <th>Gender</th>
-            <th>Phone</th>
-            <th>Email</th>
-            <th>ID Proof</th>
-            <th>No Of People</th>
-            <th>Payment Status</th>
-            <th>Current Bill</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
+    // Delete uploaded file if it exists
+    if (!string.IsNullOrEmpty(customer.IDProof))
+    {
+        string filePath = Path.Combine(Server.MapPath("~/Uploads/"), customer.IDProof);
+        if (System.IO.File.Exists(filePath))
         {
-            <tr>
-                <td>@item.Name</td>
-                <td>@item.Gender</td>
-                <td>@item.Phone</td>
-                <td>@item.Email</td>
-                <td>
-                    @if (!string.IsNullOrEmpty(item.IDProof))
-                    {
-                        <img src="~/Uploads/@item.IDProof" alt="ID Proof" width="80" height="80" />
-                    }
-                    else
-                    {
-                        <span>No Photo</span>
-                    }
-                </td>
-                <td>@item.NoOfPeople</td>
-                <td>@item.PaymentStatus</td>
-                <td>@item.CurrentBill</td>
-                <td>
-                    <a href="@Url.Action("Edit", "Customer", new { id = item.CustomerID })" class="btn btn-warning btn-sm">Edit</a>
-                    <a href="@Url.Action("Details", "Customer", new { id = item.CustomerID })" class="btn btn-info btn-sm">Details</a>
-                    <a href="@Url.Action("Delete", "Customer", new { id = item.CustomerID })" class="btn btn-danger btn-sm">Delete</a>
-                </td>
-            </tr>
+            System.IO.File.Delete(filePath);
         }
-    </tbody>
-</table>
+    }
+
+    db.Customers.Remove(customer);
+    db.SaveChanges();
+
+    return RedirectToAction("Index");
+}
+..
+...
+....
+<td>
+    @using (Html.BeginForm("Delete", "Customer", new { id = item.CustomerID }, FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+    }
+</td>
