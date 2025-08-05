@@ -1,192 +1,56 @@
-@model Hotel1.Models.Customer
-@{
-    ViewBag.Title = "Edit Customer";
-}
-
-<h2>Edit Customer</h2>
-
-@using (Html.BeginForm("Edit", "Customer", FormMethod.Post, new { enctype = "multipart/form-data" }))
-{
-    @Html.AntiForgeryToken()
-    @Html.HiddenFor(model => model.CustomerID)
-    @Html.HiddenFor(model => model.IDProof)
-
-    <div style="max-width: 600px; padding: 20px; border: 1px solid #ccc; border-radius: 8px;">
-        <div style="margin-bottom: 15px;">
-            <label>Name</label><br />
-            @Html.TextBoxFor(model => model.Name, new { @class = "form-control", style = "width:100%;" })
-            @Html.ValidationMessageFor(model => model.Name)
-        </div>
-
-        <div style="margin-bottom: 15px;">
-            <label>Gender</label><br />
-            @Html.DropDownListFor(model => model.Gender,
-                new SelectList(new[] { "Male", "Female", "Other" }, Model.Gender),
-                "Select Gender",
-                new { @class = "form-control", style = "width:100%;" })
-            @Html.ValidationMessageFor(model => model.Gender)
-        </div>
-
-        <div style="margin-bottom: 15px;">
-            <label>Phone</label><br />
-            @Html.TextBoxFor(model => model.Phone, new { @class = "form-control", style = "width:100%;" })
-            @Html.ValidationMessageFor(model => model.Phone)
-        </div>
-
-        <div style="margin-bottom: 15px;">
-            <label>Email</label><br />
-            @Html.TextBoxFor(model => model.Email, new { @class = "form-control", type = "email", style = "width:100%;" })
-            @Html.ValidationMessageFor(model => model.Email)
-        </div>
-
-        <div style="margin-bottom: 15px;">
-            <label>Current ID Proof Image</label><br />
-            @if (!string.IsNullOrEmpty(Model.IDProof))
-            {
-                <img src="~/Images/IdProofs/@Model.IDProof" width="100" height="100" style="object-fit: cover; border: 1px solid #ccc;" /><br />
-            }
-            else
-            {
-                <span>No image uploaded.</span><br />
-            }
-
-            <label>Change ID Proof Photo</label><br />
-            <input type="file" name="ImageFile" accept="image/*" class="form-control" style="width:100%;" />
-        </div>
-
-        <div style="margin-bottom: 15px;">
-            <label>No. of People</label><br />
-            @Html.TextBoxFor(model => model.NoOfPeople, new { @class = "form-control", style = "width:100%;" })
-            @Html.ValidationMessageFor(model => model.NoOfPeople)
-        </div>
-
-        <div style="margin-bottom: 15px;">
-            <label>Payment Status</label><br />
-            @Html.DropDownListFor(model => model.PaymentStatus,
-                new SelectList(new[] { "Paid", "Unpaid", "Pending" }, Model.PaymentStatus),
-                "Select Payment Status",
-                new { @class = "form-control", style = "width:100%;" })
-            @Html.ValidationMessageFor(model => model.PaymentStatus)
-        </div>
-
-        <div style="margin-bottom: 15px;">
-            <label>Current Bill</label><br />
-            @Html.TextBoxFor(model => model.CurrentBill, new { @class = "form-control", style = "width:100%;" })
-            @Html.ValidationMessageFor(model => model.CurrentBill)
-        </div>
-
-        <input type="submit" value="Update" class="btn btn-primary" />
-        @Html.ActionLink("Back to List", "Index", null, new { @class = "btn btn-secondary", style = "margin-left:10px;" })
-    </div>
-}
-
-@section Scripts {
-    @Scripts.Render("~/bundles/jqueryval")
-}
-....
-...
-...
-@model Hotel1.Models.Customer
+@model IEnumerable<Hotel1.Models.Customer>
 
 @{
-    ViewBag.Title = "Customer Details";
+    ViewBag.Title = "Customer Master";
 }
 
-<h2>Customer Details</h2>
-
-<div>
-    <hr />
-    <dl class="dl-horizontal">
-
-        <dt>Name</dt>
-        <dd>@Model.Name</dd>
-
-        <dt>Gender</dt>
-        <dd>@Model.Gender</dd>
-
-        <dt>Phone</dt>
-        <dd>@Model.Phone</dd>
-
-        <dt>Email</dt>
-        <dd>@Model.Email</dd>
-
-        <dt>ID Proof Photo</dt>
-        <dd>
-            @if (!string.IsNullOrEmpty(Model.IDProof))
-            {
-                <img src="~/Images/IdProofs/@Model.IDProof" alt="ID Proof" width="150" height="150" />
-            }
-            else
-            {
-                <span>No image uploaded</span>
-            }
-        </dd>
-
-        <dt>No. of People</dt>
-        <dd>@Model.NoOfPeople</dd>
-
-        <dt>Payment Status</dt>
-        <dd>@Model.PaymentStatus</dd>
-
-        <dt>Current Bill</dt>
-        <dd>@Model.CurrentBill</dd>
-
-    </dl>
-</div>
+<h2 style="text-align:center; font-size:28px; margin-bottom: 20px;">Customer Master</h2>
 
 <p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.CustomerID }, new { @class = "btn btn-warning" }) |
-    @Html.ActionLink("Back to List", "Index", null, new { @class = "btn btn-secondary" })
+    <a href="@Url.Action("Create", "Customer")" class="btn btn-success">Add New Customer</a>
 </p>
-.....
-.....
-...
-@model Hotel1.Models.Customer
 
-@{
-    ViewBag.Title = "Delete";
-}
-
-<h2>Delete Customer</h2>
-
-<h3>Are you sure you want to delete this record?</h3>
-<div>
-    <hr />
-    <dl class="dl-horizontal">
-        <dt>Name</dt>
-        <dd>@Model.Name</dd>
-
-        <dt>Gender</dt>
-        <dd>@Model.Gender</dd>
-
-        <dt>Phone</dt>
-        <dd>@Model.Phone</dd>
-
-        <dt>Email</dt>
-        <dd>@Model.Email</dd>
-
-        <dt>ID Proof</dt>
-        <dd>
-            @if (!string.IsNullOrEmpty(Model.IDProof))
-            {
-                <img src="~/Images/IdProofs/@Model.IDProof" alt="ID Proof" width="100" height="100" />
-            }
-        </dd>
-
-        <dt>No. of People</dt>
-        <dd>@Model.NoOfPeople</dd>
-
-        <dt>Payment Status</dt>
-        <dd>@Model.PaymentStatus</dd>
-
-        <dt>Current Bill</dt>
-        <dd>@Model.CurrentBill</dd>
-    </dl>
-
-    @using (Html.BeginForm("DeleteConfirmed", "Customer", new { id = Model.CustomerID }, FormMethod.Post))
-    {
-        @Html.AntiForgeryToken()
-        <input type="submit" value="Delete" class="btn btn-danger" />
-        @Html.ActionLink("Cancel", "Index", null, new { @class = "btn btn-default" })
-    }
-</div>
+<table class="table table-bordered table-striped mt-3">
+    <thead style="background-color: #f2f2f2;">
+        <tr>
+            <th>Name</th>
+            <th>Gender</th>
+            <th>Phone</th>
+            <th>Email</th>
+            <th>ID Proof</th>
+            <th>No Of People</th>
+            <th>Payment Status</th>
+            <th>Current Bill</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Name</td>
+                <td>@item.Gender</td>
+                <td>@item.Phone</td>
+                <td>@item.Email</td>
+                <td>
+                    @if (!string.IsNullOrEmpty(item.IDProof))
+                    {
+                        <img src="~/Uploads/@item.IDProof" alt="ID Proof" width="80" height="80" />
+                    }
+                    else
+                    {
+                        <span>No Photo</span>
+                    }
+                </td>
+                <td>@item.NoOfPeople</td>
+                <td>@item.PaymentStatus</td>
+                <td>@item.CurrentBill</td>
+                <td>
+                    <a href="@Url.Action("Edit", "Customer", new { id = item.CustomerID })" class="btn btn-warning btn-sm">Edit</a>
+                    <a href="@Url.Action("Details", "Customer", new { id = item.CustomerID })" class="btn btn-info btn-sm">Details</a>
+                    <a href="@Url.Action("Delete", "Customer", new { id = item.CustomerID })" class="btn btn-danger btn-sm">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
