@@ -1,40 +1,65 @@
-using System;
-using System.Collections.Generic;
-using System.Data.Entity;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Web;
-using System.Web.Mvc;
-using Hotel1.Models;
+@model Hotel1.Models.Customer
+@{
+    ViewBag.Title = "Create Customer";
+}
 
-namespace Hotel1.Controllers
+<h2>Create New Customer</h2>
+
+@using (Html.BeginForm("Create", "Customer", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
-    public class CustomerController : Controller
-    {
-        private HotelDbContext db = new HotelDbContext();
+    @Html.AntiForgeryToken()
 
-        // GET: Customer
-        public ActionResult Index()
-        {
-            return View(db.Customers.ToList());
-        }
+    <div style="width: 500px; padding: 20px; border: 1px solid #ccc; border-radius: 10px;">
+        <div style="margin-bottom: 15px;">
+            @Html.LabelFor(model => model.Name)
+            @Html.TextBoxFor(model => model.Name, new { @class = "form-control", style = "width:100%;", required = "required" })
+            @Html.ValidationMessageFor(model => model.Name)
+        </div>
 
-        // GET: Customer/Create
-        public ActionResult Create()
-        {
-            ViewBag.GenderList = new SelectList(new[] { "Male", "Female", "Other" });
-            ViewBag.PaymentStatusList = new SelectList(new[] { "Paid", "Unpaid", "Pending" });
-            return View();
-        }
+        <div style="margin-bottom: 15px;">
+            @Html.LabelFor(model => model.Gender)
+            @Html.DropDownListFor(model => model.Gender, (SelectList)ViewBag.GenderList, "Select Gender", new { @class = "form-control", style = "width:100%;" })
+            @Html.ValidationMessageFor(model => model.Gender)
+        </div>
 
-        // POST: Customer/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(Customer customer, HttpPostedFileBase IDProofFile)
-        {
-            if (ModelState.IsValid)
-            {
+        <div style="margin-bottom: 15px;">
+            @Html.LabelFor(model => model.Phone)
+            @Html.TextBoxFor(model => model.Phone, new { @class = "form-control", style = "width:100%;", type = "tel", pattern = "[0-9]{10}", maxlength = "10", required = "required" })
+            @Html.ValidationMessageFor(model => model.Phone)
+        </div>
+
+        <div style="margin-bottom: 15px;">
+            @Html.LabelFor(model => model.Email)
+            @Html.TextBoxFor(model => model.Email, new { @class = "form-control", style = "width:100%;", type = "email", required = "required" })
+            @Html.ValidationMessageFor(model => model.Email)
+        </div>
+
+        <div style="margin-bottom: 15px;">
+            @Html.Label("Upload ID Proof (Photo)")
+            <input type="file" name="IDProof" accept="image/*" class="form-control" style="width:100%;" required />
+        </div>
+
+        <div style="margin-bottom: 15px;">
+            @Html.LabelFor(model => model.NoOfPeople)
+            @Html.TextBoxFor(model => model.NoOfPeople, new { @class = "form-control", style = "width:100%;", type = "number", min = "1", required = "required" })
+            @Html.ValidationMessageFor(model => model.NoOfPeople)
+        </div>
+
+        <div style="margin-bottom: 15px;">
+            @Html.LabelFor(model => model.PaymentStatus)
+            @Html.DropDownListFor(model => model.PaymentStatus, (SelectList)ViewBag.PaymentStatusList, "Select Payment Status", new { @class = "form-control", style = "width:100%;" })
+            @Html.ValidationMessageFor(model => model.PaymentStatus)
+        </div>
+
+        <div style="margin-bottom: 15px;">
+            @Html.LabelFor(model => model.CurrentBill)
+            @Html.TextBoxFor(model => model.CurrentBill, new { @class = "form-control", style = "width:100%;", type = "number", min = "0", step = "0.01", required = "required" })
+            @Html.ValidationMessageFor(model => model.CurrentBill)
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width:100%;">Submit</button>
+    </div>
+}            {
                 if (IDProofFile != null && IDProofFile.ContentLength > 0)
                 {
                     string folderPath = Server.MapPath("~/Images/IdProofs/");
