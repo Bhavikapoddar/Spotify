@@ -1,79 +1,37 @@
-using Hotel1.Models;
-using Microsoft.AspNetCore.Mvc;
-using System.Linq;
-
-namespace Hotel1.Controllers
-{
-    public class RoomMasterController : Controller
-    {
-        private readonly HotelDbContext _context;
-
-        public RoomMasterController(HotelDbContext context)
-        {
-            _context = context;
-        }
-
-        public IActionResult Index(string search)
-        {
-            var rooms = from r in _context.Rooms
-                        select r;
-
-            if (!string.IsNullOrEmpty(search))
-            {
-                rooms = rooms.Where(r => r.RoomNumber.Contains(search) || r.RoomType.Contains(search));
-            }
-
-            return View(rooms.ToList());
-        }
-
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        [HttpPost]
-        public IActionResult Create(Room room)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Rooms.Add(room);
-                _context.SaveChanges();
-                return RedirectToAction("Index");
-            }
-            return View(room);
-        }
-
-        public IActionResult Edit(int id)
-        {
-            var room = _context.Rooms.Find(id);
-            return View(room);
-        }
-
-        [HttpPost]
-        public IActionResult Edit(Room room)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Rooms.Update(room);
-                _context.SaveChanges();
-                return RedirectToAction("Index");
-            }
-            return View(room);
-        }
-
-        public IActionResult Delete(int id)
-        {
-            var room = _context.Rooms.Find(id);
-            _context.Rooms.Remove(room);
-            _context.SaveChanges();
-            return RedirectToAction("Index");
-        }
-
-        // For showing only available rooms
-        public IActionResult Available()
-        {
-            var availableRooms = _context.Rooms.Where(r => r.Status == "Available").ToList();
-            return View(availableRooms);
-        }
-    }
+@model IEnumerable<Hotel1.Models.Room>
+@{
+    ViewData["Title"] = "Room Master";
 }
+<h2>Room Master</h2>
+
+<form method="get">
+    <input type="text" name="search" placeholder="Search Room Number or Type" />
+    <input type="submit" value="Search" />
+</form>
+
+<a href="/RoomMaster/Create">Add New Room</a>
+
+<table border="1">
+    <tr>
+        <th>Room Number</th>
+        <th>Room Type</th>
+        <th>Capacity</th>
+        <th>Price</th>
+        <th>Status</th>
+        <th>Actions</th>
+    </tr>
+@foreach (var r in Model)
+{
+    <tr>
+        <td>@r.RoomNumber</td>
+        <td>@r.RoomType</td>
+        <td>@r.Capacity</td>
+        <td>@r.Price</td>
+        <td>@r.Status</td>
+        <td>
+            <a href="/RoomMaster/Edit/@r.RoomID">Edit</a> |
+            <a href="/RoomMaster/Delete/@r.RoomID">Delete</a>
+        </td>
+    </tr>
+}
+</table>
