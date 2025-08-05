@@ -1,34 +1,139 @@
-using System.ComponentModel.DataAnnotations;
+using System;
+using System.Collections.Generic;
+using System.Data.Entity;
+using System.IO;
+using System.Linq;
+using System.Net;
 using System.Web;
+using System.Web.Mvc;
+using Hotel1.Models;
 
-namespace Hotel1.Models
+namespace Hotel1.Controllers
 {
-    public class Customer
+    public class CustomerController : Controller
     {
-        public int CustomerID { get; set; }
+        private HotelDbContext db = new HotelDbContext();
 
-        [Required]
-        public string Name { get; set; }
+        // GET: Customer
+        public ActionResult Index()
+        {
+            return View(db.Customers.ToList());
+        }
 
-        [Required]
-        public string Gender { get; set; }
+        // GET: Customer/Create
+        public ActionResult Create()
+        {
+            ViewBag.GenderList = new SelectList(new[] { "Male", "Female", "Other" });
+            ViewBag.PaymentStatusList = new SelectList(new[] { "Paid", "Unpaid", "Pending" });
+            return View();
+        }
 
-        [Required]
-        [Phone]
-        public string Phone { get; set; }
+        // POST: Customer/Create
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Create(Customer customer, HttpPostedFileBase IDProofFile)
+        {
+            if (ModelState.IsValid)
+            {
+                if (IDProofFile != null && IDProofFile.ContentLength > 0)
+                {
+                    string folderPath = Server.MapPath("~/Images/IdProofs/");
+                    if (!Directory.Exists(folderPath))
+                        Directory.CreateDirectory(folderPath);
 
-        [Required]
-        [EmailAddress(ErrorMessage = "Invalid Email Address")]
-        public string Email { get; set; }
+                    string fileName = Path.GetFileName(IDProofFile.FileName);
+                    string filePath = Path.Combine(folderPath, fileName);
+                    IDProofFile.SaveAs(filePath);
 
-        public string IDProof { get; set; } // Will store file name
+                    customer.IDProof = fileName; // Save file name in DB
+                }
 
-        [Required]
-        public int NoOfPeople { get; set; }
+                db.Customers.Add(customer);
+                db.SaveChanges();
+                return RedirectToAction("Index");
+            }
 
-        [Required]
-        public string PaymentStatus { get; set; }
+            ViewBag.GenderList = new SelectList(new[] { "Male", "Female", "Other" });
+            ViewBag.PaymentStatusList = new SelectList(new[] { "Paid", "Unpaid", "Pending" });
+            return View(customer);
+        }
 
-        public decimal CurrentBill { get; set; }
+        // GET: Customer/Edit/5
+        public ActionResult Edit(int? id)
+        {
+            if (id == null)
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
+            Customer customer = db.Customers.Find(id);
+            if (customer == null)
+                return HttpNotFound();
+
+            ViewBag.GenderList = new SelectList(new[] { "Male", "Female", "Other" }, customer.Gender);
+            ViewBag.PaymentStatusList = new SelectList(new[] { "Paid", "Unpaid", "Pending" }, customer.PaymentStatus);
+            return View(customer);
+        }
+
+        // POST: Customer/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Edit(Customer customer, HttpPostedFileBase IDProofFile)
+        {
+            if (ModelState.IsValid)
+            {
+                if (IDProofFile != null && IDProofFile.ContentLength > 0)
+                {
+                    string folderPath = Server.MapPath("~/Images/IdProofs/");
+                    if (!Directory.Exists(folderPath))
+                        Directory.CreateDirectory(folderPath);
+
+                    string fileName = Path.GetFileName(IDProofFile.FileName);
+                    string filePath = Path.Combine(folderPath, fileName);
+                    IDProofFile.SaveAs(filePath);
+
+                    customer.IDProof = fileName;
+                }
+
+                db.Entry(customer).State = EntityState.Modified;
+                db.SaveChanges();
+                return RedirectToAction("Index");
+            }
+
+            ViewBag.GenderList = new SelectList(new[] { "Male", "Female", "Other" }, customer.Gender);
+            ViewBag.PaymentStatusList = new SelectList(new[] { "Paid", "Unpaid", "Pending" }, customer.PaymentStatus);
+            return View(customer);
+        }
+
+        // GET: Customer/Delete/5
+        public ActionResult Delete(int? id)
+        {
+            if (id == null)
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
+            Customer customer = db.Customers.Find(id);
+            if (customer == null)
+                return HttpNotFound();
+
+            return View(customer);
+        }
+
+        // POST: Customer/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public ActionResult DeleteConfirmed(int id)
+        {
+            Customer customer = db.Customers.Find(id);
+            db.Customers.Remove(customer);
+            db.SaveChanges();
+            return RedirectToAction("Index");
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                db.Dispose();
+            }
+            base.Dispose(disposing);
+        }
     }
 }
