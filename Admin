@@ -1,18 +1,98 @@
-[HttpGet]
-public ActionResult Delete(int? id)
+CREATE TABLE LoginTbl (
+    LoginID INT PRIMARY KEY IDENTITY,
+    Username NVARCHAR(50) NOT NULL,
+    Password NVARCHAR(50) NOT NULL
+);
+,..........
+INSERT INTO LoginTbl (Username, Password) VALUES ('admin', 'admin123');
+..........
+public class LoginTbl
 {
-    if (id == null)
-    {
-        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-    }
+    public int LoginID { get; set; }
 
-    Customer customer = db.Customers.Find(id);
-    if (customer == null)
-    {
-        return HttpNotFound();
-    }
+    [Required(ErrorMessage = "Username is required")]
+    public string Username { get; set; }
 
-    db.Customers.Remove(customer);
-    db.SaveChanges();
-    return RedirectToAction("Index");
+    [Required(ErrorMessage = "Password is required")]
+    public string Password { get; set; }
 }
+............
+public DbSet<LoginTbl> LoginTbls { get; set; }
+......     
+public class LoginVM
+{
+    [Required]
+    public string Username { get; set; }
+
+    [Required]
+    [DataType(DataType.Password)]
+    public string Password { get; set; }
+}
+........     
+
+private readonly HotelDbContext db = new HotelDbContext();
+
+[HttpGet]
+public ActionResult Index()
+{
+    return View();
+}
+
+[HttpPost]
+[ValidateAntiForgeryToken]
+public ActionResult Index(LoginTbl login)
+{
+    if (ModelState.IsValid)
+    {
+        var user = db.LoginTbls.FirstOrDefault(x => x.Username == login.Username && x.Password == login.Password);
+
+        if (user != null)
+        {
+            Session["username"] = user.Username;
+            return RedirectToAction("Dashboard", "Dashboard");
+        }
+        else
+        {
+            ViewBag.Error = "Invalid username or password";
+        }
+    }
+
+    return View(login);
+}
+.............
+@model YourProjectName.Models.LoginTbl
+
+@{
+    ViewBag.Title = "Login";
+}
+
+<h2>Login</h2>
+
+@using (Html.BeginForm()) 
+{
+    @Html.AntiForgeryToken()
+    
+    <div>
+        @Html.LabelFor(m => m.Username)
+        @Html.TextBoxFor(m => m.Username)
+        @Html.ValidationMessageFor(m => m.Username)
+    </div>
+
+    <div>
+        @Html.LabelFor(m => m.Password)
+        @Html.PasswordFor(m => m.Password)
+        @Html.ValidationMessageFor(m => m.Password)
+    </div>
+
+    <div>
+        <input type="submit" value="Login" />
+    </div>
+
+    <div style="color:red">
+        @ViewBag.Error
+    </div>
+}
+..........
+<connectionStrings>
+  <add name="HotelDbContext" connectionString="Data Source=.;Initial Catalog=HotelDB;Integrated Security=True" providerName="System.Data.SqlClient" />
+</connectionStrings>
