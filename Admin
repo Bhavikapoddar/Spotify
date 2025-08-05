@@ -1,37 +1,32 @@
-@model IEnumerable<Hotel1.Models.Room>
+@model Hotel1.Models.Room
 @{
-    ViewData["Title"] = "Room Master";
+    ViewData["Title"] = "Room Form";
 }
-<h2>Room Master</h2>
+<h2>@ViewData["Title"]</h2>
 
-<form method="get">
-    <input type="text" name="search" placeholder="Search Room Number or Type" />
-    <input type="submit" value="Search" />
+<form asp-action="@ViewContext.ActionDescriptor.ActionName" method="post">
+    <label>Room Number</label>
+    <input asp-for="RoomNumber" />
+    <span asp-validation-for="RoomNumber" style="color:red"></span><br />
+
+    <label>Room Type</label>
+    <input asp-for="RoomType" />
+    <span asp-validation-for="RoomType" style="color:red"></span><br />
+
+    <label>Capacity</label>
+    <input asp-for="Capacity" type="number" />
+    <span asp-validation-for="Capacity" style="color:red"></span><br />
+
+    <label>Price</label>
+    <input asp-for="Price" type="number" />
+    <span asp-validation-for="Price" style="color:red"></span><br />
+
+    <label>Status</label>
+    <select asp-for="Status">
+        <option value="Available">Available</option>
+        <option value="Occupied">Occupied</option>
+    </select>
+    <span asp-validation-for="Status" style="color:red"></span><br /><br />
+
+    <button type="submit">Save</button>
 </form>
-
-<a href="/RoomMaster/Create">Add New Room</a>
-
-<table border="1">
-    <tr>
-        <th>Room Number</th>
-        <th>Room Type</th>
-        <th>Capacity</th>
-        <th>Price</th>
-        <th>Status</th>
-        <th>Actions</th>
-    </tr>
-@foreach (var r in Model)
-{
-    <tr>
-        <td>@r.RoomNumber</td>
-        <td>@r.RoomType</td>
-        <td>@r.Capacity</td>
-        <td>@r.Price</td>
-        <td>@r.Status</td>
-        <td>
-            <a href="/RoomMaster/Edit/@r.RoomID">Edit</a> |
-            <a href="/RoomMaster/Delete/@r.RoomID">Delete</a>
-        </td>
-    </tr>
-}
-</table>
