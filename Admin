@@ -1,51 +1,155 @@
-[HttpPost]
-public ActionResult TakePassengerInfo(Passenger passenger)
-{
-    // The "red line" is likely here, on the closing brace of this method,
-    // because not all code paths have a return statement.
-    
-    // Check if the model state is valid based on data annotations.
-    if (ModelState.IsValid)
-    {
-        try
-        {
-            // Set the TempData values before saving.
-            passenger.DepartureTime = (DateTime)TempData["DepartureTime"];
-            passenger.ArrivalTime = (DateTime)TempData["ArrivalTime"];
+hiii...
+@model IEnumerable<Hotel1.Models.Customer>
 
-            db.Passengers.Add(passenger);
-            db.SaveChanges();
-
-            // If save is successful, redirect.
-            return RedirectToAction("PaymentSuccess");
-        }
-        catch (DbEntityValidationException ex)
-        {
-            // If the database throws a validation exception, add the errors to ModelState.
-            foreach (var validationErrors in ex.EntityValidationErrors)
-            {
-                foreach (var validationError in validationErrors.ValidationErrors)
-                {
-                    ModelState.AddModelError(validationError.PropertyName, validationError.ErrorMessage);
-                }
-            }
-            // The code will now fall through to the return View() statement below.
-        }
-    }
-    
-    // This block is executed if ModelState.IsValid is false OR if a DbEntityValidationException was caught.
-    
-    // Repopulate ViewBag/TempData required by the view to prevent NullReferenceExceptions.
-    TempData.Keep();
-    ViewBag.Class = TempData["Class"];
-    ViewBag.Price = TempData["Price"];
-    ViewBag.AirplaneNumber = TempData["AirplaneNumber"];
-    ViewBag.DepartureCity = TempData["DepartureCity"];
-    ViewBag.ArrivalCity = TempData["ArrivalCity"];
-    ViewBag.DepartureDate = TempData["DepartureDate"];
-    ViewBag.ArrivalTime = TempData["ArrivalTime"];
-
-    // Return the view with the passenger object, so the form is repopulated with user data
-    // and the validation messages are displayed.
-    return View(passenger);
+@{
+    ViewBag.Title = "Customer List";
 }
+
+<h2>Customer List</h2>
+
+<form method="get" action="@Url.Action("Index")">
+    <input type="text" name="searchString" placeholder="Search by Name, Email, Phone" />
+    <input type="submit" value="Search" />
+</form>
+
+<p><a href="@Url.Action("Create")">Add New Customer</a></p>
+
+<table border="1">
+    <tr>
+        <th>Name</th>
+        <th>Gender</th>
+        <th>Phone</th>
+        <th>Email</th>
+        <th>ID Proof</th>
+        <th>No. of People</th>
+        <th>Payment Status</th>
+        <th>Current Bill</th>
+        <th>Actions</th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.Name</td>
+            <td>@item.Gender</td>
+            <td>@item.Phone</td>
+            <td>@item.Email</td>
+            <td>@item.IDProof</td>
+            <td>@item.NoOfPeople</td>
+            <td>@item.PaymentStatus</td>
+            <td>@item.CurrentBill</td>
+            <td>
+                <a href="@Url.Action("Edit", new { id = item.CustomerID })">Edit</a> |
+                <a href="@Url.Action("Details", new { id = item.CustomerID })">Details</a> |
+                <a href="@Url.Action("Delete", new { id = item.CustomerID })">Delete</a>
+            </td>
+        </tr>
+    }
+</table>
+....
+....
+@model Hotel1.Models.Customer
+
+@{
+    ViewBag.Title = "Add Customer";
+}
+
+<h2>Add New Customer</h2>
+
+@using (Html.BeginForm()) 
+{
+    @Html.AntiForgeryToken()
+
+    <table>
+        <tr><td>@Html.LabelFor(model => model.Name)</td><td>@Html.TextBoxFor(model => model.Name)</td></tr>
+        <tr><td>@Html.LabelFor(model => model.Gender)</td><td>@Html.TextBoxFor(model => model.Gender)</td></tr>
+        <tr><td>@Html.LabelFor(model => model.Phone)</td><td>@Html.TextBoxFor(model => model.Phone)</td></tr>
+        <tr><td>@Html.LabelFor(model => model.Email)</td><td>@Html.TextBoxFor(model => model.Email)</td></tr>
+        <tr><td>@Html.LabelFor(model => model.IDProof)</td><td>@Html.TextBoxFor(model => model.IDProof)</td></tr>
+        <tr><td>@Html.LabelFor(model => model.NoOfPeople)</td><td>@Html.TextBoxFor(model => model.NoOfPeople)</td></tr>
+        <tr><td>@Html.LabelFor(model => model.PaymentStatus)</td><td>@Html.TextBoxFor(model => model.PaymentStatus)</td></tr>
+        <tr><td>@Html.LabelFor(model => model.CurrentBill)</td><td>@Html.TextBoxFor(model => model.CurrentBill)</td></tr>
+    </table>
+
+    <input type="submit" value="Create" />
+}
+
+<p><a href="@Url.Action("Index")">Back to List</a></p>
+....
+....
+@model Hotel1.Models.Customer
+
+@{
+    ViewBag.Title = "Edit Customer";
+}
+
+<h2>Edit Customer</h2>
+
+@using (Html.BeginForm()) 
+{
+    @Html.AntiForgeryToken()
+
+    @Html.HiddenFor(model => model.CustomerID)
+
+    <table>
+        <tr><td>@Html.LabelFor(model => model.Name)</td><td>@Html.TextBoxFor(model => model.Name)</td></tr>
+        <tr><td>@Html.LabelFor(model => model.Gender)</td><td>@Html.TextBoxFor(model => model.Gender)</td></tr>
+        <tr><td>@Html.LabelFor(model => model.Phone)</td><td>@Html.TextBoxFor(model => model.Phone)</td></tr>
+        <tr><td>@Html.LabelFor(model => model.Email)</td><td>@Html.TextBoxFor(model => model.Email)</td></tr>
+        <tr><td>@Html.LabelFor(model => model.IDProof)</td><td>@Html.TextBoxFor(model => model.IDProof)</td></tr>
+        <tr><td>@Html.LabelFor(model => model.NoOfPeople)</td><td>@Html.TextBoxFor(model => model.NoOfPeople)</td></tr>
+        <tr><td>@Html.LabelFor(model => model.PaymentStatus)</td><td>@Html.TextBoxFor(model => model.PaymentStatus)</td></tr>
+        <tr><td>@Html.LabelFor(model => model.CurrentBill)</td><td>@Html.TextBoxFor(model => model.CurrentBill)</td></tr>
+    </table>
+
+    <input type="submit" value="Save" />
+}
+
+<p><a href="@Url.Action("Index")">Back to List</a></p>
+....
+.....
+@model Hotel1.Models.Customer
+
+@{
+    ViewBag.Title = "Customer Details";
+}
+
+<h2>Customer Details</h2>
+
+<table>
+    <tr><td>Name:</td><td>@Model.Name</td></tr>
+    <tr><td>Gender:</td><td>@Model.Gender</td></tr>
+    <tr><td>Phone:</td><td>@Model.Phone</td></tr>
+    <tr><td>Email:</td><td>@Model.Email</td></tr>
+    <tr><td>ID Proof:</td><td>@Model.IDProof</td></tr>
+    <tr><td>No. of People:</td><td>@Model.NoOfPeople</td></tr>
+    <tr><td>Payment Status:</td><td>@Model.PaymentStatus</td></tr>
+    <tr><td>Current Bill:</td><td>@Model.CurrentBill</td></tr>
+</table>
+
+<p><a href="@Url.Action("Index")">Back to List</a></p>
+.....
+....
+@model Hotel1.Models.Customer
+
+@{
+    ViewBag.Title = "Delete Customer";
+}
+
+<h2>Are you sure you want to delete this customer?</h2>
+
+<table>
+    <tr><td>Name:</td><td>@Model.Name</td></tr>
+    <tr><td>Email:</td><td>@Model.Email</td></tr>
+</table>
+
+@using (Html.BeginForm("DeleteConfirmed", "Customer", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(model => model.CustomerID)
+    <input type="submit" value="Delete" />
+    <a href="@Url.Action("Index")">Cancel</a>
+}
+.....
+.....
+....
