@@ -1,11 +1,18 @@
-// Direct delete without confirmation
-public ActionResult Delete(int id)
+[HttpGet]
+public ActionResult Delete(int? id)
 {
-    var customer = db.Customers.Find(id);
-    if (customer != null)
+    if (id == null)
     {
-        db.Customers.Remove(customer);
-        db.SaveChanges();
+        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
     }
+
+    Customer customer = db.Customers.Find(id);
+    if (customer == null)
+    {
+        return HttpNotFound();
+    }
+
+    db.Customers.Remove(customer);
+    db.SaveChanges();
     return RedirectToAction("Index");
 }
