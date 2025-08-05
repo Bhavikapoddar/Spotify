@@ -1,40 +1,59 @@
-@model Hotel1.Models.Customer
+@model IEnumerable<Hotel1.Models.Customer>
 @{
-    ViewBag.Title = "Create Customer";
+    ViewBag.Title = "Customer List";
 }
 
-<h2>Create New Customer</h2>
+<h2>Customer List</h2>
 
-@using (Html.BeginForm("Create", "Customer", FormMethod.Post, new { enctype = "multipart/form-data" }))
-{
-    @Html.AntiForgeryToken()
+<p>
+    @Html.ActionLink("Create New Customer", "Create", null, new { @class = "btn btn-success", style = "margin-bottom: 15px;" })
+</p>
 
-    <div style="width: 500px; padding: 20px; border: 1px solid #ccc; border-radius: 10px;">
-        <div style="margin-bottom: 15px;">
-            @Html.LabelFor(model => model.Name)
-            @Html.TextBoxFor(model => model.Name, new { @class = "form-control", style = "width:100%;", required = "required" })
-            @Html.ValidationMessageFor(model => model.Name)
-        </div>
+<table border="1" cellpadding="10" cellspacing="0" style="width:100%; border-collapse:collapse;">
+    <thead style="background-color: #f2f2f2;">
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.First().Name)</th>
+            <th>@Html.DisplayNameFor(model => model.First().Gender)</th>
+            <th>@Html.DisplayNameFor(model => model.First().Phone)</th>
+            <th>@Html.DisplayNameFor(model => model.First().Email)</th>
+            <th>ID Proof</th>
+            <th>@Html.DisplayNameFor(model => model.First().NoOfPeople)</th>
+            <th>@Html.DisplayNameFor(model => model.First().PaymentStatus)</th>
+            <th>@Html.DisplayNameFor(model => model.First().CurrentBill)</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
 
-        <div style="margin-bottom: 15px;">
-            @Html.LabelFor(model => model.Gender)
-            @Html.DropDownListFor(model => model.Gender, (SelectList)ViewBag.GenderList, "Select Gender", new { @class = "form-control", style = "width:100%;" })
-            @Html.ValidationMessageFor(model => model.Gender)
-        </div>
-
-        <div style="margin-bottom: 15px;">
-            @Html.LabelFor(model => model.Phone)
-            @Html.TextBoxFor(model => model.Phone, new { @class = "form-control", style = "width:100%;", type = "tel", pattern = "[0-9]{10}", maxlength = "10", required = "required" })
-            @Html.ValidationMessageFor(model => model.Phone)
-        </div>
-
-        <div style="margin-bottom: 15px;">
-            @Html.LabelFor(model => model.Email)
-            @Html.TextBoxFor(model => model.Email, new { @class = "form-control", style = "width:100%;", type = "email", required = "required" })
-            @Html.ValidationMessageFor(model => model.Email)
-        </div>
-
-        <div style="margin-bottom: 15px;">
+    <tbody>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.Name</td>
+            <td>@item.Gender</td>
+            <td>@item.Phone</td>
+            <td>@item.Email</td>
+            <td>
+                @if (!string.IsNullOrEmpty(item.IDProof))
+                {
+                    <img src="~/Images/IdProofs/@item.IDProof" width="80" height="80" style="object-fit: cover; border: 1px solid #ccc;" />
+                }
+                else
+                {
+                    <span>No image</span>
+                }
+            </td>
+            <td>@item.NoOfPeople</td>
+            <td>@item.PaymentStatus</td>
+            <td>@item.CurrentBill</td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id = item.CustomerID }, new { @class = "btn btn-sm btn-warning" }) |
+                @Html.ActionLink("Details", "Details", new { id = item.CustomerID }, new { @class = "btn btn-sm btn-info" }) |
+                @Html.ActionLink("Delete", "Delete", new { id = item.CustomerID }, new { @class = "btn btn-sm btn-danger" })
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>        <div style="margin-bottom: 15px;">
             @Html.Label("Upload ID Proof (Photo)")
             <input type="file" name="IDProof" accept="image/*" class="form-control" style="width:100%;" required />
         </div>
