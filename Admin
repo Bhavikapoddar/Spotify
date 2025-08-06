@@ -1,32 +1,60 @@
 using System;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using System.Web.Mvc;
+using HotelManagementSystem.Models;
 
-namespace HotelManagementSystem.Models
+namespace HotelManagementSystem.Controllers
 {
-    public class RoomBookings
+    public class RoomBookingsController : Controller
     {
-        [Key]
-        public int BookingID { get; set; }
+        HotelDbContext db = new HotelDbContext();
 
-        [Required]
-        public int CustomerID { get; set; }
+        public ActionResult Index()
+        {
+            var bookings = db.RoomBookings.Include("Customers").Include("Rooms").ToList();
+            return View(bookings);
+        }
 
-        [Required]
-        public int RoomID { get; set; }
+        public ActionResult Create()
+        {
+            ViewBag.CustomerID = new SelectList(db.Customers, "CustomerID", "Name");
+            ViewBag.RoomID = new SelectList(db.Rooms, "RoomID", "RoomNumber");
+            return View();
+        }
 
-        [Required]
-        [DataType(DataType.Date)]
-        public DateTime CheckInDate { get; set; }
+        [HttpPost]
+        public ActionResult Create(RoomBookings booking)
+        {
+            if (booking.CheckInDate < DateTime.Today || booking.CheckOutDate < DateTime.Today)
+            {
+                ModelState.AddModelError("", "Check-in and Check-out dates must be today or in the future.");
+            }
+            else if (booking.CheckOutDate < booking.CheckInDate)
+            {
+                ModelState.AddModelError("", "Check-out date cannot be earlier than Check-in date.");
+            }
 
-        [Required]
-        [DataType(DataType.Date)]
-        public DateTime CheckOutDate { get; set; }
+            if (ModelState.IsValid)
+            {
+                db.RoomBookings.Add(booking);
+                db.SaveChanges();
+                return RedirectToAction("Index");
+            }
 
-        [ForeignKey("CustomerID")]
-        public virtual Customers Customers { get; set; }
+            ViewBag.CustomerID = new SelectList(db.Customers, "CustomerID", "Name", booking.CustomerID);
+            ViewBag.RoomID = new SelectList(db.Rooms, "RoomID", "RoomNumber", booking.RoomID);
+            return View(booking);
+        }
 
-        [ForeignKey("RoomID")]
-        public virtual Rooms Rooms { get; set; }
+        public ActionResult Delete(int id)
+        {
+            var booking = db.RoomBookings.Find(id);
+            if (booking != null)
+            {
+                db.RoomBookings.Remove(booking);
+                db.SaveChanges();
+            }
+            return RedirectToAction("Index");
+        }
     }
 }
