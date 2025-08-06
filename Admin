@@ -1,90 +1,24 @@
-@model Hotelmanagementsystem.Models.Staff
+<table class="table table-bordered">
+    <tr>
+        <th>Booking ID</th>
+        <th>Customer</th>
+        <th>Room</th>
+        <th>Check-In</th>
+        <th>Check-Out</th>
+        <th>Actions</th>
+    </tr>
 
-@{ ViewBag.Title = "Edit Staff"; }
-
-<h2>@ViewBag.Title</h2><form asp-action="Edit" method="post" class="styled-form">
-    <input type="hidden" name="StaffID" value="@Model.StaffID" /><label for="Name">Name:</label>
-<input type="text" name="Name" value="@Model.Name" required />
-
-<label for="Role">Role:</label>
-<select name="Role" required>
-    <option value="">-- Select Role --</option>
-    <option value="Manager" @(Model.Role == "Manager" ? "selected" : "")>Manager</option>
-    <option value="Receptionist" @(Model.Role == "Receptionist" ? "selected" : "")>Receptionist</option>
-    <option value="Cleaner" @(Model.Role == "Cleaner" ? "selected" : "")>Cleaner</option>
-    <option value="Cook" @(Model.Role == "Cook" ? "selected" : "")>Cook</option>
-</select>
-
-<label for="Phone">Phone:</label>
-<input type="text" name="Phone" value="@Model.Phone" maxlength="10" required pattern="\d{10}" />
-
-<label for="Email">Email:</label>
-<input type="email" name="Email" value="@Model.Email" required />
-
-<button type="submit">Update</button>
-<a href="/Staffs/Index" class="cancel-link">Cancel</a>
-
-</form><style>
-    body {
-        font-family: Arial, sans-serif;
-        background-color: #f9f9f9;
-        color: #333;
-        padding: 30px;
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.BookingID</td>
+            <td>@item.Customer?.Name</td>
+            <td>@item.Room?.RoomNumber</td>
+            <td>@item.CheckInDate.ToShortDateString()</td>
+            <td>@item.CheckOutDate.ToShortDateString()</td>
+            <td>
+                @Html.ActionLink("Delete", "Delete", new { id = item.BookingID }, new { @class = "btn btn-danger" })
+            </td>
+        </tr>
     }
-
-    h2 {
-        color: #4a4a4a;
-        margin-bottom: 20px;
-    }
-
-    .styled-form {
-        max-width: 500px;
-        background-color: #ffffff;
-        padding: 20px;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-    }
-
-    .styled-form label {
-        display: block;
-        margin-top: 15px;
-        font-weight: bold;
-        color: #555;
-    }
-
-    .styled-form input[type="text"],
-    .styled-form input[type="email"],
-    .styled-form select {
-        width: 100%;
-        padding: 8px;
-        margin-top: 5px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        box-sizing: border-box;
-    }
-
-    .styled-form button {
-        margin-top: 20px;
-        padding: 10px 20px;
-        background-color: #007bff;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-    }
-
-    .styled-form button:hover {
-        background-color: #0056b3;
-    }
-
-    .cancel-link {
-        margin-left: 15px;
-        color: #6c757d;
-        text-decoration: none;
-    }
-
-    .cancel-link:hover {
-        text-decoration: underline;
-    }
-</style>
+</table>
