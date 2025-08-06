@@ -1,72 +1,82 @@
-@model HotelManagementSystem.Models.RoomBookings
 @{
-    ViewBag.Title = "Create Room Booking";
+    ViewBag.Title = "Admin Dashboard";
+    Layout = null;
 }
 
-<h2>Create Room Booking</h2>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e3f0fe;
+            margin: 0;
+            padding: 0;
+        }
 
-@using (Html.BeginForm())
-{
-    @Html.ValidationSummary(true)
+        .header {
+            background-color: #007bff;
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-    <div>
-        <label>Customer</label>
-        @Html.DropDownList("CustomerID", null, "-- Select Customer --", new { @class = "form-control" })
+        .logout {
+            color: white;
+            font-weight: bold;
+            text-decoration: none;
+            padding: 8px 12px;
+            background-color: red;
+            border-radius: 5px;
+        }
+
+        .container {
+            display: flex;
+            margin-top: 30px;
+            height: calc(100vh - 70px);
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: white;
+            padding: 20px;
+            margin-left: 40px;
+            box-shadow: 0 0 10px #ccc;
+            border-radius: 10px;
+        }
+
+        .sidebar a {
+            display: block;
+            padding: 10px 15px;
+            margin: 10px 0;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .sidebar a:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>Welcome, @Session["User"]</h2>
+        <a class="logout" href="@Url.Action("Logout", "Login")">Logout</a>
     </div>
 
-    <div>
-        <label>Room</label>
-        @Html.DropDownList("RoomID", null, "-- Select Room --", new { @class = "form-control" })
+    <div class="container">
+        <!-- Sidebar Menu -->
+        <div class="sidebar">
+            <a href="@Url.Action("Index", "Customer")">Customer Master</a>
+            <a href="@Url.Action("Index", "Rooms")">Room Master</a>
+            <a href="@Url.Action("Index", "Staffs")">Staff Info</a>
+            <a href="@Url.Action("Index", "RoomBookings")">Room Status</a>
+        </div>
     </div>
-
-    <div>
-        <label>Check-In Date</label>
-        @Html.TextBoxFor(m => m.CheckInDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
-    </div>
-
-    <div>
-        <label>Check-Out Date</label>
-        @Html.TextBoxFor(m => m.CheckOutDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
-    </div>
-
-    <br />
-    <button type="submit" class="btn btn-primary">Save</button>
-}
-....
-...
-...
-@model IEnumerable<HotelManagementSystem.Models.RoomBookings>
-@{
-    ViewBag.Title = "Room Bookings";
-}
-
-<h2>Room Bookings</h2>
-
-<p>
-    @Html.ActionLink("New Booking", "Create", null, new { @class = "btn btn-success" })
-</p>
-
-<table class="table table-bordered">
-    <tr>
-        <th>Booking ID</th>
-        <th>Customer</th>
-        <th>Room</th>
-        <th>Check-In</th>
-        <th>Check-Out</th>
-        <th>Actions</th>
-    </tr>
-
-@foreach (var item in Model)
-{
-    <tr>
-        <td>@item.BookingID</td>
-        <td>@item.Customers?.Name</td>
-        <td>@item.Rooms?.RoomNumber</td>
-        <td>@item.CheckInDate.ToShortDateString()</td>
-        <td>@item.CheckOutDate.ToShortDateString()</td>
-        <td>
-            @Html.ActionLink("Delete", "Delete", new { id = item.BookingID }, new { @class = "btn btn-danger" })
-        </td>
-    </tr>
-}
-</table>
+</body>
+</html>
