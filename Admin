@@ -1,103 +1,32 @@
-using Microsoft.AspNetCore.Mvc;
-using HotelManagementSystem.Models;
-using System.Linq;
+using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace HotelManagementSystem.Controllers
+namespace HotelManagementSystem.Models
 {
-    public class RoomBookingsController : Controller
+    public class RoomBookings
     {
-        private HotelDbContext db = new HotelDbContext();
+        [Key]
+        public int BookingID { get; set; }
 
-        public IActionResult Index()
-        {
-            var bookings = db.RoomBookings.ToList();
-            return View(bookings);
-        }
+        [Required]
+        public int CustomerID { get; set; }
 
-        public IActionResult Create()
-        {
-            ViewBag.Customers = db.Customers.ToList();
-            ViewBag.Rooms = db.Rooms.ToList();
-            return View();
-        }
+        [Required]
+        public int RoomID { get; set; }
 
-        [HttpPost]
-        public IActionResult Create(RoomBooking booking)
-        {
-            ViewBag.Customers = db.Customers.ToList();
-            ViewBag.Rooms = db.Rooms.ToList();
+        [Required]
+        [DataType(DataType.Date)]
+        public DateTime CheckInDate { get; set; }
 
-            if (booking.CheckInDate < DateTime.Today || booking.CheckOutDate < DateTime.Today)
-            {
-                ModelState.AddModelError("", "Dates cannot be earlier than today.");
-                return View(booking);
-            }
+        [Required]
+        [DataType(DataType.Date)]
+        public DateTime CheckOutDate { get; set; }
 
-            if (booking.CheckOutDate < booking.CheckInDate)
-            {
-                ModelState.AddModelError("", "Check-out date cannot be earlier than check-in date.");
-                return View(booking);
-            }
+        [ForeignKey("CustomerID")]
+        public virtual Customers Customers { get; set; }
 
-            db.RoomBookings.Add(booking);
-            db.SaveChanges();
-            return RedirectToAction("Index");
-        }
-
-        public IActionResult Edit(int id)
-        {
-            var booking = db.RoomBookings.FirstOrDefault(r => r.BookingID == id);
-            if (booking == null)
-            {
-                return NotFound();
-            }
-
-            ViewBag.Customers = db.Customers.ToList();
-            ViewBag.Rooms = db.Rooms.ToList();
-            return View(booking);
-        }
-
-        [HttpPost]
-        public IActionResult Edit(RoomBooking booking)
-        {
-            ViewBag.Customers = db.Customers.ToList();
-            ViewBag.Rooms = db.Rooms.ToList();
-
-            if (booking.CheckInDate < DateTime.Today || booking.CheckOutDate < DateTime.Today)
-            {
-                ModelState.AddModelError("", "Dates cannot be earlier than today.");
-                return View(booking);
-            }
-
-            if (booking.CheckOutDate < booking.CheckInDate)
-            {
-                ModelState.AddModelError("", "Check-out date cannot be earlier than check-in date.");
-                return View(booking);
-            }
-
-            var existing = db.RoomBookings.FirstOrDefault(r => r.BookingID == booking.BookingID);
-            if (existing != null)
-            {
-                existing.CustomerID = booking.CustomerID;
-                existing.RoomID = booking.RoomID;
-                existing.CheckInDate = booking.CheckInDate;
-                existing.CheckOutDate = booking.CheckOutDate;
-
-                db.SaveChanges();
-            }
-
-            return RedirectToAction("Index");
-        }
-
-        public IActionResult Delete(int id)
-        {
-            var booking = db.RoomBookings.FirstOrDefault(r => r.BookingID == id);
-            if (booking != null)
-            {
-                db.RoomBookings.Remove(booking);
-                db.SaveChanges();
-            }
-            return RedirectToAction("Index");
-        }
+        [ForeignKey("RoomID")]
+        public virtual Rooms Rooms { get; set; }
     }
 }
