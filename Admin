@@ -1,7 +1,6 @@
-using System;
-using System.Linq;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using HotelManagementSystem.Models;
+using System.Linq;
 
 namespace HotelManagementSystem.Controllers
 {
@@ -9,63 +8,95 @@ namespace HotelManagementSystem.Controllers
     {
         private HotelDbContext db = new HotelDbContext();
 
-        // GET: RoomBookings
-        public ActionResult Index()
+        public IActionResult Index()
         {
             var bookings = db.RoomBookings.ToList();
             return View(bookings);
         }
 
-        // GET: RoomBookings/Create
-        public ActionResult Create()
+        public IActionResult Create()
         {
-            ViewBag.CustomerID = new SelectList(db.Customers, "CustomerID", "Name");
-            ViewBag.RoomID = new SelectList(db.Rooms, "RoomID", "RoomNumber");
+            ViewBag.Customers = db.Customers.ToList();
+            ViewBag.Rooms = db.Rooms.ToList();
             return View();
         }
 
-        // POST: RoomBookings/Create
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(RoomBooking booking)
+        public IActionResult Create(RoomBooking booking)
         {
-            if (booking.CheckInDate < DateTime.Today)
-            {
-                ModelState.AddModelError("CheckInDate", "Check-In Date cannot be before today.");
-            }
+            ViewBag.Customers = db.Customers.ToList();
+            ViewBag.Rooms = db.Rooms.ToList();
 
-            if (booking.CheckOutDate < DateTime.Today)
+            if (booking.CheckInDate < DateTime.Today || booking.CheckOutDate < DateTime.Today)
             {
-                ModelState.AddModelError("CheckOutDate", "Check-Out Date cannot be before today.");
+                ModelState.AddModelError("", "Dates cannot be earlier than today.");
+                return View(booking);
             }
 
             if (booking.CheckOutDate < booking.CheckInDate)
             {
-                ModelState.AddModelError("CheckOutDate", "Check-Out Date cannot be earlier than Check-In Date.");
+                ModelState.AddModelError("", "Check-out date cannot be earlier than check-in date.");
+                return View(booking);
             }
 
-            if (ModelState.IsValid)
+            db.RoomBookings.Add(booking);
+            db.SaveChanges();
+            return RedirectToAction("Index");
+        }
+
+        public IActionResult Edit(int id)
+        {
+            var booking = db.RoomBookings.FirstOrDefault(r => r.BookingID == id);
+            if (booking == null)
             {
-                db.RoomBookings.Add(booking);
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                return NotFound();
             }
 
-            ViewBag.CustomerID = new SelectList(db.Customers, "CustomerID", "Name", booking.CustomerID);
-            ViewBag.RoomID = new SelectList(db.Rooms, "RoomID", "RoomNumber", booking.RoomID);
+            ViewBag.Customers = db.Customers.ToList();
+            ViewBag.Rooms = db.Rooms.ToList();
             return View(booking);
         }
 
-        // GET: RoomBookings/Delete/5
-        public ActionResult Delete(int id)
+        [HttpPost]
+        public IActionResult Edit(RoomBooking booking)
         {
-            var booking = db.RoomBookings.Find(id);
-            if (booking == null)
+            ViewBag.Customers = db.Customers.ToList();
+            ViewBag.Rooms = db.Rooms.ToList();
+
+            if (booking.CheckInDate < DateTime.Today || booking.CheckOutDate < DateTime.Today)
             {
-                return HttpNotFound();
+                ModelState.AddModelError("", "Dates cannot be earlier than today.");
+                return View(booking);
             }
-            db.RoomBookings.Remove(booking);
-            db.SaveChanges();
+
+            if (booking.CheckOutDate < booking.CheckInDate)
+            {
+                ModelState.AddModelError("", "Check-out date cannot be earlier than check-in date.");
+                return View(booking);
+            }
+
+            var existing = db.RoomBookings.FirstOrDefault(r => r.BookingID == booking.BookingID);
+            if (existing != null)
+            {
+                existing.CustomerID = booking.CustomerID;
+                existing.RoomID = booking.RoomID;
+                existing.CheckInDate = booking.CheckInDate;
+                existing.CheckOutDate = booking.CheckOutDate;
+
+                db.SaveChanges();
+            }
+
+            return RedirectToAction("Index");
+        }
+
+        public IActionResult Delete(int id)
+        {
+            var booking = db.RoomBookings.FirstOrDefault(r => r.BookingID == id);
+            if (booking != null)
+            {
+                db.RoomBookings.Remove(booking);
+                db.SaveChanges();
+            }
             return RedirectToAction("Index");
         }
     }
