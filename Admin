@@ -2,188 +2,60 @@
 
 @{
     ViewBag.Title = "Rooms List";
+    var search = ViewBag.Search as string ?? "";
+    var statusFilter = ViewBag.StatusFilter as string ?? "";
 }
 
-<h2>Rooms List</h2>
+<h2>Room List</h2>
 
-<form method="get">
-    <input type="text" name="searchString" placeholder="Search by Room Number" value="@Request.Query["searchString"]" />
-    <input type="submit" value="Search" />
+<form method="get" style="margin-bottom: 20px;">
+    <input type="text" name="search" value="@search" placeholder="Search Room Number or Type" style="padding:5px;" />
+    
+    <select name="statusFilter" style="padding:5px;">
+        <option value="">All Status</option>
+        <option value="Available" @(statusFilter == "Available" ? "selected" : "")>Available</option>
+        <option value="Occupied" @(statusFilter == "Occupied" ? "selected" : "")>Occupied</option>
+        <option value="Maintenance" @(statusFilter == "Maintenance" ? "selected" : "")>Maintenance</option>
+    </select>
+
+    <input type="submit" value="Search" style="padding:5px;" />
+    <a href="@Url.Action("Create")" style="padding:5px; margin-left:10px;">Add New Room</a>
 </form>
 
-<p>
-    <a href="@Url.Action("Create")">Create New Room</a>
-</p>
-
-<table border="1" cellpadding="10">
-    <tr>
-        <th>Room Number</th>
-        <th>Room Type</th>
-        <th>Capacity</th>
-        <th>Price</th>
-        <th>Status</th>
-        <th>Actions</th>
-    </tr>
-@foreach (var item in Model)
-{
-    <tr>
-        <td>@item.RoomNumber</td>
-        <td>@item.RoomType</td>
-        <td>@item.Capacity</td>
-        <td>@item.Price</td>
-        <td>@item.Status</td>
-        <td>
-            <a href="@Url.Action("Edit", new { id = item.RoomID })">Edit</a> |
-            <a href="@Url.Action("Delete", new { id = item.RoomID })">Delete</a> |
-            <a href="@Url.Action("Details", new { id = item.RoomID })">Details</a>
-        </td>
-    </tr>
-}
+<table border="1" cellpadding="8" cellspacing="0" style="width:100%; border-collapse: collapse;">
+    <thead>
+        <tr>
+            <th>Room Number</th>
+            <th>Room Type</th>
+            <th>Capacity</th>
+            <th>Price</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+    @if (Model.Any())
+    {
+        foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.RoomNumber</td>
+                <td>@item.RoomType</td>
+                <td>@item.Capacity</td>
+                <td>@item.Price</td>
+                <td>@item.Status</td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { id = item.RoomID }) |
+                    @Html.ActionLink("Delete", "Delete", new { id = item.RoomID })
+                </td>
+            </tr>
+        }
+    }
+    else
+    {
+        <tr>
+            <td colspan="6" style="text-align:center;">No records found.</td>
+        </tr>
+    }
+    </tbody>
 </table>
-...
-..
-..
-@model HotelManagementSystem.Models.Room
-
-@{
-    ViewBag.Title = "Create Room";
-}
-
-<h2>Create Room</h2>
-
-@using (Html.BeginForm())
-{
-    @Html.AntiForgeryToken()
-
-    <div>
-        <label>Room Number:</label>
-        @Html.TextBoxFor(m => m.RoomNumber, new { required = "required" })
-    </div>
-
-    <div>
-        <label>Room Type:</label>
-        @Html.DropDownListFor(m => m.RoomType,
-            new SelectList(new[] { "AC", "Non-AC", "Deluxe" }),
-            "--Select--")
-    </div>
-
-    <div>
-        <label>Capacity:</label>
-        @Html.TextBoxFor(m => m.Capacity, new { type = "number", min = "1", required = "required" })
-    </div>
-
-    <div>
-        <label>Price:</label>
-        @Html.TextBoxFor(m => m.Price, new { type = "number", step = "0.01", required = "required" })
-    </div>
-
-    <div>
-        <label>Status:</label>
-        @Html.DropDownListFor(m => m.Status,
-            new SelectList(new[] { "Available", "Booked", "Maintenance" }),
-            "--Select--")
-    </div>
-
-    <div>
-        <input type="submit" value="Create" />
-        <a href="@Url.Action("Index")">Cancel</a>
-    </div>
-}
-.....
-....
-...
-@model HotelManagementSystem.Models.Room
-
-@{
-    ViewBag.Title = "Edit Room";
-}
-
-<h2>Edit Room</h2>
-
-@using (Html.BeginForm())
-{
-    @Html.AntiForgeryToken()
-    @Html.HiddenFor(m => m.RoomID)
-
-    <div>
-        <label>Room Number:</label>
-        @Html.TextBoxFor(m => m.RoomNumber, new { required = "required" })
-    </div>
-
-    <div>
-        <label>Room Type:</label>
-        @Html.DropDownListFor(m => m.RoomType,
-            new SelectList(new[] { "AC", "Non-AC", "Deluxe" }, Model.RoomType),
-            "--Select--")
-    </div>
-
-    <div>
-        <label>Capacity:</label>
-        @Html.TextBoxFor(m => m.Capacity, new { type = "number", required = "required" })
-    </div>
-
-    <div>
-        <label>Price:</label>
-        @Html.TextBoxFor(m => m.Price, new { type = "number", step = "0.01", required = "required" })
-    </div>
-
-    <div>
-        <label>Status:</label>
-        @Html.DropDownListFor(m => m.Status,
-            new SelectList(new[] { "Available", "Booked", "Maintenance" }, Model.Status),
-            "--Select--")
-    </div>
-
-    <div>
-        <input type="submit" value="Save" />
-        <a href="@Url.Action("Index")">Cancel</a>
-    </div>
-}
-.....
-...
- ..
-@model HotelManagementSystem.Models.Room
-
-@{
-    ViewBag.Title = "Room Details";
-}
-
-<h2>Room Details</h2>
-
-<table border="1" cellpadding="10">
-    <tr><th>Room Number</th><td>@Model.RoomNumber</td></tr>
-    <tr><th>Room Type</th><td>@Model.RoomType</td></tr>
-    <tr><th>Capacity</th><td>@Model.Capacity</td></tr>
-    <tr><th>Price</th><td>@Model.Price</td></tr>
-    <tr><th>Status</th><td>@Model.Status</td></tr>
-</table>
-
-<p>
-    <a href="@Url.Action("Edit", new { id = Model.RoomID })">Edit</a> |
-    <a href="@Url.Action("Index")">Back to List</a>
-</p>
-....
-   ..
-.....
-@model HotelManagementSystem.Models.Room
-
-@{
-    ViewBag.Title = "Delete Room";
-}
-
-<h2>Are you sure you want to delete this room?</h2>
-
-<table border="1" cellpadding="10">
-    <tr><th>Room Number</th><td>@Model.RoomNumber</td></tr>
-    <tr><th>Room Type</th><td>@Model.RoomType</td></tr>
-    <tr><th>Capacity</th><td>@Model.Capacity</td></tr>
-    <tr><th>Price</th><td>@Model.Price</td></tr>
-    <tr><th>Status</th><td>@Model.Status</td></tr>
-</table>
-
-@using (Html.BeginForm("DeleteConfirmed", "Rooms", new { id = Model.RoomID }))
-{
-    @Html.AntiForgeryToken()
-    <input type="submit" value="Delete" />
-    <a href="@Url.Action("Index")">Cancel</a>
-}
