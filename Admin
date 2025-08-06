@@ -1,61 +1,148 @@
-@model IEnumerable<HotelManagementSystem.Models.Room>
+using Microsoft.EntityFrameworkCore;
+using HotelManagementSystem.Models;
 
-@{
-    ViewBag.Title = "Rooms List";
-    var search = ViewBag.Search as string ?? "";
-    var statusFilter = ViewBag.StatusFilter as string ?? "";
-}
-
-<h2>Room List</h2>
-
-<form method="get" style="margin-bottom: 20px;">
-    <input type="text" name="search" value="@search" placeholder="Search Room Number or Type" style="padding:5px;" />
-    
-    <select name="statusFilter" style="padding:5px;">
-        <option value="">All Status</option>
-        <option value="Available" @(statusFilter == "Available" ? "selected" : "")>Available</option>
-        <option value="Occupied" @(statusFilter == "Occupied" ? "selected" : "")>Occupied</option>
-        <option value="Maintenance" @(statusFilter == "Maintenance" ? "selected" : "")>Maintenance</option>
-    </select>
-
-    <input type="submit" value="Search" style="padding:5px;" />
-    <a href="@Url.Action("Create")" style="padding:5px; margin-left:10px;">Add New Room</a>
-</form>
-
-<table border="1" cellpadding="8" cellspacing="0" style="width:100%; border-collapse: collapse;">
-    <thead>
-        <tr>
-            <th>Room Number</th>
-            <th>Room Type</th>
-            <th>Capacity</th>
-            <th>Price</th>
-            <th>Status</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-    @if (Model.Any())
+namespace HotelManagementSystem.Data
+{
+    public class HotelDbContext : DbContext
     {
-        foreach (var item in Model)
+        public HotelDbContext(DbContextOptions<HotelDbContext> options) : base(options)
         {
-            <tr>
-                <td>@item.RoomNumber</td>
-                <td>@item.RoomType</td>
-                <td>@item.Capacity</td>
-                <td>@item.Price</td>
-                <td>@item.Status</td>
-                <td>
-                    @Html.ActionLink("Edit", "Edit", new { id = item.RoomID }) |
-                    @Html.ActionLink("Delete", "Delete", new { id = item.RoomID })
-                </td>
-            </tr>
+        }
+
+        public DbSet<Staff> Staff { get; set; }
+        public DbSet<Customer> Customer { get; set; } // if exists
+        public DbSet<Room> Room { get; set; }         // if exists
+    }
+}
+....
+...
+...
+using System.ComponentModel.DataAnnotations;
+
+namespace HotelManagementSystem.Models
+{
+    public class Staff
+    {
+        [Key]
+        public int StaffID { get; set; }
+
+        [Required(ErrorMessage = "Name is required")]
+        public string Name { get; set; }
+
+        [Required(ErrorMessage = "Role is required")]
+        public string Role { get; set; }
+
+        [Required(ErrorMessage = "Phone is required")]
+        [RegularExpression(@"^\d{10}$", ErrorMessage = "Phone must be 10 digits")]
+        public string Phone { get; set; }
+
+        [Required(ErrorMessage = "Email is required")]
+        [EmailAddress(ErrorMessage = "Invalid Email")]
+        public string Email { get; set; }
+    }
+}
+...
+.......
+.....
+using Microsoft.AspNetCore.Mvc;
+using HotelManagementSystem.Data;
+using HotelManagementSystem.Models;
+using System.Linq;
+
+namespace HotelManagementSystem.Controllers
+{
+    public class StaffsController : Controller
+    {
+        private readonly HotelDbContext _context;
+
+        public StaffsController(HotelDbContext context)
+        {
+            _context = context;
+        }
+
+        // GET: Staffs
+        public IActionResult Index(string searchString)
+        {
+            var staffs = from s in _context.Staff
+                         select s;
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                staffs = staffs.Where(s => s.Name.Contains(searchString) || s.Role.Contains(searchString));
+            }
+
+            return View(staffs.ToList());
+        }
+
+        // GET: Staffs/Create
+        public IActionResult Create()
+        {
+            ViewBag.Roles = new List<string> { "Manager", "Receptionist", "Cleaner", "Cook", "Security" };
+            return View();
+        }
+
+        // POST: Staffs/Create
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Create(Staff staff)
+        {
+            ViewBag.Roles = new List<string> { "Manager", "Receptionist", "Cleaner", "Cook", "Security" };
+
+            if (ModelState.IsValid)
+            {
+                _context.Staff.Add(staff);
+                _context.SaveChanges();
+                return RedirectToAction(nameof(Index));
+            }
+            return View(staff);
+        }
+
+        // GET: Staffs/Edit/5
+        public IActionResult Edit(int id)
+        {
+            var staff = _context.Staff.Find(id);
+            if (staff == null)
+            {
+                return NotFound();
+            }
+
+            ViewBag.Roles = new List<string> { "Manager", "Receptionist", "Cleaner", "Cook", "Security" };
+            return View(staff);
+        }
+
+        // POST: Staffs/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Edit(int id, Staff staff)
+        {
+            ViewBag.Roles = new List<string> { "Manager", "Receptionist", "Cleaner", "Cook", "Security" };
+
+            if (id != staff.StaffID)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                _context.Update(staff);
+                _context.SaveChanges();
+                return RedirectToAction(nameof(Index));
+            }
+            return View(staff);
+        }
+
+        // GET: Staffs/Delete/5
+        public IActionResult Delete(int id)
+        {
+            var staff = _context.Staff.Find(id);
+            if (staff == null)
+            {
+                return NotFound();
+            }
+
+            _context.Staff.Remove(staff);
+            _context.SaveChanges();
+            return RedirectToAction(nameof(Index));
         }
     }
-    else
-    {
-        <tr>
-            <td colspan="6" style="text-align:center;">No records found.</td>
-        </tr>
-    }
-    </tbody>
-</table>
+}
