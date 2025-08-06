@@ -38,28 +38,48 @@
             border-radius: 5px;
         }
 
-        .menu-bar {
+        .container {
+            display: flex;
+            margin-top: 40px;
+            padding: 0 40px;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px #ccc;
+        }
+
+        .sidebar a {
+            display: block;
+            padding: 12px 15px;
+            margin: 10px 0;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .sidebar a:hover {
+            background-color: #0056b3;
+        }
+
+        .main-content {
+            flex-grow: 1;
             display: flex;
             justify-content: center;
-            margin-top: 100px;
-            gap: 20px;
+            align-items: center;
+            margin-left: 40px;
         }
 
-        .menu-bar a {
-            display: inline-block;
-            padding: 15px 25px;
-            background-color: white;
-            color: #007bff;
-            text-decoration: none;
-            border-radius: 8px;
-            font-weight: bold;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-            transition: background-color 0.3s, color 0.3s;
-        }
-
-        .menu-bar a:hover {
-            background-color: #0056b3;
-            color: white;
+        .main-content img {
+            max-width: 700px;
+            width: 100%;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
         }
     </style>
 </head>
@@ -69,11 +89,19 @@
         <a class="logout" href="@Url.Action("Logout", "Login")">Logout</a>
     </div>
 
-    <div class="menu-bar">
-        <a href="@Url.Action("Index", "Customer")">Customer Master</a>
-        <a href="@Url.Action("Index", "Rooms")">Room Master</a>
-        <a href="@Url.Action("Index", "Staffs")">Staff Info</a>
-        <a href="@Url.Action("Index", "RoomBookings")">Room Status</a>
+    <div class="container">
+        <!-- Sidebar on the Left -->
+        <div class="sidebar">
+            <a href="@Url.Action("Index", "Customer")">Customer Master</a>
+            <a href="@Url.Action("Index", "Rooms")">Room Master</a>
+            <a href="@Url.Action("Index", "Staffs")">Staff Info</a>
+            <a href="@Url.Action("Index", "RoomBookings")">Room Status</a>
+        </div>
+
+        <!-- Main Content Area with Hotel Image -->
+        <div class="main-content">
+            <img src="~/Content/Images/hotel.jpg" alt="Hotel Image" />
+        </div>
     </div>
 </body>
 </html>
