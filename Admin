@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HotelManagementSystem.Models
 {
-    public class RoomBookings
+    public class RoomBooking
     {
         [Key]
         public int BookingID { get; set; }
@@ -21,10 +21,23 @@ namespace HotelManagementSystem.Models
 
         [Required]
         [DataType(DataType.Date)]
+        [CustomValidation(typeof(RoomBooking), "ValidateCheckoutDate")]
         public DateTime CheckOutDate { get; set; }
 
-        // Navigation properties (optional, useful for dropdowns)
-        public Customers Customer { get; set; }
-        public Rooms Room { get; set; }
+        [ForeignKey("CustomerID")]
+        public Customer Customer { get; set; }
+
+        [ForeignKey("RoomID")]
+        public Room Room { get; set; }
+
+        public static ValidationResult ValidateCheckoutDate(DateTime checkOutDate, ValidationContext context)
+        {
+            var instance = (RoomBooking)context.ObjectInstance;
+            if (checkOutDate < instance.CheckInDate)
+            {
+                return new ValidationResult("Check-out date must be after Check-in date.");
+            }
+            return ValidationResult.Success;
+        }
     }
 }
