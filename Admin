@@ -1,110 +1,135 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Web.Mvc;
-using HotelManagementSystem.Models;
+@model IEnumerable<HotelManagementSystem.Models.Staff>
 
-namespace HotelManagementSystem.Controllers
-{
-    public class StaffsController : Controller
-    {
-        private HotelDbContext db = new HotelDbContext();
-
-        // GET: Staffs
-        public ActionResult Index(string search)
-        {
-            var staffs = db.Staff.ToList();
-
-            if (!string.IsNullOrEmpty(search))
-            {
-                staffs = staffs.Where(s => s.Name.ToLower().Contains(search.ToLower())
-                                        || s.Role.ToLower().Contains(search.ToLower())
-                                        || s.Phone.Contains(search)
-                                        || s.Email.ToLower().Contains(search.ToLower())).ToList();
-            }
-
-            return View(staffs);
-        }
-
-        // GET: Staffs/Create
-        public ActionResult Create()
-        {
-            ViewBag.RoleList = GetRoleList();
-            return View();
-        }
-
-        // POST: Staffs/Create
-        [HttpPost]
-        public ActionResult Create(Staff staff)
-        {
-            if (ModelState.IsValid)
-            {
-                db.Staff.Add(staff);
-                db.SaveChanges();
-                return RedirectToAction("Index");
-            }
-
-            ViewBag.RoleList = GetRoleList();
-            return View(staff);
-        }
-
-        // GET: Staffs/Edit/5
-        public ActionResult Edit(int id)
-        {
-            var staff = db.Staff.Find(id);
-            if (staff == null)
-            {
-                return HttpNotFound();
-            }
-
-            ViewBag.RoleList = GetRoleList();
-            return View(staff);
-        }
-
-        // POST: Staffs/Edit/5
-        [HttpPost]
-        public ActionResult Edit(Staff updatedStaff)
-        {
-            if (ModelState.IsValid)
-            {
-                var existingStaff = db.Staff.Find(updatedStaff.StaffID);
-                if (existingStaff != null)
-                {
-                    existingStaff.Name = updatedStaff.Name;
-                    existingStaff.Role = updatedStaff.Role;
-                    existingStaff.Phone = updatedStaff.Phone;
-                    existingStaff.Email = updatedStaff.Email;
-
-                    db.SaveChanges();
-                    return RedirectToAction("Index");
-                }
-            }
-
-            ViewBag.RoleList = GetRoleList();
-            return View(updatedStaff);
-        }
-
-        // GET: Staffs/Delete/5
-        public ActionResult Delete(int id)
-        {
-            var staff = db.Staff.Find(id);
-            if (staff != null)
-            {
-                db.Staff.Remove(staff);
-                db.SaveChanges();
-            }
-            return RedirectToAction("Index");
-        }
-
-        // Helper Method for Role Drop-down
-        private List<SelectListItem> GetRoleList()
-        {
-            return new List<SelectListItem>
-            {
-                new SelectListItem { Text = "Manager", Value = "Manager" },
-                new SelectListItem { Text = "Receptionist", Value = "Receptionist" },
-                new SelectListItem { Text = "Cleaner", Value = "Cleaner" },
-                new SelectListItem { Text = "Cook", Value = "Cook" }
-            };
-        }
-    }
+@{
+    ViewBag.Title = "Staff List";
 }
+
+<h2>Staff List</h2>
+
+<form method="get">
+    <input type="text" name="search" placeholder="Search by name" value="@Request.Query["search"]" />
+    <button type="submit">Search</button>
+    <a href="/Staffs/Create">Add New</a>
+</form>
+
+<table border="1" cellpadding="8" cellspacing="0">
+    <tr>
+        <th>Name</th>
+        <th>Role</th>
+        <th>Phone</th>
+        <th>Email</th>
+        <th>Actions</th>
+    </tr>
+@foreach (var item in Model)
+{
+    <tr>
+        <td>@item.Name</td>
+        <td>@item.Role</td>
+        <td>@item.Phone</td>
+        <td>@item.Email</td>
+        <td>
+            <a href="/Staffs/Edit/@item.StaffID">Edit</a> |
+            <a href="/Staffs/Delete/@item.StaffID">Delete</a>
+        </td>
+    </tr>
+}
+</table>
+....
+...
+...
+@model HotelManagementSystem.Models.Staff
+
+@{
+    ViewBag.Title = "Create Staff";
+}
+
+<h2>Create New Staff</h2>
+
+<form asp-action="Create" method="post">
+    <label>Name:</label>
+    <input type="text" name="Name" value="@Model.Name" required />
+    <br />
+
+    <label>Role:</label>
+    <select name="Role" required>
+        <option value="">-- Select Role --</option>
+        <option>Manager</option>
+        <option>Receptionist</option>
+        <option>Cleaner</option>
+        <option>Cook</option>
+    </select>
+    <br />
+
+    <label>Phone:</label>
+    <input type="text" name="Phone" value="@Model.Phone" maxlength="10" required pattern="\d{10}" />
+    <br />
+
+    <label>Email:</label>
+    <input type="email" name="Email" value="@Model.Email" required />
+    <br />
+
+    <button type="submit">Save</button>
+    <a href="/Staffs/Index">Cancel</a>
+</form>
+...
+..
+ .
+@model HotelManagementSystem.Models.Staff
+
+@{
+    ViewBag.Title = "Edit Staff";
+}
+
+<h2>Edit Staff</h2>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" name="StaffID" value="@Model.StaffID" />
+
+    <label>Name:</label>
+    <input type="text" name="Name" value="@Model.Name" required />
+    <br />
+
+    <label>Role:</label>
+    <select name="Role" required>
+        <option value="">-- Select Role --</option>
+        <option selected="@("Manager" == Model.Role)">Manager</option>
+        <option selected="@("Receptionist" == Model.Role)">Receptionist</option>
+        <option selected="@("Cleaner" == Model.Role)">Cleaner</option>
+        <option selected="@("Cook" == Model.Role)">Cook</option>
+    </select>
+    <br />
+
+    <label>Phone:</label>
+    <input type="text" name="Phone" value="@Model.Phone" maxlength="10" required pattern="\d{10}" />
+    <br />
+
+    <label>Email:</label>
+    <input type="email" name="Email" value="@Model.Email" required />
+    <br />
+
+    <button type="submit">Update</button>
+    <a href="/Staffs/Index">Cancel</a>
+</form>
+...
+..
+...
+@model HotelManagementSystem.Models.Staff
+
+@{
+    ViewBag.Title = "Delete Staff";
+}
+
+<h2>Delete Staff</h2>
+
+<p>Are you sure you want to delete the following staff?</p>
+
+<p><strong>Name:</strong> @Model.Name</p>
+<p><strong>Role:</strong> @Model.Role</p>
+<p><strong>Phone:</strong> @Model.Phone</p>
+<p><strong>Email:</strong> @Model.Email</p>
+
+<form asp-action="DeleteConfirmed" method="post">
+    <input type="hidden" name="StaffID" value="@Model.StaffID" />
+    <button type="submit">Delete</button>
+    <a href="/Staffs/Index">Cancel</a>
+</form>
