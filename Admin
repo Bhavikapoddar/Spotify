@@ -1,51 +1,4 @@
-using Microsoft.EntityFrameworkCore;
-using HotelManagementSystem.Models;
-
-namespace HotelManagementSystem.Data
-{
-    public class HotelDbContext : DbContext
-    {
-        public HotelDbContext(DbContextOptions<HotelDbContext> options) : base(options)
-        {
-        }
-
-        public DbSet<Staff> Staff { get; set; }
-        public DbSet<Customer> Customer { get; set; } // if exists
-        public DbSet<Room> Room { get; set; }         // if exists
-    }
-}
-....
-...
-...
-using System.ComponentModel.DataAnnotations;
-
-namespace HotelManagementSystem.Models
-{
-    public class Staff
-    {
-        [Key]
-        public int StaffID { get; set; }
-
-        [Required(ErrorMessage = "Name is required")]
-        public string Name { get; set; }
-
-        [Required(ErrorMessage = "Role is required")]
-        public string Role { get; set; }
-
-        [Required(ErrorMessage = "Phone is required")]
-        [RegularExpression(@"^\d{10}$", ErrorMessage = "Phone must be 10 digits")]
-        public string Phone { get; set; }
-
-        [Required(ErrorMessage = "Email is required")]
-        [EmailAddress(ErrorMessage = "Invalid Email")]
-        public string Email { get; set; }
-    }
-}
-...
-.......
-.....
 using Microsoft.AspNetCore.Mvc;
-using HotelManagementSystem.Data;
 using HotelManagementSystem.Models;
 using System.Linq;
 
@@ -53,96 +6,74 @@ namespace HotelManagementSystem.Controllers
 {
     public class StaffsController : Controller
     {
-        private readonly HotelDbContext _context;
+        HotelDbContext db = new HotelDbContext();
 
-        public StaffsController(HotelDbContext context)
+        public IActionResult Index(string search)
         {
-            _context = context;
-        }
+            var staffList = db.Staffs.ToList();
 
-        // GET: Staffs
-        public IActionResult Index(string searchString)
-        {
-            var staffs = from s in _context.Staff
-                         select s;
-
-            if (!string.IsNullOrEmpty(searchString))
+            if (!string.IsNullOrEmpty(search))
             {
-                staffs = staffs.Where(s => s.Name.Contains(searchString) || s.Role.Contains(searchString));
+                staffList = staffList
+                    .Where(s => s.Name.ToLower().Contains(search.ToLower()) || s.Role.ToLower().Contains(search.ToLower()))
+                    .ToList();
             }
 
-            return View(staffs.ToList());
+            return View(staffList);
         }
 
-        // GET: Staffs/Create
         public IActionResult Create()
         {
-            ViewBag.Roles = new List<string> { "Manager", "Receptionist", "Cleaner", "Cook", "Security" };
+            ViewBag.RoleList = new List<string> { "Manager", "Receptionist", "Housekeeping", "Security", "Cook" };
             return View();
         }
 
-        // POST: Staffs/Create
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public IActionResult Create(Staff staff)
         {
-            ViewBag.Roles = new List<string> { "Manager", "Receptionist", "Cleaner", "Cook", "Security" };
-
             if (ModelState.IsValid)
             {
-                _context.Staff.Add(staff);
-                _context.SaveChanges();
-                return RedirectToAction(nameof(Index));
+                db.Staffs.Add(staff);
+                db.SaveChanges();
+                return RedirectToAction("Index");
             }
+            ViewBag.RoleList = new List<string> { "Manager", "Receptionist", "Housekeeping", "Security", "Cook" };
             return View(staff);
         }
 
-        // GET: Staffs/Edit/5
         public IActionResult Edit(int id)
         {
-            var staff = _context.Staff.Find(id);
+            var staff = db.Staffs.Find(id);
             if (staff == null)
             {
                 return NotFound();
             }
-
-            ViewBag.Roles = new List<string> { "Manager", "Receptionist", "Cleaner", "Cook", "Security" };
+            ViewBag.RoleList = new List<string> { "Manager", "Receptionist", "Housekeeping", "Security", "Cook" };
             return View(staff);
         }
 
-        // POST: Staffs/Edit/5
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Edit(int id, Staff staff)
+        public IActionResult Edit(Staff staff)
         {
-            ViewBag.Roles = new List<string> { "Manager", "Receptionist", "Cleaner", "Cook", "Security" };
-
-            if (id != staff.StaffID)
-            {
-                return NotFound();
-            }
-
             if (ModelState.IsValid)
             {
-                _context.Update(staff);
-                _context.SaveChanges();
-                return RedirectToAction(nameof(Index));
+                db.Staffs.Update(staff);
+                db.SaveChanges();
+                return RedirectToAction("Index");
             }
+            ViewBag.RoleList = new List<string> { "Manager", "Receptionist", "Housekeeping", "Security", "Cook" };
             return View(staff);
         }
 
-        // GET: Staffs/Delete/5
         public IActionResult Delete(int id)
         {
-            var staff = _context.Staff.Find(id);
-            if (staff == null)
+            var staff = db.Staffs.Find(id);
+            if (staff != null)
             {
-                return NotFound();
+                db.Staffs.Remove(staff);
+                db.SaveChanges();
             }
-
-            _context.Staff.Remove(staff);
-            _context.SaveChanges();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Index");
         }
     }
 }
