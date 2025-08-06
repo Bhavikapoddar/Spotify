@@ -1,146 +1,89 @@
-using System.ComponentModel.DataAnnotations;
-
-namespace Hotel1.Models
-{
-    public class Room
-    {
-        [Key]
-        public int RoomID { get; set; }
-
-        [Required]
-        public string RoomNumber { get; set; }
-
-        [Required]
-        public string RoomType { get; set; }
-
-        [Required]
-        public int Capacity { get; set; }
-
-        [Required]
-        public decimal Price { get; set; }
-
-        [Required]
-        public string Status { get; set; }
-    }
-}
-...........
-..
-...
-using Hotel1.Data;
-using Hotel1.Models;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System.Linq;
+using System.Web.Mvc;
+using HotelManagementSystem.Models;
 
-namespace Hotel1.Controllers
+namespace HotelManagementSystem.Controllers
 {
     public class RoomsController : Controller
     {
-        private readonly HotelDbContext _context;
-
-        public RoomsController(HotelDbContext context)
-        {
-            _context = context;
-        }
+        private HotelManagementSystemContext db = new HotelManagementSystemContext();
 
         // GET: Rooms
-        public IActionResult Index(string search)
+        public ActionResult Index(string search)
         {
-            var rooms = from r in _context.Rooms select r;
+            var rooms = from r in db.Rooms select r;
 
             if (!string.IsNullOrEmpty(search))
             {
-                rooms = rooms.Where(r =>
-                    r.RoomNumber.Contains(search) ||
-                    r.RoomType.Contains(search) ||
-                    r.Status.Contains(search));
+                rooms = rooms.Where(r => r.RoomNumber.Contains(search));
             }
 
             return View(rooms.ToList());
         }
 
         // GET: Rooms/Create
-        public IActionResult Create()
+        public ActionResult Create()
         {
-            ViewBag.RoomTypeList = new List<string> { "Single", "Double", "Suite" };
-            ViewBag.StatusList = new List<string> { "Available", "Occupied", "Under Maintenance" };
             return View();
         }
 
         // POST: Rooms/Create
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Create(Room room)
+        public ActionResult Create(Room room)
         {
             if (ModelState.IsValid)
             {
-                _context.Rooms.Add(room);
-                _context.SaveChanges();
-                return RedirectToAction(nameof(Index));
+                db.Rooms.Add(room);
+                db.SaveChanges();
+                return RedirectToAction("Index");
             }
 
-            ViewBag.RoomTypeList = new List<string> { "Single", "Double", "Suite" };
-            ViewBag.StatusList = new List<string> { "Available", "Occupied", "Under Maintenance" };
             return View(room);
         }
 
         // GET: Rooms/Edit/5
-        public IActionResult Edit(int? id)
+        public ActionResult Edit(int id)
         {
-            if (id == null)
-                return NotFound();
-
-            var room = _context.Rooms.Find(id);
+            Room room = db.Rooms.Find(id);
             if (room == null)
-                return NotFound();
-
-            ViewBag.RoomTypeList = new List<string> { "Single", "Double", "Suite" };
-            ViewBag.StatusList = new List<string> { "Available", "Occupied", "Under Maintenance" };
+            {
+                return HttpNotFound();
+            }
             return View(room);
         }
 
         // POST: Rooms/Edit/5
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Edit(int id, Room room)
+        public ActionResult Edit(Room room)
         {
-            if (id != room.RoomID)
-                return NotFound();
-
             if (ModelState.IsValid)
             {
-                _context.Update(room);
-                _context.SaveChanges();
-                return RedirectToAction(nameof(Index));
+                db.Entry(room).State = System.Data.Entity.EntityState.Modified;
+                db.SaveChanges();
+                return RedirectToAction("Index");
             }
-
-            ViewBag.RoomTypeList = new List<string> { "Single", "Double", "Suite" };
-            ViewBag.StatusList = new List<string> { "Available", "Occupied", "Under Maintenance" };
             return View(room);
         }
 
         // GET: Rooms/Delete/5
-        public IActionResult Delete(int? id)
+        public ActionResult Delete(int id)
         {
-            if (id == null)
-                return NotFound();
-
-            var room = _context.Rooms.FirstOrDefault(m => m.RoomID == id);
+            Room room = db.Rooms.Find(id);
             if (room == null)
-                return NotFound();
-
+            {
+                return HttpNotFound();
+            }
             return View(room);
         }
 
         // POST: Rooms/Delete/5
         [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public IActionResult DeleteConfirmed(int id)
+        public ActionResult DeleteConfirmed(int id)
         {
-            var room = _context.Rooms.Find(id);
-            _context.Rooms.Remove(room);
-            _context.SaveChanges();
-            return RedirectToAction(nameof(Index));
+            Room room = db.Rooms.Find(id);
+            db.Rooms.Remove(room);
+            db.SaveChanges();
+            return RedirectToAction("Index");
         }
     }
 }
