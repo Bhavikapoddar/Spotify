@@ -35,3 +35,38 @@
 ....
 ...
 ...
+@model IEnumerable<HotelManagementSystem.Models.RoomBookings>
+@{
+    ViewBag.Title = "Room Bookings";
+}
+
+<h2>Room Bookings</h2>
+
+<p>
+    @Html.ActionLink("New Booking", "Create", null, new { @class = "btn btn-success" })
+</p>
+
+<table class="table table-bordered">
+    <tr>
+        <th>Booking ID</th>
+        <th>Customer</th>
+        <th>Room</th>
+        <th>Check-In</th>
+        <th>Check-Out</th>
+        <th>Actions</th>
+    </tr>
+
+@foreach (var item in Model)
+{
+    <tr>
+        <td>@item.BookingID</td>
+        <td>@item.Customers?.Name</td>
+        <td>@item.Rooms?.RoomNumber</td>
+        <td>@item.CheckInDate.ToShortDateString()</td>
+        <td>@item.CheckOutDate.ToShortDateString()</td>
+        <td>
+            @Html.ActionLink("Delete", "Delete", new { id = item.BookingID }, new { @class = "btn btn-danger" })
+        </td>
+    </tr>
+}
+</table>
