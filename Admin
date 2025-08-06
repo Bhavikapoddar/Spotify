@@ -1,7 +1,30 @@
-CREATE TABLE RoomBooking (
-    BookingID INT PRIMARY KEY IDENTITY(1,1),
-    CustomerID INT FOREIGN KEY REFERENCES Customers(CustomerID),
-    RoomID INT FOREIGN KEY REFERENCES Rooms(RoomID),
-    CheckInDate DATETIME NOT NULL,
-    CheckOutDate DATETIME NOT NULL
-);
+using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace HotelManagementSystem.Models
+{
+    public class RoomBookings
+    {
+        [Key]
+        public int BookingID { get; set; }
+
+        [Required]
+        public int CustomerID { get; set; }
+
+        [Required]
+        public int RoomID { get; set; }
+
+        [Required]
+        [DataType(DataType.Date)]
+        public DateTime CheckInDate { get; set; }
+
+        [Required]
+        [DataType(DataType.Date)]
+        public DateTime CheckOutDate { get; set; }
+
+        // Navigation properties (optional, useful for dropdowns)
+        public Customers Customer { get; set; }
+        public Rooms Room { get; set; }
+    }
+}
