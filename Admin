@@ -12,32 +12,23 @@ namespace HotelManagementSystem.Models
         [Required]
         public int CustomerID { get; set; }
 
-        [Required]
-        public int RoomID { get; set; }
-
-        [Required]
-        [DataType(DataType.Date)]
-        public DateTime CheckInDate { get; set; }
-
-        [Required]
-        [DataType(DataType.Date)]
-        [CustomValidation(typeof(RoomBooking), "ValidateCheckoutDate")]
-        public DateTime CheckOutDate { get; set; }
-
         [ForeignKey("CustomerID")]
         public Customer Customer { get; set; }
+
+        [Required]
+        public int RoomID { get; set; }
 
         [ForeignKey("RoomID")]
         public Room Room { get; set; }
 
-        public static ValidationResult ValidateCheckoutDate(DateTime checkOutDate, ValidationContext context)
-        {
-            var instance = (RoomBooking)context.ObjectInstance;
-            if (checkOutDate < instance.CheckInDate)
-            {
-                return new ValidationResult("Check-out date must be after Check-in date.");
-            }
-            return ValidationResult.Success;
-        }
+        [Required]
+        [DataType(DataType.Date)]
+        [Display(Name = "Check-In Date")]
+        public DateTime CheckInDate { get; set; }
+
+        [Required]
+        [DataType(DataType.Date)]
+        [Display(Name = "Check-Out Date")]
+        public DateTime CheckOutDate { get; set; }
     }
 }
