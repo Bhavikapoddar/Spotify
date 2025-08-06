@@ -1,14 +1,15 @@
 @model Hotelmanagementsystem.Models.Room
 
 @{
-    ViewBag.Title = "Create Room";
+    ViewBag.Title = "Edit Room";
 }
 
-<h2 style="text-align: center; color: #4a4a4a; font-family: Arial;">Create Room</h2>
+<h2 style="text-align: center; color: #4a4a4a; font-family: Arial;">Edit Room</h2>
 
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.RoomID)
 
     <div style="max-width: 600px; margin: auto; background-color: #f9f9f9; padding: 25px; border-radius: 10px; box-shadow: 0 0 8px rgba(0,0,0,0.05); font-family: Arial;">
 
@@ -20,7 +21,7 @@
         <div style="margin-bottom: 15px;">
             <label style="font-weight: bold; color: #555;">Room Type:</label><br />
             @Html.DropDownListFor(m => m.RoomType,
-                new SelectList(new[] { "AC", "Non-AC", "Deluxe" }),
+                new SelectList(new[] { "AC", "Non-AC", "Deluxe" }, Model.RoomType),
                 "--Select--",
                 new { @class = "form-control", style = "width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 5px;" })
         </div>
@@ -38,15 +39,15 @@
         <div style="margin-bottom: 20px;">
             <label style="font-weight: bold; color: #555;">Status:</label><br />
             @Html.DropDownListFor(m => m.Status,
-                new SelectList(new[] { "Available", "Booked", "Maintenance" }),
+                new SelectList(new[] { "Available", "Booked", "Maintenance" }, Model.Status),
                 "--Select--",
                 new { @class = "form-control", style = "width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 5px;" })
         </div>
 
         <div style="text-align: center;">
-            <input type="submit" value="Create" style="padding: 8px 20px; background-color: #b3d9ff; color: #333; border: none; border-radius: 5px; cursor: pointer;" />
+            <input type="submit" value="Save"
+                   style="padding: 8px 20px; background-color: #b3e0ff; color: #333; border: none; border-radius: 5px; cursor: pointer;" />
             <a href="@Url.Action("Index")" style="margin-left: 15px; text-decoration: none; color: #555;">Cancel</a>
         </div>
-
     </div>
 }
