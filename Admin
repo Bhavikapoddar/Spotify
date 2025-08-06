@@ -1,7 +1,52 @@
-INSERT INTO Staff (Name, Role, Phone, Email)
-VALUES 
-('Rahul Sharma', 'Manager', '9876543210', 'rahul.sharma@example.com'),
-('Sneha Patil', 'Receptionist', '9823456789', 'sneha.patil@example.com'),
-('Amit Desai', 'Housekeeping', '9867123456', 'amit.desai@example.com'),
-('Pooja Mehta', 'Chef', '9812345678', 'pooja.mehta@example.com'),
-('Ravi Kulkarni', 'Security', '9898765432', 'ravi.kulkarni@example.com');
+@model HotelManagementSystem.Models.Staff
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h2>Create Staff</h2>
+
+<form asp-action="Create" enctype="multipart/form-data">
+    <div class="form-group">
+        <label asp-for="Name"></label>
+        <input asp-for="Name" class="form-control" required />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Email"></label>
+        <input asp-for="Email" type="email" class="form-control" required />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Phone"></label>
+        <input asp-for="Phone" class="form-control" maxlength="10" pattern="[0-9]{10}" title="Enter 10-digit phone number" required />
+        <span asp-validation-for="Phone" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Role"></label>
+        <select asp-for="Role" class="form-control" required>
+            <option value="">-- Select Role --</option>
+            <option>Manager</option>
+            <option>Receptionist</option>
+            <option>Housekeeping</option>
+            <option>Security</option>
+        </select>
+        <span asp-validation-for="Role" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="IDProofPhoto"></label>
+        <input asp-for="IDProofPhoto" type="file" class="form-control" required />
+        <span asp-validation-for="IDProofPhoto" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
