@@ -1,79 +1,110 @@
-using Microsoft.AspNetCore.Mvc;
-using HotelManagementSystem.Models;
+using System.Collections.Generic;
 using System.Linq;
+using System.Web.Mvc;
+using HotelManagementSystem.Models;
 
 namespace HotelManagementSystem.Controllers
 {
     public class StaffsController : Controller
     {
-        HotelDbContext db = new HotelDbContext();
+        private HotelDbContext db = new HotelDbContext();
 
-        public IActionResult Index(string search)
+        // GET: Staffs
+        public ActionResult Index(string search)
         {
-            var staffList = db.Staffs.ToList();
+            var staffs = db.Staff.ToList();
 
             if (!string.IsNullOrEmpty(search))
             {
-                staffList = staffList
-                    .Where(s => s.Name.ToLower().Contains(search.ToLower()) || s.Role.ToLower().Contains(search.ToLower()))
-                    .ToList();
+                staffs = staffs.Where(s => s.Name.ToLower().Contains(search.ToLower())
+                                        || s.Role.ToLower().Contains(search.ToLower())
+                                        || s.Phone.Contains(search)
+                                        || s.Email.ToLower().Contains(search.ToLower())).ToList();
             }
 
-            return View(staffList);
+            return View(staffs);
         }
 
-        public IActionResult Create()
+        // GET: Staffs/Create
+        public ActionResult Create()
         {
-            ViewBag.RoleList = new List<string> { "Manager", "Receptionist", "Housekeeping", "Security", "Cook" };
+            ViewBag.RoleList = GetRoleList();
             return View();
         }
 
+        // POST: Staffs/Create
         [HttpPost]
-        public IActionResult Create(Staff staff)
+        public ActionResult Create(Staff staff)
         {
             if (ModelState.IsValid)
             {
-                db.Staffs.Add(staff);
+                db.Staff.Add(staff);
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
-            ViewBag.RoleList = new List<string> { "Manager", "Receptionist", "Housekeeping", "Security", "Cook" };
+
+            ViewBag.RoleList = GetRoleList();
             return View(staff);
         }
 
-        public IActionResult Edit(int id)
+        // GET: Staffs/Edit/5
+        public ActionResult Edit(int id)
         {
-            var staff = db.Staffs.Find(id);
+            var staff = db.Staff.Find(id);
             if (staff == null)
             {
-                return NotFound();
+                return HttpNotFound();
             }
-            ViewBag.RoleList = new List<string> { "Manager", "Receptionist", "Housekeeping", "Security", "Cook" };
+
+            ViewBag.RoleList = GetRoleList();
             return View(staff);
         }
 
+        // POST: Staffs/Edit/5
         [HttpPost]
-        public IActionResult Edit(Staff staff)
+        public ActionResult Edit(Staff updatedStaff)
         {
             if (ModelState.IsValid)
             {
-                db.Staffs.Update(staff);
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                var existingStaff = db.Staff.Find(updatedStaff.StaffID);
+                if (existingStaff != null)
+                {
+                    existingStaff.Name = updatedStaff.Name;
+                    existingStaff.Role = updatedStaff.Role;
+                    existingStaff.Phone = updatedStaff.Phone;
+                    existingStaff.Email = updatedStaff.Email;
+
+                    db.SaveChanges();
+                    return RedirectToAction("Index");
+                }
             }
-            ViewBag.RoleList = new List<string> { "Manager", "Receptionist", "Housekeeping", "Security", "Cook" };
-            return View(staff);
+
+            ViewBag.RoleList = GetRoleList();
+            return View(updatedStaff);
         }
 
-        public IActionResult Delete(int id)
+        // GET: Staffs/Delete/5
+        public ActionResult Delete(int id)
         {
-            var staff = db.Staffs.Find(id);
+            var staff = db.Staff.Find(id);
             if (staff != null)
             {
-                db.Staffs.Remove(staff);
+                db.Staff.Remove(staff);
                 db.SaveChanges();
             }
             return RedirectToAction("Index");
+        }
+
+        // Helper Method for Role Drop-down
+        private List<SelectListItem> GetRoleList()
+        {
+            return new List<SelectListItem>
+            {
+                new SelectListItem { Text = "Manager", Value = "Manager" },
+                new SelectListItem { Text = "Receptionist", Value = "Receptionist" },
+                new SelectListItem { Text = "Cleaner", Value = "Cleaner" },
+                new SelectListItem { Text = "Cook", Value = "Cook" }
+            };
         }
     }
 }
