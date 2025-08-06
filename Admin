@@ -1,60 +1,37 @@
-using System;
-using System.Linq;
-using System.Web.Mvc;
-using HotelManagementSystem.Models;
-
-namespace HotelManagementSystem.Controllers
-{
-    public class RoomBookingsController : Controller
-    {
-        HotelDbContext db = new HotelDbContext();
-
-        public ActionResult Index()
-        {
-            var bookings = db.RoomBookings.Include("Customers").Include("Rooms").ToList();
-            return View(bookings);
-        }
-
-        public ActionResult Create()
-        {
-            ViewBag.CustomerID = new SelectList(db.Customers, "CustomerID", "Name");
-            ViewBag.RoomID = new SelectList(db.Rooms, "RoomID", "RoomNumber");
-            return View();
-        }
-
-        [HttpPost]
-        public ActionResult Create(RoomBookings booking)
-        {
-            if (booking.CheckInDate < DateTime.Today || booking.CheckOutDate < DateTime.Today)
-            {
-                ModelState.AddModelError("", "Check-in and Check-out dates must be today or in the future.");
-            }
-            else if (booking.CheckOutDate < booking.CheckInDate)
-            {
-                ModelState.AddModelError("", "Check-out date cannot be earlier than Check-in date.");
-            }
-
-            if (ModelState.IsValid)
-            {
-                db.RoomBookings.Add(booking);
-                db.SaveChanges();
-                return RedirectToAction("Index");
-            }
-
-            ViewBag.CustomerID = new SelectList(db.Customers, "CustomerID", "Name", booking.CustomerID);
-            ViewBag.RoomID = new SelectList(db.Rooms, "RoomID", "RoomNumber", booking.RoomID);
-            return View(booking);
-        }
-
-        public ActionResult Delete(int id)
-        {
-            var booking = db.RoomBookings.Find(id);
-            if (booking != null)
-            {
-                db.RoomBookings.Remove(booking);
-                db.SaveChanges();
-            }
-            return RedirectToAction("Index");
-        }
-    }
+@model HotelManagementSystem.Models.RoomBookings
+@{
+    ViewBag.Title = "Create Room Booking";
 }
+
+<h2>Create Room Booking</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.ValidationSummary(true)
+
+    <div>
+        <label>Customer</label>
+        @Html.DropDownList("CustomerID", null, "-- Select Customer --", new { @class = "form-control" })
+    </div>
+
+    <div>
+        <label>Room</label>
+        @Html.DropDownList("RoomID", null, "-- Select Room --", new { @class = "form-control" })
+    </div>
+
+    <div>
+        <label>Check-In Date</label>
+        @Html.TextBoxFor(m => m.CheckInDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+    </div>
+
+    <div>
+        <label>Check-Out Date</label>
+        @Html.TextBoxFor(m => m.CheckOutDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+    </div>
+
+    <br />
+    <button type="submit" class="btn btn-primary">Save</button>
+}
+....
+...
+...
