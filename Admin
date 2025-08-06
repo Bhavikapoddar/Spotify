@@ -1,41 +1,7 @@
-@model IEnumerable<HotelManagementSystem.Models.Staff>
-
-@{
-    ViewBag.Title = "Staff List";
-}
-
-<h2>Staff List</h2>
-
-<form method="get" asp-action="Index">
-    <input type="text" name="searchString" value="@Context.Request.Query["searchString"]" placeholder="Search by name or role" />
-    <input type="submit" value="Search" />
-    <a asp-action="Index">Clear</a>
-</form>
-
-<p>
-    <a asp-action="Create">Add New Staff</a>
-</p>
-
-<table border="1">
-    <tr>
-        <th>Name</th>
-        <th>Role</th>
-        <th>Phone</th>
-        <th>Email</th>
-        <th>Actions</th>
-    </tr>
-
-@foreach (var item in Model)
-{
-    <tr>
-        <td>@item.Name</td>
-        <td>@item.Role</td>
-        <td>@item.Phone</td>
-        <td>@item.Email</td>
-        <td>
-            <a asp-action="Edit" asp-route-id="@item.StaffID">Edit</a> |
-            <a asp-action="Delete" asp-route-id="@item.StaffID">Delete</a>
-        </td>
-    </tr>
-}
-</table>
+INSERT INTO Staff (Name, Role, Phone, Email)
+VALUES 
+('Rahul Sharma', 'Manager', '9876543210', 'rahul.sharma@example.com'),
+('Sneha Patil', 'Receptionist', '9823456789', 'sneha.patil@example.com'),
+('Amit Desai', 'Housekeeping', '9867123456', 'amit.desai@example.com'),
+('Pooja Mehta', 'Chef', '9812345678', 'pooja.mehta@example.com'),
+('Ravi Kulkarni', 'Security', '9898765432', 'ravi.kulkarni@example.com');
