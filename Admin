@@ -1,102 +1,146 @@
-@model Hotelmanagementsystem.Models.adminlogin
+using System.ComponentModel.DataAnnotations;
 
-@{
-    ViewBag.Title = "Login";
-}
-
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        background-color: #f2f2f2;
-        padding: 50px;
-    }
-
-    h2 {
-        text-align: center;
-        color: #333;
-    }
-
-    form {
-        width: 300px;
-        margin: 0 auto;
-        padding: 30px;
-        background-color: #ffffff;
-        border-radius: 10px;
-        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-    }
-
-    label {
-        display: block;
-        margin-bottom: 5px;
-        color: #333;
-        font-weight: bold;
-    }
-
-    input[type="text"],
-    input[type="password"] {
-        width: 100%;
-        padding: 8px;
-        margin-bottom: 15px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        box-sizing: border-box;
-    }
-
-    input[type="submit"] {
-        width: 100%;
-        background-color: #4CAF50;
-        color: white;
-        padding: 10px;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-    }
-
-    input[type="submit"]:hover {
-        background-color: #45a049;
-    }
-
-    .validation-message {
-        color: red;
-        font-size: 12px;
-        margin-top: -10px;
-        margin-bottom: 10px;
-    }
-
-    .error-message {
-        text-align: center;
-        color: red;
-        margin-top: 10px;
-    }
-</style>
-
-<h2>Login</h2>
-
-@using (Html.BeginForm())
+namespace Hotel1.Models
 {
-    @Html.AntiForgeryToken()
+    public class Room
+    {
+        [Key]
+        public int RoomID { get; set; }
 
-    <div>
-        @Html.LabelFor(m => m.Username)
-        @Html.TextBoxFor(m => m.Username)
-        <div class="validation-message">
-            @Html.ValidationMessageFor(m => m.Username)
-        </div>
-    </div>
+        [Required]
+        public string RoomNumber { get; set; }
 
-    <div>
-        @Html.LabelFor(m => m.Password)
-        @Html.PasswordFor(m => m.Password)
-        <div class="validation-message">
-            @Html.ValidationMessageFor(m => m.Password)
-        </div>
-    </div>
+        [Required]
+        public string RoomType { get; set; }
 
-    <div>
-        <input type="submit" value="Login" />
-    </div>
+        [Required]
+        public int Capacity { get; set; }
 
-    <div class="error-message">
-        @ViewBag.Error
-    </div>
+        [Required]
+        public decimal Price { get; set; }
+
+        [Required]
+        public string Status { get; set; }
+    }
+}
+...........
+..
+...
+using Hotel1.Data;
+using Hotel1.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
+
+namespace Hotel1.Controllers
+{
+    public class RoomsController : Controller
+    {
+        private readonly HotelDbContext _context;
+
+        public RoomsController(HotelDbContext context)
+        {
+            _context = context;
+        }
+
+        // GET: Rooms
+        public IActionResult Index(string search)
+        {
+            var rooms = from r in _context.Rooms select r;
+
+            if (!string.IsNullOrEmpty(search))
+            {
+                rooms = rooms.Where(r =>
+                    r.RoomNumber.Contains(search) ||
+                    r.RoomType.Contains(search) ||
+                    r.Status.Contains(search));
+            }
+
+            return View(rooms.ToList());
+        }
+
+        // GET: Rooms/Create
+        public IActionResult Create()
+        {
+            ViewBag.RoomTypeList = new List<string> { "Single", "Double", "Suite" };
+            ViewBag.StatusList = new List<string> { "Available", "Occupied", "Under Maintenance" };
+            return View();
+        }
+
+        // POST: Rooms/Create
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Create(Room room)
+        {
+            if (ModelState.IsValid)
+            {
+                _context.Rooms.Add(room);
+                _context.SaveChanges();
+                return RedirectToAction(nameof(Index));
+            }
+
+            ViewBag.RoomTypeList = new List<string> { "Single", "Double", "Suite" };
+            ViewBag.StatusList = new List<string> { "Available", "Occupied", "Under Maintenance" };
+            return View(room);
+        }
+
+        // GET: Rooms/Edit/5
+        public IActionResult Edit(int? id)
+        {
+            if (id == null)
+                return NotFound();
+
+            var room = _context.Rooms.Find(id);
+            if (room == null)
+                return NotFound();
+
+            ViewBag.RoomTypeList = new List<string> { "Single", "Double", "Suite" };
+            ViewBag.StatusList = new List<string> { "Available", "Occupied", "Under Maintenance" };
+            return View(room);
+        }
+
+        // POST: Rooms/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Edit(int id, Room room)
+        {
+            if (id != room.RoomID)
+                return NotFound();
+
+            if (ModelState.IsValid)
+            {
+                _context.Update(room);
+                _context.SaveChanges();
+                return RedirectToAction(nameof(Index));
+            }
+
+            ViewBag.RoomTypeList = new List<string> { "Single", "Double", "Suite" };
+            ViewBag.StatusList = new List<string> { "Available", "Occupied", "Under Maintenance" };
+            return View(room);
+        }
+
+        // GET: Rooms/Delete/5
+        public IActionResult Delete(int? id)
+        {
+            if (id == null)
+                return NotFound();
+
+            var room = _context.Rooms.FirstOrDefault(m => m.RoomID == id);
+            if (room == null)
+                return NotFound();
+
+            return View(room);
+        }
+
+        // POST: Rooms/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteConfirmed(int id)
+        {
+            var room = _context.Rooms.Find(id);
+            _context.Rooms.Remove(room);
+            _context.SaveChanges();
+            return RedirectToAction(nameof(Index));
+        }
+    }
 }
