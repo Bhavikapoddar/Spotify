@@ -2,17 +2,32 @@
 
 @{ ViewBag.Title = "Staff Information"; }
 
-<h2>Staff Information</h2><p>
+<h2>@ViewBag.Title</h2><p>
     @Html.ActionLink("Create New", "Create")
-</p><table class="table styled-table">
-    <tr>
-        <th>@Html.DisplayNameFor(model => model.Name)</th>
-        <th>@Html.DisplayNameFor(model => model.Role)</th>
-        <th>@Html.DisplayNameFor(model => model.Phone)</th>
-        <th>@Html.DisplayNameFor(model => model.Email)</th>
-        <th></th>
-    </tr>@foreach (var item in Model) { <tr> <td>@Html.DisplayFor(modelItem => item.Name)</td> <td>@Html.DisplayFor(modelItem => item.Role)</td> <td>@Html.DisplayFor(modelItem => item.Phone)</td> <td>@Html.DisplayFor(modelItem => item.Email)</td> <td> @Html.ActionLink("Edit", "Edit", new { id=item.StaffID }) | @Html.ActionLink("Delete", "Delete", new { id=item.StaffID }) </td> </tr> }
-
+</p><table class="styled-table">
+    <thead>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.Name)</th>
+            <th>@Html.DisplayNameFor(model => model.Role)</th>
+            <th>@Html.DisplayNameFor(model => model.Phone)</th>
+            <th>@Html.DisplayNameFor(model => model.Email)</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model) {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.Name)</td>
+                <td>@Html.DisplayFor(modelItem => item.Role)</td>
+                <td>@Html.DisplayFor(modelItem => item.Phone)</td>
+                <td>@Html.DisplayFor(modelItem => item.Email)</td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { id=item.StaffID }) |
+                    @Html.ActionLink("Delete", "Delete", new { id=item.StaffID })
+                </td>
+            </tr>
+        }
+    </tbody>
 </table><style>
     body {
         font-family: Arial, sans-serif;
@@ -23,32 +38,32 @@
 
     h2 {
         color: #4a4a4a;
+        margin-bottom: 20px;
     }
 
     .styled-table {
         width: 100%;
         border-collapse: collapse;
-        margin-top: 20px;
-        background-color: #ffffff;
+        background-color: #fff;
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
     }
 
-    .styled-table th, .styled-table td {
-        border: 1px solid #dee2e6;
-        padding: 10px 15px;
+    .styled-table thead tr {
+        background-color: #e9ecef;
+        color: #495057;
         text-align: left;
     }
 
-    .styled-table th {
-        background-color: #e9ecef;
-        color: #495057;
+    .styled-table th, .styled-table td {
+        padding: 12px 15px;
+        border: 1px solid #dee2e6;
     }
 
-    .styled-table tr:nth-child(even) {
+    .styled-table tbody tr:nth-child(even) {
         background-color: #f1f3f5;
     }
 
-    .styled-table tr:hover {
+    .styled-table tbody tr:hover {
         background-color: #e2e6ea;
     }
 
@@ -60,4 +75,4 @@
     a:hover {
         text-decoration: underline;
     }
-</style
+</style>
