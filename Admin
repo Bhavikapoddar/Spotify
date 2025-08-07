@@ -1,47 +1,11 @@
-public ActionResult Statistics()
-{
-    var data = _context.RoomBookings
-        .Include(rb => rb.Room)  // Make sure Room navigation property is included
-        .GroupBy(rb => rb.Room.RoomType)
-        .Select(group => new
-        {
-            RoomType = group.Key,
-            BookingCount = group.Count()
-        })
-        .OrderByDescending(g => g.BookingCount)
-        .ToList();
-
-    ViewBag.RoomTypeStats = data;
-    return View();
-}
-...
-...
-.  
-@{
-    ViewBag.Title = "Room Booking Statistics";
-    var stats = ViewBag.RoomTypeStats;
-}
-
-<h2 style="text-align:center;">Room Booking Statistics</h2>
-
-<table border="1" style="width:50%; margin:auto; border-collapse: collapse; text-align:center;">
-    <thead style="background-color:lightblue;">
-        <tr>
-            <th>Room Type</th>
-            <th>Number of Bookings</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in stats)
-        {
-            <tr>
-                <td>@item.RoomType</td>
-                <td>@item.BookingCount</td>
-            </tr>
-        }
-    </tbody>
-</table>
-...
-..
-...
-<a href="/RoomBookings/Statistics" style="padding: 10px;">View Booking Stats</a>
+INSERT INTO Staff (Name, Role, Phone, Email) VALUES
+('Anjali Deshmukh', 'Manager', '9876543210', 'anjali.manager@example.com'),
+('Ramesh Kulkarni', 'Cook', '8765432109', 'ramesh.cook@example.com'),
+('Sneha Patil', 'Receptionist', '9988776655', 'sneha.reception@example.com'),
+('Vikram Joshi', 'Cleaner', '9123456780', 'vikram.cleaner@example.com'),
+('Priya Jadhav', 'Cook', '9012345678', 'priya.cook@example.com'),
+('Sagar More', 'Manager', '9321456789', 'sagar.manager@example.com'),
+('Neha Shinde', 'Receptionist', '7890654321', 'neha.reception@example.com'),
+('Sunil Pawar', 'Cleaner', '9090909090', 'sunil.cleaner@example.com'),
+('Kavita Bhosale', 'Cook', '8800554433', 'kavita.cook@example.com'),
+('Rahul Patil', 'Receptionist', '7788990011', 'rahul.reception@example.com');
