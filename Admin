@@ -1,94 +1,47 @@
-You cannot directly manipulate background images or move elements outside the viewport with standard CSS. However, I will modify the provided HTML and CSS code to address the green color in the sidebar, align the sidebar to the left, and set the sidebar background to white. I will also add a placeholder comment for where you might include a background image and the "Welcome Admin" title. Since the gap property with display: flex is not working in your older environment, I will adjust spacing using margins instead.
- <!DOCTYPE html>
- <html>
- <head>
-     <title>Admin Dashboard</title>
-     <style>
-         body {
-             font-family: Arial, sans-serif;
-             background-color: #f3f3f3; /* Light gray background for the page */
-             margin: 0;
-             padding: 0;
-             display: flex; /* Enable flexbox for overall layout */
-         }
+public ActionResult Statistics()
+{
+    var data = _context.RoomBookings
+        .Include(rb => rb.Room)  // Make sure Room navigation property is included
+        .GroupBy(rb => rb.Room.RoomType)
+        .Select(group => new
+        {
+            RoomType = group.Key,
+            BookingCount = group.Count()
+        })
+        .OrderByDescending(g => g.BookingCount)
+        .ToList();
 
-         .header {
-             background-color: #4CAF50; /* Green header - you can change this */
-             color: white;
-             padding: 15px;
-             display: flex;
-             justify-content: space-between;
-             align-items: center;
-             width: 100%; /* Header spans the full width */
-         }
+    ViewBag.RoomTypeStats = data;
+    return View();
+}
+...
+...
+.  
+@{
+    ViewBag.Title = "Room Booking Statistics";
+    var stats = ViewBag.RoomTypeStats;
+}
 
-         .logout {
-             color: white;
-             font-weight: bold;
-             text-decoration: none;
-             padding: 8px 12px;
-             background-color: red;
-             border-radius: 5px;
-         }
+<h2 style="text-align:center;">Room Booking Statistics</h2>
 
-         .container {
-             display: flex;
-             margin-top: 30px;
-             height: calc(100vh - 70px); /* Adjust height based on header */
-             width: 100%; /* Container spans the full width */
-         }
-
-         .sidebar {
-             width: 200px; /* Adjust sidebar width as needed */
-             background-color: white; /* White sidebar background */
-             padding: 20px;
-             margin-right: 20px; /* Add some right margin to separate from content */
-             box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); /* Optional: Add a subtle shadow */
-             /* Removed margin-left: 40px; to align to the left */
-             border-radius: 5px; /* Optional: Rounded corners */
-         }
-
-         .sidebar a {
-             display: block;
-             padding: 10px 15px;
-             margin: 5px 0; /* Adjust vertical spacing between links */
-             background-color: #f9f9f9; /* Light background for links */
-             color: #333;
-             text-decoration: none;
-             border-radius: 3px;
-         }
-
-         .sidebar a:hover {
-             background-color: #0056b3; /* Darker background on hover */
-             color: white;
-         }
-
-         .content {
-             flex-grow: 1; /* Content takes up remaining space */
-             padding: 20px;
-             background-color: #fff; /* White background for content area */
-             border-radius: 5px; /* Optional: Rounded corners */
-             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Optional: Add a subtle shadow */
-         }
-     </style>
- </head>
- <body>
-     <div class="header">
-         <h2>Welcome Admin</h2> <a href="@Url.Action("Logout", "Login")" class="logout">Logout</a>
-     </div>
-     <div class="container">
-         <div class="sidebar">
-             <h3>Sidebar Menu</h3>
-             <a href="@Url.Action("Index", "Customer")">Customer Master</a>
-             <a href="@Url.Action("Index", "Rooms")">Room Master</a>
-             <a href="@Url.Action("Index", "Staffs")">Staff Info</a>
-             <a href="@Url.Action("Index", "RoomBookings")">Room Status</a>
-         </div>
-         <div class="content">
-             <h1>Dashboard Content</h1>
-             <p>This is the main content area of your admin dashboard.</p>
-             </div>
-     </div>
- </body>
- </html>
-
+<table border="1" style="width:50%; margin:auto; border-collapse: collapse; text-align:center;">
+    <thead style="background-color:lightblue;">
+        <tr>
+            <th>Room Type</th>
+            <th>Number of Bookings</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in stats)
+        {
+            <tr>
+                <td>@item.RoomType</td>
+                <td>@item.BookingCount</td>
+            </tr>
+        }
+    </tbody>
+</table>
+...
+..
+...
+<a href="/RoomBookings/Statistics" style="padding: 10px;">View Booking Stats</a>
