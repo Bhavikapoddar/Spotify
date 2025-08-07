@@ -1,11 +1,11 @@
-INSERT INTO Staff (Name, Role, Phone, Email) VALUES
-('Anjali Deshmukh', 'Manager', '9876543210', 'anjali.manager@example.com'),
-('Ramesh Kulkarni', 'Cook', '8765432109', 'ramesh.cook@example.com'),
-('Sneha Patil', 'Receptionist', '9988776655', 'sneha.reception@example.com'),
-('Vikram Joshi', 'Cleaner', '9123456780', 'vikram.cleaner@example.com'),
-('Priya Jadhav', 'Cook', '9012345678', 'priya.cook@example.com'),
-('Sagar More', 'Manager', '9321456789', 'sagar.manager@example.com'),
-('Neha Shinde', 'Receptionist', '7890654321', 'neha.reception@example.com'),
-('Sunil Pawar', 'Cleaner', '9090909090', 'sunil.cleaner@example.com'),
-('Kavita Bhosale', 'Cook', '8800554433', 'kavita.cook@example.com'),
-('Rahul Patil', 'Receptionist', '7788990011', 'rahul.reception@example.com');
+INSERT INTO Rooms (RoomNumber, RoomType, Capacity, Price, Status) VALUES
+('101', 'AC', 2, 2500.00, 'Available'),
+('102', 'Non AC', 2, 1800.00, 'Booked'),
+('103', 'Deluxe', 4, 4000.00, 'Available'),
+('104', 'AC', 3, 3000.00, 'Maintenance'),
+('105', 'Non AC', 1, 1500.00, 'Available'),
+('106', 'Deluxe', 2, 3500.00, 'Booked'),
+('107', 'AC', 2, 2800.00, 'Available'),
+('108', 'Non AC', 3, 2000.00, 'Booked'),
+('109', 'Deluxe', 5, 4500.00, 'Maintenance'),
+('110', 'AC', 2, 2700.00, 'Available');
