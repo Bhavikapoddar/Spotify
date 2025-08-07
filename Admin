@@ -1,11 +1,123 @@
-INSERT INTO Rooms (RoomNumber, RoomType, Capacity, Price, Status) VALUES
-('101', 'AC', 2, 2500.00, 'Available'),
-('102', 'Non AC', 2, 1800.00, 'Booked'),
-('103', 'Deluxe', 4, 4000.00, 'Available'),
-('104', 'AC', 3, 3000.00, 'Maintenance'),
-('105', 'Non AC', 1, 1500.00, 'Available'),
-('106', 'Deluxe', 2, 3500.00, 'Booked'),
-('107', 'AC', 2, 2800.00, 'Available'),
-('108', 'Non AC', 3, 2000.00, 'Booked'),
-('109', 'Deluxe', 5, 4500.00, 'Maintenance'),
-('110', 'AC', 2, 2700.00, 'Available');
+@model Hotelmanagementsystem.Models.adminlogin
+
+@{
+    ViewBag.Title = "WELCOME TO VITS HOTEL";
+}
+
+@if (!String.IsNullOrEmpty((string)ViewBag.Error))
+{
+    <script type="text/javascript">
+        alert(@Html.Raw(Json.Encode((string)ViewBag.Error)));
+    </script>
+}
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f2f2f2;
+        padding: 0;
+        margin: 0;
+    }
+
+    .login-container {
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    form {
+        width: 300px;
+        padding: 30px;
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+        text-align: center;
+        color: #333;
+    }
+
+    h3 {
+        text-align: center;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 5px;
+        color: #333;
+        font-weight: bold;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+        width: 100%;
+        padding: 8px;
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+
+    input[type="submit"] {
+        width: 100%;
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    input[type="submit"]:hover {
+        background-color: #45a049;
+    }
+
+    .validation-message {
+        color: red;
+        font-size: 12px;
+        margin-top: -10px;
+        margin-bottom: 10px;
+    }
+
+    .error-message {
+        text-align: center;
+        color: red;
+        margin-top: 10px;
+    }
+</style>
+
+<div class="login-container">
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+        <form>
+            <h3>Admin Login</h3>
+
+            <div>
+                @Html.LabelFor(m => m.Username)
+                @Html.TextBoxFor(m => m.Username)
+                <div class="validation-message">
+                    @Html.ValidationMessageFor(m => m.Username)
+                </div>
+            </div>
+
+            <div>
+                @Html.LabelFor(m => m.Password)
+                @Html.PasswordFor(m => m.Password)
+                <div class="validation-message">
+                    @Html.ValidationMessageFor(m => m.Password)
+                </div>
+            </div>
+
+            <div>
+                <input type="submit" value="Login" />
+            </div>
+
+            <div class="error-message">
+                @ViewBag.Error
+            </div>
+        </form>
+    }
+</div>
