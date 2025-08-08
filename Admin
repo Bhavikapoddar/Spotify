@@ -1,104 +1,130 @@
+@model Hotelmanagementsystem.Models.adminlogin
 @{
-    ViewBag.Title = "Admin Dashboard";
-    Layout = null;
+    ViewBag.Title = "WELCOME TO VETS HOTEL";
 }
 
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Admin Dashboard</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #eaf0f6;
-            margin: 0;
-            padding: 0;
-        }
+<script type="text/javascript">
+    function preventBack() {
+        window.history.forward();
+    }
+    setTimeout("preventBack()", 0);
+    window.onunload = function () { null };
+</script>
 
-        .header {
-            background-color: #A6CAF0;
-            padding: 10px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            color: #f0f8ff; /* Light text color */
-            font-size: 18px;
-            font-weight: bold;
-        }
+@if (!string.IsNullOrEmpty((string)ViewBag.Error))
+{
+    <script type="text/javascript">
+        alert(@Html.Raw(Json.Encode((string)ViewBag.Error)));
+    </script>
+}
 
-        .logout-link {
-            font-weight: bold;
-            color: red;
-            text-decoration: none;
-            margin-left: auto;
-        }
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: linear-gradient(to right, #e3f2fd, #fce4ec);
+        margin: 0;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
 
-        .container {
-            display: flex;
-            height: calc(100vh - 70px);
-        }
+    .login-container {
+        width: 350px;
+        padding: 30px;
+        background-color: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.15);
+        text-align: center;
+        animation: fadeIn 0.8s ease-in-out;
+    }
 
-        .sidebar {
-            background-color: #004080;
-            width: 200px;
-            padding: 20px;
-            color: white;
-        }
+    h3 {
+        margin-bottom: 20px;
+        color: #333;
+    }
 
-        .sidebar a {
-            display: block;
-            margin: 10px 0;
-            color: white;
-            text-decoration: none;
-            background-color: #6699cc;
-            padding: 10px;
-            border-radius: 5px;
-        }
+    label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+        color: #444;
+        text-align: left;
+    }
 
-        .sidebar a:hover {
-            background-color: #336699;
-        }
+    input[type="text"], input[type="password"] {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        box-sizing: border-box;
+        font-size: 14px;
+    }
 
-        .main {
-            flex: 1;
-            padding: 30px;
-            background-color: #f5faff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-        }
+    input[type="submit"] {
+        width: 100%;
+        padding: 10px;
+        background: linear-gradient(90deg, #4CAF50, #66bb6a);
+        color: white;
+        font-size: 16px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background 0.3s ease-in-out;
+    }
 
-        .main img {
-            max-width: 300px;
-            height: auto;
-            margin-bottom: 20px;
-        }
+    input[type="submit"]:hover {
+        background: linear-gradient(90deg, #43a047, #388e3c);
+    }
 
-        .main h2 {
-            color: #005580;
-            font-size: 24px;
-        }
-    </style>
-</head>
-<body>
-    <div class="header">
-        <span>Welcome Admin @Session["username"]</span>
-        <a class="logout-link" href="@Url.Action("Logout", "Login")">Logout</a>
-    </div>
+    .validation-message {
+        color: red;
+        font-size: 12px;
+        margin-bottom: 10px;
+        text-align: left;
+    }
 
-    <div class="container">
-        <div class="sidebar">
-            <a href="@Url.Action("Index", "Customer")">Customer Master</a>
-            <a href="@Url.Action("Index", "Room")">Room Master</a>
-            <a href="@Url.Action("Index", "Staff")">Staff Info</a>
-            <a href="@Url.Action("Index", "RoomStatus")">Room Status</a>
+    .error-message {
+        color: red;
+        margin-top: 10px;
+        font-weight: bold;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+
+<div class="login-container">
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+
+        <h3>Admin Login</h3>
+
+        <div>
+            @Html.LabelFor(m => m.Username)
+            @Html.TextBoxFor(m => m.Username)
+            <div class="validation-message">
+                @Html.ValidationMessageFor(m => m.Username)
+            </div>
         </div>
 
-        <div class="main">
-            <img src="~/Content/Images/hotel.png" alt="Hotel Image" />
-            <h2>Welcome to VITS</h2>
+        <div>
+            @Html.LabelFor(m => m.Password)
+            @Html.PasswordFor(m => m.Password)
+            <div class="validation-message">
+                @Html.ValidationMessageFor(m => m.Password)
+            </div>
         </div>
-    </div>
-</body>
-</html>
+
+        <input type="submit" value="Login" />
+
+        @if (!string.IsNullOrEmpty((string)ViewBag.Error))
+        {
+            <div class="error-message">@ViewBag.Error</div>
+        }
+    }
+</div>
