@@ -1,130 +1,101 @@
-@model Hotelmanagementsystem.Models.adminlogin
+@model IEnumerable<Hotelmanagementsystem.Models.Customers>
 @{
-    ViewBag.Title = "WELCOME TO VETS HOTEL";
+    ViewBag.Title = "Customer List";
 }
 
-<script type="text/javascript">
-    function preventBack() {
-        window.history.forward();
-    }
-    setTimeout("preventBack()", 0);
-    window.onunload = function () { null };
-</script>
+<h2>Customer List</h2>
 
-@if (!string.IsNullOrEmpty((string)ViewBag.Error))
+<!-- Search Form -->
+@using (Html.BeginForm("Index", "Customer", FormMethod.Get))
 {
-    <script type="text/javascript">
-        alert(@Html.Raw(Json.Encode((string)ViewBag.Error)));
-    </script>
+    <p>
+        Search by Name or Email:
+        @Html.TextBox("searchString", ViewBag.CurrentFilter as string, new
+        {
+            @class = "form-control",
+            placeholder = "Enter name or email",
+            style = "width: 250px; display: inline-block; margin-right: 10px;"
+        })
+        <input type="submit" value="Search" class="btn btn-primary" />
+    </p>
 }
+
+<p>
+    @Html.ActionLink("Create New", "Create", null, new { @class = "btn btn-success" })
+</p>
+
+<br />
+
+<table class="table table-striped table-bordered">
+    <thead>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.FirstOrDefault().Name)</th>
+            <th>@Html.DisplayNameFor(model => model.FirstOrDefault().Gender)</th>
+            <th>@Html.DisplayNameFor(model => model.FirstOrDefault().Phone)</th>
+            <th>@Html.DisplayNameFor(model => model.FirstOrDefault().Email)</th>
+            <th>@Html.DisplayNameFor(model => model.FirstOrDefault().IDProof)</th>
+            <th>@Html.DisplayNameFor(model => model.FirstOrDefault().NoOfPeople)</th>
+            <th>@Html.DisplayNameFor(model => model.FirstOrDefault().PaymentStatus)</th>
+            <th>@Html.DisplayNameFor(model => model.FirstOrDefault().CurrentBill)</th>
+            <th>Modify</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Name</td>
+                <td>@item.Gender</td>
+                <td>@item.Phone</td>
+                <td>@item.Email</td>
+                <td>
+                    @if (!string.IsNullOrEmpty(item.IDProof))
+                    {
+                        <img src="~/Uploads/@item.IDProof" width="60" height="60" style="object-fit:cover; border-radius:5px;" />
+                    }
+                    else
+                    {
+                        <span style="color:gray;">No Photo</span>
+                    }
+                </td>
+                <td>@item.NoOfPeople</td>
+                <td>@item.PaymentStatus</td>
+                <td>@item.CurrentBill</td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { id = item.CustomerID }, new { @class = "btn btn-warning btn-sm" }) |
+                    @Html.ActionLink("Delete", "Delete", new { id = item.CustomerID }, new { @class = "btn btn-danger btn-sm" })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
 
 <style>
-    body {
-        font-family: Arial, sans-serif;
-        background: linear-gradient(to right, #e3f2fd, #fce4ec);
-        margin: 0;
-        height: 100vh;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .login-container {
-        width: 350px;
-        padding: 30px;
-        background-color: #ffffff;
-        border-radius: 12px;
-        box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.15);
-        text-align: center;
-        animation: fadeIn 0.8s ease-in-out;
-    }
-
-    h3 {
+    h2 {
         margin-bottom: 20px;
         color: #333;
     }
 
-    label {
-        display: block;
-        margin-bottom: 5px;
-        font-weight: bold;
-        color: #444;
-        text-align: left;
+    table {
+        background-color: #fff;
+        border-radius: 5px;
+        overflow: hidden;
     }
 
-    input[type="text"], input[type="password"] {
-        width: 100%;
-        padding: 10px;
-        margin-bottom: 15px;
+    th {
+        background-color: #f1f1f1;
+        text-align: center;
+        font-weight: bold;
+    }
+
+    td {
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    img {
         border: 1px solid #ccc;
-        border-radius: 6px;
-        box-sizing: border-box;
-        font-size: 14px;
-    }
-
-    input[type="submit"] {
-        width: 100%;
-        padding: 10px;
-        background: linear-gradient(90deg, #4CAF50, #66bb6a);
-        color: white;
-        font-size: 16px;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-        transition: background 0.3s ease-in-out;
-    }
-
-    input[type="submit"]:hover {
-        background: linear-gradient(90deg, #43a047, #388e3c);
-    }
-
-    .validation-message {
-        color: red;
-        font-size: 12px;
-        margin-bottom: 10px;
-        text-align: left;
-    }
-
-    .error-message {
-        color: red;
-        margin-top: 10px;
-        font-weight: bold;
-    }
-
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(-10px); }
-        to { opacity: 1; transform: translateY(0); }
+        padding: 2px;
+        background: #fafafa;
     }
 </style>
-
-<div class="login-container">
-    @using (Html.BeginForm())
-    {
-        @Html.AntiForgeryToken()
-
-        <h3>Admin Login</h3>
-
-        <div>
-            @Html.LabelFor(m => m.Username)
-            @Html.TextBoxFor(m => m.Username)
-            <div class="validation-message">
-                @Html.ValidationMessageFor(m => m.Username)
-            </div>
-        </div>
-
-        <div>
-            @Html.LabelFor(m => m.Password)
-            @Html.PasswordFor(m => m.Password)
-            <div class="validation-message">
-                @Html.ValidationMessageFor(m => m.Password)
-            </div>
-        </div>
-
-        <input type="submit" value="Login" />
-
-        @if (!string.IsNullOrEmpty((string)ViewBag.Error))
-        {
-            <div class="error-message">@ViewBag.Error</div>
-        }
-    }
-</div>
