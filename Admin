@@ -1,7 +1,95 @@
-<div>
-    <label for="roomNumberFilter">Available Room Numbers:</label>
-    @Html.DropDownList("roomNumberFilter",
-                       (SelectList)ViewBag.AvailableRoomNumbers,
-                       "-- Select Room Number --",
-                       new { @class = "form-control", style = "width: 200px; display:inline-block; margin-bottom: 15px;" })
+<div class="content-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="content-block">
+                    <h2>Experience Tranquility</h2>
+                    <p>Serenity Haven offers a tranquil escape, featuring comfortable seating, calming ambiance, and attentive service.</p>
+                </div>
+                <div class="content-block">
+                    <h2>A Welcoming Space</h2>
+                    <p>Creating a family-friendly atmosphere, The Family Zone is the perfect haven for parents and children.</p>
+                </div>
+            </div>
+            <div class="col-md-6 text-center">
+                <img src="/Content/Images/seat.jpg" alt="Person on an airplane" class="content-image" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 text-center">
+                <img src="/Content/Images/food.jpg" alt="Delicious airplane meal" class="content-image" />
+            </div>
+            <div class="col-md-6">
+                <div class="content-block">
+                    <h2>Elevate Your Experience</h2>
+                    <p>Designed for discerning travelers, this exclusive lounge offers premium amenities, assistance, and private workspaces.</p>
+                </div>
+                <div class="content-block">
+                    <h2>A Culinary Delight</h2>
+                    <p>Immerse yourself in a world of flavors, offering international cuisines, gourmet dishes, and carefully curated beverages.</p>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+..... 
+... 
+. 
+/* New Section Styles */
+.content-section {
+    padding: 60px 0;
+    background-color: #f9f9f9;
+}
+
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    overflow: hidden; /* Clear floats */
+}
+
+.row {
+    margin-bottom: 40px;
+    clear: both; /* Clear floats */
+}
+
+.col-md-6 {
+    width: 48%; /* A bit less than 50% to account for margin */
+    float: left;
+    box-sizing: border-box;
+    padding: 0 1%;
+}
+
+.col-md-6:nth-child(even) {
+    margin-left: 4%; /* Adjust for spacing */
+}
+
+.content-block {
+    margin-bottom: 30px;
+}
+
+.content-block h2 {
+    font-size: 2em;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.content-block p {
+    font-size: 1.1em;
+    line-height: 1.6;
+    color: #666;
+}
+
+.content-image {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.text-center {
+    text-align: center;
+}
+... 
+
+... 
