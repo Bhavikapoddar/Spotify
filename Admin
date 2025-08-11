@@ -1,95 +1,74 @@
-<div class="content-section">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-6">
-                <div class="content-block">
-                    <h2>Experience Tranquility</h2>
-                    <p>Serenity Haven offers a tranquil escape, featuring comfortable seating, calming ambiance, and attentive service.</p>
-                </div>
-                <div class="content-block">
-                    <h2>A Welcoming Space</h2>
-                    <p>Creating a family-friendly atmosphere, The Family Zone is the perfect haven for parents and children.</p>
-                </div>
-            </div>
-            <div class="col-md-6 text-center">
-                <img src="/Content/Images/seat.jpg" alt="Person on an airplane" class="content-image" />
-            </div>
+<div class="about-section">
+    <div class="about-images">
+        <img src="/Content/Images/seat1.jpg" alt="Airplane Seat" class="img-main">
+        <img src="/Content/Images/seat2.jpg" alt="Passenger" class="img-overlap">
+    </div>
+    <div class="about-content">
+        <div class="content-block">
+            <h2>Experience Tranquility</h2>
+            <p>Serenity Haven offers a tranquil escape, featuring comfortable seating, calming ambiance, and attentive service.</p>
         </div>
-        <div class="row">
-            <div class="col-md-6 text-center">
-                <img src="/Content/Images/food.jpg" alt="Delicious airplane meal" class="content-image" />
-            </div>
-            <div class="col-md-6">
-                <div class="content-block">
-                    <h2>Elevate Your Experience</h2>
-                    <p>Designed for discerning travelers, this exclusive lounge offers premium amenities, assistance, and private workspaces.</p>
-                </div>
-                <div class="content-block">
-                    <h2>A Culinary Delight</h2>
-                    <p>Immerse yourself in a world of flavors, offering international cuisines, gourmet dishes, and carefully curated beverages.</p>
-                </div>
-            </div>
+        <div class="content-block">
+            <h2>Elevate Your Experience</h2>
+            <p>Designed for discerning travelers, this exclusive lounge offers premium amenities, assistance, and private workspaces.</p>
         </div>
     </div>
+    <div style="clear: both;"></div>
 </div>
-..... 
-... 
-. 
-/* New Section Styles */
-.content-section {
-    padding: 60px 0;
-    background-color: #f9f9f9;
-}
-
-.container {
+.... 
+.about-section {
     width: 90%;
     max-width: 1200px;
-    margin: 0 auto;
-    overflow: hidden; /* Clear floats */
+    margin: 60px auto;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 0 12px rgba(0,0,0,0.1);
+    padding: 30px;
+    overflow: hidden;
 }
 
-.row {
-    margin-bottom: 40px;
-    clear: both; /* Clear floats */
-}
-
-.col-md-6 {
-    width: 48%; /* A bit less than 50% to account for margin */
+/* Left Image Section */
+.about-images {
+    width: 45%;
     float: left;
+    position: relative;
+    text-align: center;
+}
+
+.about-images .img-main {
+    width: 80%;
+    border-radius: 12px;
+    box-shadow: 0 5px 12px rgba(0,0,0,0.2);
+}
+
+.about-images .img-overlap {
+    width: 50%;
+    position: absolute;
+    bottom: -20px;
+    right: 10%;
+    border-radius: 12px;
+    box-shadow: 0 5px 12px rgba(0,0,0,0.2);
+}
+
+/* Right Content Section */
+.about-content {
+    width: 50%;
+    float: right;
     box-sizing: border-box;
-    padding: 0 1%;
 }
 
-.col-md-6:nth-child(even) {
-    margin-left: 4%; /* Adjust for spacing */
+.about-content .content-block {
+    margin-bottom: 25px;
 }
 
-.content-block {
-    margin-bottom: 30px;
-}
-
-.content-block h2 {
-    font-size: 2em;
+.about-content h2 {
+    font-size: 1.8em;
     color: #333;
     margin-bottom: 10px;
 }
 
-.content-block p {
+.about-content p {
     font-size: 1.1em;
+    color: #555;
     line-height: 1.6;
-    color: #666;
 }
-
-.content-image {
-    width: 100%;
-    height: auto;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.text-center {
-    text-align: center;
-}
-... 
-
-... 
